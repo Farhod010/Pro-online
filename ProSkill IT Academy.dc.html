@@ -53,6 +53,99 @@
   @keyframes dotB{0%,22%{background:rgba(255,255,255,.4);width:14px}33%,55%{background:#fff;width:18px}66%,100%{background:rgba(255,255,255,.4);width:14px}}
   @keyframes dotC{0%,55%{background:rgba(255,255,255,.4);width:14px}66%,88%{background:#fff;width:18px}100%{background:rgba(255,255,255,.4);width:14px}}
   .cline{height:7px;border-radius:4px;background:rgba(255,255,255,.55)}
+
+  /* ===== 3D Ustozlar karuseli ===== */
+  .t3d-wrap{
+    perspective:1200px;perspective-origin:50% 45%;
+    height:420px;display:flex;align-items:center;justify-content:center;
+    position:relative;user-select:none;
+  }
+  .t3d-stage{
+    width:100%;height:100%;position:relative;
+    display:flex;align-items:center;justify-content:center;
+  }
+  .t3d-ring{
+    position:relative;width:200px;height:280px;
+    transform-style:preserve-3d;
+    animation:t3dSpin 28s linear infinite;
+  }
+  .t3d-wrap:hover .t3d-ring,
+  .t3d-ring.is-paused{
+    animation-play-state:paused;
+  }
+  @keyframes t3dSpin{
+    from{transform:rotateY(0deg)}
+    to{transform:rotateY(-360deg)}
+  }
+  .t3d-card{
+    position:absolute;inset:0;
+    transform-style:preserve-3d;
+    -webkit-box-reflect:below 10px linear-gradient(transparent 60%,rgba(0,0,0,.25));
+  }
+  .t3d-inner{
+    width:100%;height:100%;
+    border-radius:18px;overflow:hidden;
+    background:linear-gradient(160deg,rgba(30,20,55,.95),rgba(15,12,28,.98));
+    border:1px solid rgba(255,255,255,.12);
+    box-shadow:0 18px 40px rgba(0,0,0,.45);
+    display:flex;flex-direction:column;
+    transition:transform .35s cubic-bezier(.2,.8,.2,1),box-shadow .35s,border-color .35s;
+    cursor:pointer;position:relative;
+  }
+  .t3d-card:hover .t3d-inner{
+    transform:scale(1.18) translateY(-14px);
+    border-color:rgba(168,85,247,.65);
+    box-shadow:0 28px 60px rgba(168,85,247,.35),0 0 0 1px rgba(168,85,247,.25);
+    z-index:5;
+  }
+  .t3d-photo{
+    height:62%;position:relative;overflow:hidden;flex:none;
+    background:linear-gradient(135deg,#4c1d95,#312e81);
+  }
+  .t3d-photo img{
+    width:100%;height:100%;object-fit:cover;display:block;
+    transition:transform .45s ease;
+  }
+  .t3d-card:hover .t3d-photo img{transform:scale(1.08)}
+  .t3d-photo::after{
+    content:"";position:absolute;inset:0;
+    background:linear-gradient(180deg,transparent 40%,rgba(10,8,20,.85) 100%);
+    pointer-events:none;
+  }
+  .t3d-body{
+    flex:1;padding:12px 14px 14px;display:flex;flex-direction:column;gap:4px;
+  }
+  .t3d-name{
+    font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:14.5px;
+    color:#fff;line-height:1.2;
+  }
+  .t3d-role{font-size:12px;color:#c4b5fd;font-weight:600}
+  .t3d-meta{font-size:11.5px;color:#8d8aa0;margin-top:2px}
+  .t3d-detail{
+    max-height:0;opacity:0;overflow:hidden;
+    transition:max-height .35s ease,opacity .3s ease,margin .3s ease;
+    margin-top:0;
+  }
+  .t3d-card:hover .t3d-detail{
+    max-height:90px;opacity:1;margin-top:8px;
+  }
+  .t3d-detail p{
+    font-size:11.5px;line-height:1.45;color:#bdb9d0;margin:0 0 8px;
+  }
+  .t3d-tags{display:flex;flex-wrap:wrap;gap:5px}
+  .t3d-tag{
+    font-size:10px;font-weight:700;padding:3px 8px;border-radius:999px;
+    background:rgba(168,85,247,.18);color:#d8b4fe;border:1px solid rgba(168,85,247,.3);
+  }
+  .t3d-hint{
+    text-align:center;font-size:13px;color:#8d8aa0;margin-top:8px;font-weight:500;
+  }
+  .t3d-floor{
+    position:absolute;left:50%;bottom:28px;width:70%;height:40px;
+    transform:translateX(-50%);
+    background:radial-gradient(ellipse at center,rgba(168,85,247,.22),transparent 70%);
+    filter:blur(8px);pointer-events:none;
+  }
 </style>
 </helmet>
 <div style="min-height:100vh;color:#ece9f5;font-family:'Manrope',sans-serif;position:relative;overflow-x:hidden">
@@ -203,18 +296,43 @@
       </section>
       </sc-if>
 
-      <section style="padding:20px 0 40px">
-        <h2 style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:30px;letter-spacing:-.7px;margin-bottom:24px">Ustozlarimiz</h2>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px">
-          <sc-for list="{{ teachers }}" as="t" hint-placeholder-count="4">
-            <div style="background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:24px;text-align:center">
-              <div style="width:74px;height:74px;border-radius:50%;margin:0 auto 16px;background:{{ t.grad }};display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans';font-weight:800;font-size:28px;color:#fff">{{ t.initial }}</div>
-              <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:16px;margin-bottom:4px">{{ t.name }}</div>
-              <div style="font-size:13px;color:#bd8cff;font-weight:600;margin-bottom:12px">{{ t.role }}</div>
-              <div style="display:flex;justify-content:center;gap:18px;font-size:12.5px;color:#8d8aa0"><span>{{ t.courseCount }} kurs</span><span>{{ t.students }} o'quvchi</span></div>
-            </div>
-          </sc-for>
+      <section style="padding:28px 0 48px">
+        <div style="display:flex;align-items:end;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:12px">
+          <div>
+            <h2 style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:30px;letter-spacing:-.7px">Ustozlarimiz</h2>
+            <p style="color:#8d8aa0;font-size:15px;margin-top:6px">Soha mutaxassislari — 3D karuselda tanishing</p>
+          </div>
         </div>
+        <div class="t3d-wrap" title="Sichqoncha bilan to'xtatish">
+          <div class="t3d-floor"></div>
+          <div class="t3d-stage">
+            <div class="t3d-ring">
+              <sc-for list="{{ teachers3d }}" as="t" hint-placeholder-count="6">
+                <div class="t3d-card" style="transform:{{ t.transform }}">
+                  <div class="t3d-inner">
+                    <div class="t3d-photo">
+                      <img src="{{ t.photo }}" alt="{{ t.name }}" loading="lazy"/>
+                    </div>
+                    <div class="t3d-body">
+                      <div class="t3d-name">{{ t.name }}</div>
+                      <div class="t3d-role">{{ t.role }}</div>
+                      <div class="t3d-meta">{{ t.courseCount }} kurs · {{ t.students }} o'quvchi</div>
+                      <div class="t3d-detail">
+                        <p>{{ t.bio }}</p>
+                        <div class="t3d-tags">
+                          <sc-for list="{{ t.tags }}" as="tag" hint-placeholder-count="2">
+                            <span class="t3d-tag">{{ tag }}</span>
+                          </sc-for>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </sc-for>
+            </div>
+          </div>
+        </div>
+        <p class="t3d-hint">⏸ Sichqonchani olib boring — aylanadi to'xtaydi · kartaga boring — rasm kattalashadi va ma'lumot chiqadi</p>
       </section>
 
       <sc-if value="{{ showTestimonials }}" hint-placeholder-val="{{ true }}">
@@ -1181,8 +1299,43 @@ class Component extends DCLogic {
     });
     const popularCourses = [...this.courses].sort((a,b)=>b.students-a.students).slice(0,6).map(c=>({...c, onOpen:()=>this.openCourse(c.id)}));
     const teacherMap={};
-    this.courses.forEach(c=>{ if(!teacherMap[c.teacher]) teacherMap[c.teacher]={name:c.teacher,courseCount:0,students:0,initial:c.teacherInitial,grad:this.grads[c.cat]}; teacherMap[c.teacher].courseCount++; teacherMap[c.teacher].students+=c.students; });
+    this.courses.forEach(c=>{ if(!teacherMap[c.teacher]) teacherMap[c.teacher]={name:c.teacher,courseCount:0,students:0,initial:c.teacherInitial,grad:this.grads[c.cat],cats:[]}; teacherMap[c.teacher].courseCount++; teacherMap[c.teacher].students+=c.students; if(teacherMap[c.teacher].cats.indexOf(c.cat)<0) teacherMap[c.teacher].cats.push(c.cat); });
+    const teacherMeta={
+      "Sardor Aliyev":{photo:"https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=500&h=600&q=80",bio:"Senior Python & Backend dasturchi. 8 yillik tajriba, 4000+ o'quvchi.",role:"Python · Backend"},
+      "Dilnoza Karimova":{photo:"https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=500&h=600&q=80",bio:"Frontend mutaxassis, React va zamonaviy UI bo'yicha trener.",role:"Frontend · React"},
+      "Madina Yusupova":{photo:"https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&w=500&h=600&q=80",bio:"Grafik dizayner, Figma va brending bo'yicha sertifikatli trener.",role:"Grafik dizayn"},
+      "Jasur Toshmatov":{photo:"https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=500&h=600&q=80",bio:"SMM va raqamli marketing strategiyasi bo'yicha amaliyotchi.",role:"SMM · Marketing"},
+      "Aziza Rahimova":{photo:"https://images.unsplash.com/photo-1438761681033-6461ffad8d80?auto=format&fit=crop&w=500&h=600&q=80",bio:"Data Science va AI tadqiqotchisi. Python, ML, analitika.",role:"Data · AI"},
+      "Bekzod Ismoilov":{photo:"https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&w=500&h=600&q=80",bio:"Mobil dasturchi — Flutter va cross-platform ilovalar.",role:"Mobil · Flutter"},
+      "Kamola Saidova":{photo:"https://images.unsplash.com/photo-1544005313-94ddf0286df2?auto=format&fit=crop&w=500&h=600&q=80",bio:"IT uchun ingliz tili va texnik muloqot bo'yicha murabbiy.",role:"Ingliz tili"},
+      "Nodira Tosheva":{photo:"https://images.unsplash.com/photo-1594744803329-e58b31de8bf5?auto=format&fit=crop&w=500&h=600&q=80",bio:"Kompyuter savodxonligi va ofis dasturlari o'qituvchisi.",role:"Kompyuter savodxonligi"}
+    };
     const teachers=Object.values(teacherMap).sort((a,b)=>b.students-a.students).slice(0,4).map(t=>({...t,role:"Ustoz",students:(t.students/1000).toFixed(1)+"k"}));
+    // 3D karusel — barcha ustozlar + foto
+    let teachers3dBase=Object.values(teacherMap).sort((a,b)=>b.students-a.students);
+    // kam bo'lsa, meta ro'yxatidan to'ldirish
+    Object.keys(teacherMeta).forEach(name=>{
+      if(!teachers3dBase.some(t=>t.name===name)){
+        teachers3dBase.push({name,courseCount:1,students:500,initial:name.split(" ").map(w=>w[0]).join("").slice(0,2),grad:this.grads["Python"],cats:[teacherMeta[name].role]});
+      }
+    });
+    teachers3dBase=teachers3dBase.slice(0,7);
+    const n3d=Math.max(teachers3dBase.length,1);
+    const radius=Math.round(210+n3d*12);
+    const teachers3d=teachers3dBase.map((t,i)=>{
+      const meta=teacherMeta[t.name]||{photo:"https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&h=600&q=80",bio:"ProSkill IT Academy ustozi.",role:"Ustoz"};
+      const angle=(360/n3d)*i;
+      return {
+        name:t.name,
+        role:meta.role||"Ustoz",
+        bio:meta.bio,
+        photo:meta.photo,
+        courseCount:t.courseCount,
+        students:(t.students>=1000?(t.students/1000).toFixed(1)+"k":t.students),
+        tags:(t.cats&&t.cats.length?t.cats:meta.role.split("·").map(s=>s.trim())).slice(0,3),
+        transform:"rotateY("+angle+"deg) translateZ("+radius+"px)"
+      };
+    });
 
     // ---- Courses page ----
     const q=st.search.toLowerCase();
@@ -1264,7 +1417,7 @@ class Component extends DCLogic {
       // landing
       heroStats:[{value:"18k+",label:"O'quvchilar"},{value:"42",label:"Kurslar"},{value:"25+",label:"Ustozlar"},{value:"96%",label:"Tugatish"}],
       heroProgress:[{title:"Python asoslari",pct:78},{title:"Frontend",pct:45},{title:"Grafik dizayn",pct:62}],
-      landingCats, popularCourses, teachers,
+      landingCats, popularCourses, teachers, teachers3d,
       features:[{num:"01",title:"Amaliy yo'naltirilgan",desc:"Har bir kurs real loyihalar va amaliy mashqlarga asoslangan."},{num:"02",title:"Avtomatik kurs ochilishi",desc:"To'lov muvaffaqiyatli bo'lishi bilan kurs darhol ochiladi."},{num:"03",title:"Progress kuzatuvi",desc:"Har bir darsdagi progressingiz saqlanadi va ko'rsatiladi."},{num:"04",title:"Rasmiy sertifikat",desc:"Kursni tugatganingizdan so'ng sertifikat olasiz."}],
       testimonials:[{name:"Akmal Y.",role:"Python o'quvchisi",initial:"AY",text:"Kursdan keyin junior dasturchi bo'lib ishga kirdim. Ustozlar juda kuchli, hammasi amaliy."},{name:"Gulnora S.",role:"Frontend o'quvchisi",initial:"GS",text:"Eng yaxshi tomoni — istalgan vaqt ko'rish mumkin va progress saqlanib qoladi."},{name:"Nilufar T.",role:"Dizayn o'quvchisi",initial:"NT",text:"Figma kursi ajoyib! Endi freelance orqali pul ishlayapman. Rahmat ProSkill!"}],
       // courses page
