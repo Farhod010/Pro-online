@@ -234,8 +234,10 @@
         </div>
         <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px">
           <sc-for list="{{ landingCats }}" as="c" hint-placeholder-count="10">
-            <div onClick="{{ c.onClick }}" style="cursor:pointer;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:20px 16px;transition:transform .2s,border-color .2s" style-hover="transform:translateY(-4px);border-color:rgba(168,85,247,.4)">
-              <div style="width:46px;height:46px;border-radius:13px;background:{{ c.grad }};display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans';font-weight:800;font-size:19px;color:#fff;margin-bottom:14px">{{ c.initial }}</div>
+            <div onClick="{{ c.onClick }}" class="cat-card" style="cursor:pointer;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:20px 16px;transition:transform .2s,border-color .2s,background .2s" style-hover="transform:translateY(-4px);border-color:rgba(168,85,247,.4);background:rgba(255,255,255,.06)">
+              <div style="width:52px;height:52px;border-radius:14px;background:{{ c.iconBg }};display:flex;align-items:center;justify-content:center;margin-bottom:14px;border:1px solid {{ c.iconBorder }};box-shadow:0 8px 20px {{ c.iconShadow }}">
+                <img src="{{ c.icon }}" alt="{{ c.name }}" width="30" height="30" style="width:30px;height:30px;object-fit:contain;display:block" loading="lazy"/>
+              </div>
               <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:14.5px;line-height:1.25;margin-bottom:4px">{{ c.name }}</div>
               <div style="font-size:12.5px;color:#8d8aa0">{{ c.count }} kurs</div>
             </div>
@@ -1294,10 +1296,69 @@ class Component extends DCLogic {
     const loggedIn=!!st.user;
     const isChrome=!["dashboard","login"].includes(route);
 
-    // ---- Landing data ----
+    // ---- Landing data (asl brand ikonkalar — Devicon) ----
+    const catIcons={
+      "Python":{
+        icon:"https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/python/python-original.svg",
+        iconBg:"rgba(55,118,171,.16)", iconBorder:"rgba(55,118,171,.35)", iconShadow:"rgba(55,118,171,.18)"
+      },
+      "Frontend":{
+        icon:"https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/react/react-original.svg",
+        iconBg:"rgba(97,218,251,.14)", iconBorder:"rgba(97,218,251,.35)", iconShadow:"rgba(97,218,251,.16)"
+      },
+      "Backend":{
+        icon:"https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/nodejs/nodejs-original.svg",
+        iconBg:"rgba(104,160,99,.14)", iconBorder:"rgba(104,160,99,.4)", iconShadow:"rgba(104,160,99,.18)"
+      },
+      "Grafik dizayn":{
+        icon:"https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/figma/figma-original.svg",
+        iconBg:"rgba(242,78,30,.12)", iconBorder:"rgba(242,78,30,.35)", iconShadow:"rgba(162,89,255,.15)"
+      },
+      "SMM":{
+        icon:"https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/canva/canva-original.svg",
+        iconBg:"rgba(0,196,204,.12)", iconBorder:"rgba(0,196,204,.35)", iconShadow:"rgba(0,196,204,.15)"
+      },
+      "Data Science":{
+        icon:"https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/jupyter/jupyter-original.svg",
+        iconBg:"rgba(243,119,38,.12)", iconBorder:"rgba(243,119,38,.35)", iconShadow:"rgba(243,119,38,.15)"
+      },
+      "Sun'iy intellekt":{
+        icon:"https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/tensorflow/tensorflow-original.svg",
+        iconBg:"rgba(255,111,0,.12)", iconBorder:"rgba(255,111,0,.35)", iconShadow:"rgba(255,111,0,.15)"
+      },
+      "Mobil dasturlash":{
+        icon:"https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/flutter/flutter-original.svg",
+        iconBg:"rgba(69,176,238,.12)", iconBorder:"rgba(69,176,238,.35)", iconShadow:"rgba(69,176,238,.15)"
+      },
+      "Ingliz tili":{
+        icon:"https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/markdown/markdown-original.svg",
+        iconBg:"rgba(139,92,246,.14)", iconBorder:"rgba(139,92,246,.35)", iconShadow:"rgba(139,92,246,.15)"
+      },
+      "Kompyuter savodxonligi":{
+        icon:"https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/vscode/vscode-original.svg",
+        iconBg:"rgba(0,122,204,.14)", iconBorder:"rgba(0,122,204,.35)", iconShadow:"rgba(0,122,204,.15)"
+      }
+    };
+    // Ingliz tili uchun yaxshiroq: Google Translate brand (simpleicons)
+    catIcons["Ingliz tili"].icon="https://cdn.simpleicons.org/googletranslate/4285F4";
+    // SMM uchun Instagram asl icon
+    catIcons["SMM"].icon="https://cdn.simpleicons.org/instagram/E4405F";
+    catIcons["SMM"].iconBg="rgba(228,64,95,.12)";
+    catIcons["SMM"].iconBorder="rgba(228,64,95,.35)";
+    catIcons["SMM"].iconShadow="rgba(228,64,95,.16)";
+
     const landingCats = this.categories.filter(c=>c!=="Hammasi").map(name=>{
       const cs=this.courses.filter(c=>c.cat===name);
-      return {name, count:cs.length, initial:name.charAt(0), grad:this.grads[name]||"linear-gradient(135deg,#a855f7,#6366f1)", onClick:()=>{this.setState({category:name});this.nav("courses");}};
+      const ic=catIcons[name]||{
+        icon:"https://cdn.jsdelivr.net/gh/devicons/devicon@latest/icons/github/github-original.svg",
+        iconBg:"rgba(255,255,255,.08)", iconBorder:"rgba(255,255,255,.12)", iconShadow:"rgba(0,0,0,.2)"
+      };
+      return {
+        name, count:cs.length, initial:name.charAt(0),
+        grad:this.grads[name]||"linear-gradient(135deg,#a855f7,#6366f1)",
+        icon:ic.icon, iconBg:ic.iconBg, iconBorder:ic.iconBorder, iconShadow:ic.iconShadow,
+        onClick:()=>{this.setState({category:name});this.nav("courses");}
+      };
     });
     const popularCourses = [...this.courses].sort((a,b)=>b.students-a.students).slice(0,6).map(c=>({...c, onOpen:()=>this.openCourse(c.id)}));
     const teacherMap={};
