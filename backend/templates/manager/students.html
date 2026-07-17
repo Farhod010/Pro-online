@@ -1,0 +1,197 @@
+{% extends 'manager/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <div class="page-subtitle">Dashboard / O'quvchilar</div>
+        <h1 class="page-title">O'quvchilar ma'lumotlar bazasi</h1>
+    </div>
+    <div>
+        <button class="btn-primary" onclick="openEnrollModal(null, '')"><i class="bi bi-person-plus-fill"></i> Qo'lda kursga yozish</button>
+    </div>
+</div>
+
+<!-- ============ SEARCH & FILTER SECTION ============ -->
+<div class="panel-card" style="margin-bottom: 24px; padding: 18px 24px;">
+    <form method="GET" action="{% url 'manager:students' %}" id="studentsFilterForm" style="display:flex; flex-wrap:wrap; justify-content:space-between; align-items:center; gap:16px;">
+        <div style="display:flex; gap:10px; flex-wrap:wrap; align-items:center;">
+            <!-- Filter Chips (Status) -->
+            <input type="hidden" name="status" id="statusFilterVal" value="{{ status_filter }}">
+            <button type="button" class="filter-chip {% if status_filter == 'all' or not status_filter %}active{% endif %}" onclick="setStatusFilter('all')">Hammasi</button>
+            <button type="button" class="filter-chip {% if status_filter == 'active' %}active{% endif %}" onclick="setStatusFilter('active')">Faol</button>
+            <button type="button" class="filter-chip {% if status_filter == 'pending' %}active{% endif %}" onclick="setStatusFilter('pending')">Kutilayotgan</button>
+            <button type="button" class="filter-chip {% if status_filter == 'blocked' %}active{% endif %}" onclick="setStatusFilter('blocked')">Bloklangan</button>
+        </div>
+
+        <div style="display:flex; gap:10px; width:100%; max-width:400px;">
+            <div class="search-bar" style="max-width:none; flex:1;">
+                <i class="bi bi-search" style="color:var(--muted2)"></i>
+                <input type="text" name="search" value="{{ search_query }}" placeholder="Ism, familiya yoki email bo'yicha qidirish..." onkeypress="if(event.key === 'Enter') this.form.submit();">
+            </div>
+            <button type="submit" class="btn-secondary">Filtrlash</button>
+        </div>
+    </form>
+</div>
+
+<!-- ============ STUDENTS TABLE ============ -->
+<div class="panel-card" style="padding:0; overflow:hidden;">
+    <div class="table-responsive">
+        <table class="custom-table" id="studentsTable">
+            <thead>
+                <tr>
+                    <th>O'quvchi</th>
+                    <th>Kurslar</th>
+                    <th>Umumiy progress</th>
+                    <th>Sertifikatlar</th>
+                    <th>Holat</th>
+                    <th style="text-align:right;">Amallar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for student in students %}
+                <tr>
+                    <td>
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            {% if student.obj.avatar %}
+                                <img src="{{ student.obj.avatar.url }}" alt="{{ student.obj.get_full_name }}" style="width:36px; height:36px; border-radius:10px; object-fit:cover;"/>
+                            {% else %}
+                                <div class="avatar-fallback" style="width:36px; height:36px; font-size:13px; font-weight:700;">{{ student.obj.initial }}</div>
+                            {% endif %}
+                            <div>
+                                <div style="font-weight:700;">{{ student.obj.get_full_name|default:student.obj.username }}</div>
+                                <div style="font-size:11.5px; color:var(--muted2);">Qo'shildi: {{ student.obj.joined_label|default:student.obj.date_joined|date:"d.m.Y" }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="font-weight:600; color:var(--muted);">{{ student.courses_count }} ta kurs</td>
+                    <td>
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <div style="flex:1; height:6px; border-radius:10px; background:var(--line); overflow:hidden;">
+                                <div style="height:100%; width:{{ student.progress }}%; background:linear-gradient(90deg, var(--accent), #0ea5e9); border-radius:10px;"></div>
+                            </div>
+                            <span style="font-size:12px; font-weight:700; color:var(--muted2); width:35px; text-align:right;">{{ student.progress }}%</span>
+                        </div>
+                    </td>
+                    <td>
+                        {% if student.certs_count > 0 %}
+                            <span style="color:#ffd479; font-weight:700;"><i class="bi bi-trophy-fill"></i> {{ student.certs_count }} ta</span>
+                        {% else %}
+                            <span style="color:var(--muted2);">—</span>
+                        {% endif %}
+                    </td>
+                    <td>
+                        <span class="badge {% if student.obj.status == 'active' %}badge-success{% elif student.obj.status == 'pending' %}badge-warning{% else %}badge-danger{% endif %}">
+                            ● {{ student.obj.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <div style="display:flex; gap:8px; justify-content:flex-end;">
+                            <button class="btn-secondary" style="padding:6px 12px; font-size:12.5px;" onclick="openEnrollModal('{{ student.obj.id }}', '{{ student.obj.get_full_name|escapejs }}')">
+                                <i class="bi bi-journal-plus"></i> Kursga qo'shish
+                            </button>
+                            
+                            <form method="POST" action="{% url 'manager:students' %}" style="display:inline;" onsubmit="return confirm('O\'quvchi holatini o\'zgartirishni tasdiqlaysizmi?')">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="toggle_status">
+                                <input type="hidden" name="student_id" value="{{ student.obj.id }}">
+                                {% if student.obj.status == 'active' %}
+                                    <button type="submit" class="btn-secondary" style="padding:6px 12px; font-size:12.5px; color:var(--danger); border-color:rgba(239,68,68,0.2);">
+                                        <i class="bi bi-slash-circle"></i> Bloklash
+                                    </button>
+                                {% else %}
+                                    <button type="submit" class="btn-secondary" style="padding:6px 12px; font-size:12.5px; color:var(--success); border-color:rgba(16,185,129,0.2);">
+                                        <i class="bi bi-shield-check"></i> Faollash
+                                    </button>
+                                {% endif %}
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="6" style="text-align:center; padding:30px; color:var(--muted2);">Qidiruv bo'yicha hech qanday o'quvchi topilmadi.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- ============ ENROLL MODAL POPUP ============ -->
+<div class="modal-overlay" id="enrollModalOverlay">
+    <div class="modal-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+            <h3 style="font-family:'Plus Jakarta Sans'; font-weight:800; font-size:18px;">Kursga yozish</h3>
+            <button class="icon-btn" style="border:none; background:transparent;" onclick="closeEnrollModal()"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <form method="POST" action="{% url 'manager:students' %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="enroll">
+            <input type="hidden" name="student_id" id="modalStudentId">
+            
+            <div class="form-group" id="studentSelectGroup">
+                <label for="studentSelect">O'quvchini tanlang</label>
+                <select name="student_id_select" id="studentSelect" class="form-control" onchange="document.getElementById('modalStudentId').value = this.value">
+                    <option value="">-- Tanlang --</option>
+                    {% for student in students %}
+                        <option value="{{ student.obj.id }}">{{ student.obj.get_full_name|default:student.obj.username }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+
+            <div class="form-group" id="studentNameDisplayGroup" style="display:none;">
+                <label>O'quvchi</label>
+                <input type="text" id="modalStudentName" class="form-control" readonly style="opacity:0.7;">
+            </div>
+            
+            <div class="form-group">
+                <label for="modalCourseId">Kursni tanlang</label>
+                <select name="course_id" id="modalCourseId" class="form-control" required>
+                    <option value="">-- Kursni tanlang --</option>
+                    {% for course in all_courses %}
+                        <option value="{{ course.id }}">{{ course.title }} ({{ course.price_label }})</option>
+                    {% endfor %}
+                </select>
+            </div>
+            
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button type="button" class="btn-secondary" style="flex:1;" onclick="closeEnrollModal()">Bekor qilish</button>
+                <button type="submit" class="btn-primary" style="flex:1;">Kursga ochish</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function setStatusFilter(status) {
+        document.getElementById('statusFilterVal').value = status;
+        document.getElementById('studentsFilterForm').submit();
+    }
+
+    function openEnrollModal(studentId, studentName) {
+        const overlay = document.getElementById('enrollModalOverlay');
+        const selectGroup = document.getElementById('studentSelectGroup');
+        const displayGroup = document.getElementById('studentNameDisplayGroup');
+        
+        if (studentId) {
+            document.getElementById('modalStudentId').value = studentId;
+            document.getElementById('modalStudentName').value = studentName;
+            selectGroup.style.display = 'none';
+            displayGroup.style.display = 'block';
+            document.getElementById('studentSelect').removeAttribute('required');
+        } else {
+            document.getElementById('modalStudentId').value = '';
+            selectGroup.style.display = 'block';
+            displayGroup.style.display = 'none';
+            document.getElementById('studentSelect').setAttribute('required', 'required');
+        }
+        
+        overlay.classList.add('active');
+    }
+
+    function closeEnrollModal() {
+        document.getElementById('enrollModalOverlay').classList.remove('active');
+    }
+</script>
+{% endblock %}

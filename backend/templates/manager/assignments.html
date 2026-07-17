@@ -1,0 +1,138 @@
+{% extends 'manager/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <div class="page-subtitle">Dashboard / Vazifalar & Imtihonlar</div>
+        <h1 class="page-title">Vazifalar va Testlar nazorati</h1>
+    </div>
+    <div>
+        <a href="/admin/tests_app/test/add/" class="btn-primary"><i class="bi bi-plus-lg"></i> Yangi Test yaratish</a>
+    </div>
+</div>
+
+<div class="dashboard-grid">
+    <!-- ============ SUBMISSIONS / GRADING ============ -->
+    <div class="panel-card" style="padding:0; overflow:hidden;">
+        <div class="panel-card-title" style="padding:24px 24px 10px 24px; margin-bottom:0;">
+            <span>Studentlar topshiriqlari (Test natijalari)</span>
+        </div>
+        <div class="table-responsive">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Talaba</th>
+                        <th>Test</th>
+                        <th>Kurs</th>
+                        <th>Ball (Foiz)</th>
+                        <th>Holat</th>
+                        <th style="text-align:right;">Amallar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for sub in submissions %}
+                    <tr>
+                        <td style="font-weight:700;">{{ sub.student.get_full_name|default:sub.student.username }}</td>
+                        <td>{{ sub.test.title }}</td>
+                        <td style="color:var(--muted); font-size:13px;">{{ sub.test.course.title }}</td>
+                        <td style="font-weight:700;">
+                            {{ sub.score }} ball <span style="font-size:11px; color:var(--muted2);">({{ sub.percentage }}%)</span>
+                        </td>
+                        <td>
+                            {% if sub.passed %}
+                                <span class="badge badge-success">● O'tdi</span>
+                            {% else %}
+                                <span class="badge badge-danger">● Yiqildi</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div style="display:flex; justify-content:flex-end;">
+                                <button class="btn-secondary" style="padding:6px 12px; font-size:12px;" onclick="openGradeModal('{{ sub.id }}', '{{ sub.student.get_full_name|escapejs }}', '{{ sub.test.title|escapejs }}', '{{ sub.score }}')">
+                                    <i class="bi bi-pencil-square"></i> Baholash
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="6" style="text-align:center; padding:30px; color:var(--muted2);">Natijalar topilmadi.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ============ ACTIVE QUIZZES PANEL ============ -->
+    <div class="panel-card" style="align-self:flex-start;">
+        <div class="panel-card-title">Faol Test va Imtihonlar</div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+            {% for quiz in quizzes %}
+            <div style="padding:14px; background:var(--input-bg); border-radius:12px; border:1px solid var(--border);">
+                <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:6px;">
+                    <div style="font-weight:700; font-size:13.5px;">{{ quiz.title }}</div>
+                    <span class="badge badge-success" style="font-size:9px;">Faol</span>
+                </div>
+                <div style="font-size:11.5px; color:var(--muted);">Kurs: {{ quiz.course.title|truncatechars:30 }}</div>
+                <div style="display:flex; justify-content:space-between; font-size:11.5px; color:var(--muted2); margin-top:8px;">
+                    <span>O'tish bali: {{ quiz.pass_percent }}%</span>
+                    <span>Savollar: {{ quiz.questions.count }} ta</span>
+                </div>
+            </div>
+            {% empty %}
+            <div style="text-align:center; color:var(--muted2); padding:15px 0;">Testlar mavjud emas.</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- ============ GRADING MODAL POPUP ============ -->
+<div class="modal-overlay" id="gradeModalOverlay">
+    <div class="modal-content">
+        <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:18px;">
+            <h3 style="font-family:'Plus Jakarta Sans'; font-weight:800; font-size:18px;">Bahoni tahrirlash</h3>
+            <button class="icon-btn" style="border:none; background:transparent;" onclick="closeGradeModal()"><i class="bi bi-x-lg"></i></button>
+        </div>
+        <form method="POST" action="{% url 'manager:assignments' %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="grade_submission">
+            <input type="hidden" name="result_id" id="modalResultId">
+            
+            <div class="form-group">
+                <label>Talaba</label>
+                <input type="text" id="modalStudentName" class="form-control" readonly style="opacity:0.7;">
+            </div>
+
+            <div class="form-group">
+                <label>Test nomi</label>
+                <input type="text" id="modalQuizTitle" class="form-control" readonly style="opacity:0.7;">
+            </div>
+            
+            <div class="form-group">
+                <label for="modalScore">Kiritilgan ball (To'g'ri javoblar soni)</label>
+                <input type="number" name="score" id="modalScore" class="form-control" min="0" required>
+            </div>
+            
+            <div style="display:flex; gap:10px; margin-top:20px;">
+                <button type="button" class="btn-secondary" style="flex:1;" onclick="closeGradeModal()">Bekor qilish</button>
+                <button type="submit" class="btn-primary" style="flex:1;">Saqlash</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<script>
+    function openGradeModal(resultId, studentName, quizTitle, currentScore) {
+        document.getElementById('modalResultId').value = resultId;
+        document.getElementById('modalStudentName').value = studentName;
+        document.getElementById('modalQuizTitle').value = quizTitle;
+        document.getElementById('modalScore').value = currentScore;
+        document.getElementById('gradeModalOverlay').classList.add('active');
+    }
+
+    function closeGradeModal() {
+        document.getElementById('gradeModalOverlay').classList.remove('active');
+    }
+</script>
+{% endblock %}

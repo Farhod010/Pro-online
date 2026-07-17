@@ -1,0 +1,260 @@
+{% extends 'manager/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <div class="page-subtitle">Dashboard / Umumiy tahlil</div>
+        <h1 class="page-title">Xush kelibsiz, {{ request.user.get_full_name|default:request.user.username }}!</h1>
+    </div>
+    <div style="display:flex; gap:10px;">
+        <button class="btn-secondary" onclick="window.location.reload()"><i class="bi bi-arrow-clockwise"></i> Yangilash</button>
+        <a href="{% url 'manager:courses' %}" class="btn-primary"><i class="bi bi-plus-lg"></i> Yangi Kurs</a>
+    </div>
+</div>
+
+<!-- ============ KPI CARDS DECK ============ -->
+<div class="stats-grid">
+    <!-- Active Students Card -->
+    <div class="stat-card">
+        <div class="stat-card-header">
+            <div class="stat-icon" style="background: rgba(16, 185, 129, 0.15); color: #10b981;">
+                <i class="bi bi-people-fill"></i>
+            </div>
+            <span class="stat-trend positive"><i class="bi bi-arrow-up-short"></i> Faol</span>
+        </div>
+        <div class="stat-value">{{ active_students }} <span style="font-size:14px; color:var(--muted)">/ {{ students_count }}</span></div>
+        <div class="stat-label">Faol O'quvchilar</div>
+    </div>
+
+    <!-- Active Teachers Card -->
+    <div class="stat-card">
+        <div class="stat-card-header">
+            <div class="stat-icon" style="background: rgba(14, 165, 233, 0.15); color: #0ea5e9;">
+                <i class="bi bi-person-badge-fill"></i>
+            </div>
+            <span class="stat-trend positive"><i class="bi bi-check-circle"></i> Tasdiqlangan</span>
+        </div>
+        <div class="stat-value">{{ active_teachers }} <span style="font-size:14px; color:var(--muted)">/ {{ teachers_count }}</span></div>
+        <div class="stat-label">Faol Ustozlar</div>
+    </div>
+
+    <!-- Active Courses Card -->
+    <div class="stat-card">
+        <div class="stat-card-header">
+            <div class="stat-icon" style="background: rgba(139, 92, 246, 0.15); color: #8b5cf6;">
+                <i class="bi bi-book-half"></i>
+            </div>
+            <span class="stat-trend positive"><i class="bi bi-eye"></i> Nashr etilgan</span>
+        </div>
+        <div class="stat-value">{{ active_courses }} <span style="font-size:14px; color:var(--muted)">/ {{ courses_count }}</span></div>
+        <div class="stat-label">Nashr etilgan Kurslar</div>
+    </div>
+
+    <!-- Revenue Card -->
+    <div class="stat-card">
+        <div class="stat-card-header">
+            <div class="stat-icon" style="background: rgba(245, 158, 11, 0.15); color: #f59e0b;">
+                <i class="bi bi-wallet2"></i>
+            </div>
+            <span class="stat-trend positive" style="color:#10b981;"><i class="bi bi-graph-up"></i> Jami</span>
+        </div>
+        <div class="stat-value" style="font-size: 20px; font-weight: 800;">{{ formatted_revenue }}</div>
+        <div class="stat-label">Platforma Daromadi</div>
+    </div>
+</div>
+
+<!-- ============ ANALYTICS CHARTS SECTION ============ -->
+<div class="dashboard-grid">
+    <!-- Chart Panel -->
+    <div class="panel-card">
+        <div class="panel-card-title">
+            <span>O'sish dinamikasi (Haftalik o'quvchilar soni)</span>
+            <span style="font-size:12px; color:var(--muted2); font-weight:600;">Oxirgi 6 hafta</span>
+        </div>
+        <div style="position:relative; height:300px; width:100%;">
+            <canvas id="weeklyGrowthChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Course Analytics & Quick Actions -->
+    <div class="panel-card">
+        <div class="panel-card-title">Tezkor amallar (Quick Actions)</div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+            <a href="{% url 'manager:students' %}" class="btn-secondary" style="display:flex; align-items:center; justify-content:space-between;">
+                <span><i class="bi bi-person-plus-fill" style="margin-right:8px; color:var(--accent);"></i> Studentlarni yozish</span>
+                <i class="bi bi-chevron-right" style="font-size:12px;"></i>
+            </a>
+            <a href="{% url 'manager:support' %}" class="btn-secondary" style="display:flex; align-items:center; justify-content:space-between;">
+                <span><i class="bi bi-envelope-exclamation-fill" style="margin-right:8px; color:var(--warning);"></i> Support so'rovlari ({{ pending_payments }})</span>
+                <i class="bi bi-chevron-right" style="font-size:12px;"></i>
+            </a>
+            <a href="{% url 'manager:assignments' %}" class="btn-secondary" style="display:flex; align-items:center; justify-content:space-between;">
+                <span><i class="bi bi-patch-check-fill" style="margin-right:8px; color:var(--success);"></i> Imtihonlar & Baholar</span>
+                <i class="bi bi-chevron-right" style="font-size:12px;"></i>
+            </a>
+            <a href="{% url 'manager:reports' %}" class="btn-secondary" style="display:flex; align-items:center; justify-content:space-between;">
+                <span><i class="bi bi-file-earmark-spreadsheet-fill" style="margin-right:8px; color:var(--accent);"></i> Hisobotlarni yuklash</span>
+                <i class="bi bi-chevron-right" style="font-size:12px;"></i>
+            </a>
+        </div>
+        
+        <div style="margin-top:20px; border-top:1px solid var(--border); padding-top:16px;">
+            <div class="panel-card-title" style="margin-bottom:12px; font-size:14px;">Kurs bo'limlari hisoboti</div>
+            <div style="position:relative; height:130px; width:100%;">
+                <canvas id="courseCategoryChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- ============ BOTTOM FEED: TOP COURSES & RECENT ACTIVITIES ============ -->
+<div class="dashboard-grid">
+    <!-- Top Courses -->
+    <div class="panel-card">
+        <div class="panel-card-title">
+            <span>Eng ko'p sotilgan kurslar (Top Courses)</span>
+            <a href="{% url 'manager:courses' %}" style="font-size:12.5px; color:var(--accent); font-weight:700;">Barchasi <i class="bi bi-arrow-right"></i></a>
+        </div>
+        <div class="table-responsive">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Kurs sarlavhasi</th>
+                        <th>Ustoz</th>
+                        <th>O'quvchilar</th>
+                        <th>Reyting</th>
+                        <th>Narxi</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in top_courses %}
+                    <tr>
+                        <td>
+                            <div style="display:flex; align-items:center; gap:10px; font-weight:700;">
+                                <div class="avatar-fallback" style="width:30px; height:30px; font-size:12px; background:linear-gradient(135deg, #8b5cf6, #3b82f6)">{{ c.initial }}</div>
+                                <span>{{ c.title|truncatechars:35 }}</span>
+                            </div>
+                        </td>
+                        <td style="color:var(--muted);">{{ c.teacher.get_full_name|default:c.teacher.username }}</td>
+                        <td style="font-weight:700;">{{ c.students_count }} ta</td>
+                        <td style="color:var(--warning); font-weight:700;"><i class="bi bi-star-fill"></i> {{ c.rating }}</td>
+                        <td>{{ c.price_label }}</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="5" style="text-align:center; padding:20px; color:var(--muted2);">Kurslar ro'yxati bo'sh.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Recent Activity Log & Users -->
+    <div class="panel-card">
+        <div class="panel-card-title">Tizim Faoliyati loglari</div>
+        <div style="display:flex; flex-direction:column; gap:12px; max-height: 400px; overflow-y: auto; padding-right:5px;">
+            {% for act in recent_activities %}
+            <div style="display:flex; align-items:flex-start; gap:12px; font-size:13px; border-bottom: 1px solid var(--line); padding-bottom:8px;">
+                <div style="padding:6px; border-radius:8px; background:var(--input-bg); color:var(--accent);">
+                    {% if act.log_type == 'payment' %}
+                        <i class="bi bi-wallet2"></i>
+                    {% elif act.log_type == 'security' %}
+                        <i class="bi bi-shield-lock-fill"></i>
+                    {% elif act.log_type == 'enroll' %}
+                        <i class="bi bi-person-plus-fill"></i>
+                    {% else %}
+                        <i class="bi bi-activity"></i>
+                    {% endif %}
+                </div>
+                <div style="flex:1;">
+                    <div><span style="font-weight:700;">{{ act.who }}</span> ({{ act.role }})</div>
+                    <div style="color:var(--muted); margin-top:2px;">{{ act.action }}</div>
+                    {% if act.target %}
+                        <div style="font-size:11.5px; color:var(--muted2); margin-top:2px;">Target: {{ act.target }}</div>
+                    {% endif %}
+                </div>
+                <div style="font-size:11px; color:var(--muted2); white-space:nowrap;">{{ act.created_at|date:"H:i" }}</div>
+            </div>
+            {% empty %}
+            <div style="text-align:center; color:var(--muted2); padding:20px 0;">Hozircha hech qanday faoliyat mavjud emas.</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+
+<!-- ============ CHART INITIALIZATION DATA ============ -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // 1. Weekly Growth Chart
+        const ctxGrowth = document.getElementById('weeklyGrowthChart').getContext('2d');
+        new Chart(ctxGrowth, {
+            type: 'line',
+            data: {
+                labels: ['1-hafta', '2-hafta', '3-hafta', '4-hafta', '5-hafta', '6-hafta'],
+                datasets: [{
+                    label: 'Yangi O\'quvchilar',
+                    data: [12, 19, 15, 25, 22, 30],
+                    borderColor: '#0d9488',
+                    backgroundColor: 'rgba(13, 148, 136, 0.1)',
+                    borderWidth: 2.5,
+                    fill: true,
+                    tension: 0.35,
+                    pointBackgroundColor: '#0d9488'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#9b98ad' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#9b98ad' }
+                    }
+                }
+            }
+        });
+
+        // 2. Course Categories Pie Chart
+        const ctxCategories = document.getElementById('courseCategoryChart').getContext('2d');
+        new Chart(ctxCategories, {
+            type: 'bar',
+            data: {
+                labels: ['Python', 'Frontend', 'Backend', 'Dizayn', 'SMM'],
+                datasets: [{
+                    data: [8, 12, 6, 9, 11],
+                    backgroundColor: ['#0d9488', '#0ea5e9', '#8b5cf6', '#ec4899', '#f59e0b'],
+                    borderWidth: 0,
+                    borderRadius: 5
+                }]
+            },
+            options: {
+                indexAxis: 'y',
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    x: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#9b98ad', precision: 0 }
+                    },
+                    y: {
+                        grid: { display: false },
+                        ticks: { color: '#9b98ad' }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

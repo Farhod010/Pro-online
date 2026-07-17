@@ -1,0 +1,146 @@
+{% extends 'manager/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <div class="page-subtitle">Dashboard / Ustozlar</div>
+        <h1 class="page-title">Ustozlar va Arizalar</h1>
+    </div>
+</div>
+
+<!-- ============ PENDING APPLICATIONS SECTION ============ -->
+{% if applications %}
+<div class="panel-card" style="margin-bottom: 24px; border-color: rgba(245, 158, 11, 0.3); background: linear-gradient(135deg, rgba(245, 158, 11, 0.05), transparent);">
+    <div class="panel-card-title" style="color: var(--warning); margin-bottom:14px;">
+        <span><i class="bi bi-file-earmark-person-fill"></i> Yangi o'qituvchi arizalari ({{ applications|length }} ta kutilmoqda)</span>
+    </div>
+    <div class="table-responsive">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Nomzod</th>
+                    <th>Mutaxassisligi</th>
+                    <th>Biografiyasi</th>
+                    <th>Telefon</th>
+                    <th style="text-align:right;">Amallar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for app in applications %}
+                <tr>
+                    <td>
+                        <div style="display:flex; align-items:center; gap:10px; font-weight:700;">
+                            <div class="avatar-fallback" style="width:34px; height:34px; font-size:12px; background:linear-gradient(135deg, #f59e0b, #fbbf24)">{{ app.initial }}</div>
+                            <div>
+                                <div>{{ app.get_full_name|default:app.username }}</div>
+                                <div style="font-size:11px; color:var(--muted2);">{{ app.email }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="font-weight:600;">{{ app.specialization|default:"Mavjud emas" }}</td>
+                    <td style="color:var(--muted); font-size:13px; max-width:250px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ app.bio|default:"Mavjud emas" }}</td>
+                    <td>{{ app.phone|default:"—" }}</td>
+                    <td>
+                        <div style="display:flex; gap:8px; justify-content:flex-end;">
+                            <form method="POST" action="{% url 'manager:teachers' %}">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="approve_application">
+                                <input type="hidden" name="teacher_id" value="{{ app.id }}">
+                                <button type="submit" class="btn-primary" style="padding:6px 12px; font-size:12px; background:linear-gradient(135deg, var(--success), #34d399); box-shadow:none;">
+                                    <i class="bi bi-check-circle"></i> Arizani tasdiqlash
+                                </button>
+                            </form>
+                            
+                            <form method="POST" action="{% url 'manager:teachers' %}" onsubmit="return confirm('Nomzodni rad etishni xohlaysizmi?')">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="toggle_status">
+                                <input type="hidden" name="teacher_id" value="{{ app.id }}">
+                                <button type="submit" class="btn-secondary" style="padding:6px 12px; font-size:12px; color:var(--danger); border-color:rgba(239,68,68,0.2);">
+                                    Rad etish
+                                </button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endif %}
+
+<!-- ============ TEACHERS LIST TABLE ============ -->
+<div class="panel-card" style="padding:0; overflow:hidden;">
+    <div class="panel-card-title" style="padding:24px 24px 10px 24px; margin-bottom:0;">
+        <span>O'qituvchilar tarkibi</span>
+    </div>
+    <div class="table-responsive">
+        <table class="custom-table">
+            <thead>
+                <tr>
+                    <th>Ustoz</th>
+                    <th>Yo'nalishi</th>
+                    <th>Kurslar</th>
+                    <th>O'quvchilar soni</th>
+                    <th>Reyting</th>
+                    <th>Holat</th>
+                    <th style="text-align:right;">Amallar</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for teacher in teachers %}
+                <tr>
+                    <td>
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            {% if teacher.obj.avatar %}
+                                <img src="{{ teacher.obj.avatar.url }}" alt="{{ teacher.obj.get_full_name }}" style="width:36px; height:36px; border-radius:10px; object-fit:cover;"/>
+                            {% else %}
+                                <div class="avatar-fallback" style="width:36px; height:36px; font-size:13px; background:linear-gradient(135deg, #0ea5e9, #818cf8)">{{ teacher.obj.initial }}</div>
+                            {% endif %}
+                            <div>
+                                <div style="font-weight:700;">{{ teacher.obj.get_full_name|default:teacher.obj.username }}</div>
+                                <div style="font-size:11px; color:var(--muted2);">{{ teacher.obj.email }}</div>
+                            </div>
+                        </div>
+                    </td>
+                    <td style="font-weight:600; color:var(--muted);">{{ teacher.obj.specialization|default:"O'qituvchi" }}</td>
+                    <td style="font-weight:700;">{{ teacher.courses_count }} ta</td>
+                    <td style="color:var(--muted);">{{ teacher.students_count }} o'quvchi</td>
+                    <td>
+                        <span style="color:#ffd479; font-weight:700;"><i class="bi bi-star-fill"></i> {{ teacher.rating }}</span>
+                    </td>
+                    <td>
+                        <span class="badge {% if teacher.obj.status == 'active' %}badge-success{% else %}badge-danger{% endif %}">
+                            ● {{ teacher.obj.get_status_display }}
+                        </span>
+                    </td>
+                    <td>
+                        <div style="display:flex; gap:8px; justify-content:flex-end;">
+                            <form method="POST" action="{% url 'manager:teachers' %}" onsubmit="return confirm('O\'qituvchi holatini o\'zgartirishni tasdiqlaysizmi?')">
+                                {% csrf_token %}
+                                <input type="hidden" name="action" value="toggle_status">
+                                <input type="hidden" name="teacher_id" value="{{ teacher.obj.id }}">
+                                {% if teacher.obj.status == 'active' %}
+                                    <button type="submit" class="btn-secondary" style="padding:6px 12px; font-size:12.5px; color:var(--danger); border-color:rgba(239,68,68,0.2);">
+                                        <i class="bi bi-slash-circle"></i> Bloklash
+                                    </button>
+                                {% else %}
+                                    <button type="submit" class="btn-secondary" style="padding:6px 12px; font-size:12.5px; color:var(--success); border-color:rgba(16,185,129,0.2);">
+                                        <i class="bi bi-shield-check"></i> Faollash
+                                    </button>
+                                {% endif %}
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="7" style="text-align:center; padding:30px; color:var(--muted2);">Tizimda o'qituvchilar topilmadi.</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}

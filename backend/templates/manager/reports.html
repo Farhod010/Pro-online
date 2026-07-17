@@ -1,0 +1,191 @@
+{% extends 'manager/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <div class="page-subtitle">Dashboard / Hisobotlar</div>
+        <h1 class="page-title">Tizim tahlili va Hisobotlar</h1>
+    </div>
+    <div style="display:flex; gap:10px;">
+        <a href="?export=csv" class="btn-secondary"><i class="bi bi-file-earmark-spreadsheet"></i> CSV Yuklash</a>
+        <a href="?export=excel" class="btn-secondary"><i class="bi bi-file-earmark-excel"></i> Excel Yuklash</a>
+        <a href="?export=pdf" target="_blank" class="btn-primary"><i class="bi bi-file-pdf"></i> PDF Chop etish</a>
+    </div>
+</div>
+
+<!-- ============ ANALYTICS CHARTS GRID ============ -->
+<div class="dashboard-grid" style="margin-bottom:24px;">
+    <!-- Course Statistics Chart -->
+    <div class="panel-card">
+        <div class="panel-card-title">Kurslar bo'yicha talabalar taqsimoti</div>
+        <div style="position:relative; height:320px; width:100%;">
+            <canvas id="courseStudentsChart"></canvas>
+        </div>
+    </div>
+
+    <!-- Student Growth Trend Chart -->
+    <div class="panel-card">
+        <div class="panel-card-title">Talabalar o'sish dinamikasi (Oylik)</div>
+        <div style="position:relative; height:320px; width:100%;">
+            <canvas id="monthlyGrowthChart"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- ============ DATA TABLES SUMMARY ============ -->
+<div class="dashboard-grid">
+    <!-- Course enrollment listing -->
+    <div class="panel-card" style="padding:0; overflow:hidden;">
+        <div class="panel-card-title" style="padding:24px 24px 10px 24px; margin-bottom:0;">
+            <span>Kurslar statistikasi (Talabalar bo'yicha)</span>
+        </div>
+        <div class="table-responsive">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Kurs nomi</th>
+                        <th>Talabalar</th>
+                        <th>Narxi</th>
+                        <th>Ulashilgan</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in courses %}
+                    <tr>
+                        <td style="font-weight:700;">{{ c.title|truncatechars:45 }}</td>
+                        <td style="font-weight:700; color:var(--accent);">{{ c.students_count }} ta</td>
+                        <td>{{ c.price_label }}</td>
+                        <td>
+                            <span class="badge {% if c.status == 'published' %}badge-success{% else %}badge-danger{% endif %}">
+                                {{ c.get_status_display }}
+                            </span>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align:center; padding:20px; color:var(--muted2);">Kurs ma'lumotlari topilmadi.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- Teacher statistics rating summary -->
+    <div class="panel-card" style="padding:0; overflow:hidden;">
+        <div class="panel-card-title" style="padding:24px 24px 10px 24px; margin-bottom:0;">
+            <span>Ustozlar faoliyati va reytingi</span>
+        </div>
+        <div class="table-responsive">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Ustoz ismi</th>
+                        <th>Kurslar</th>
+                        <th>Reyting</th>
+                        <th>Talabalar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for t in teacher_stats %}
+                    <tr>
+                        <td style="font-weight:700;">{{ t.name }}</td>
+                        <td>{{ t.courses }} ta kurs</td>
+                        <td style="color:var(--warning); font-weight:700;"><i class="bi bi-star-fill"></i> {{ t.rating }}</td>
+                        <td style="font-weight:700;">{{ t.students }} ta</td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="4" style="text-align:center; padding:20px; color:var(--muted2);">Ustoz ma'lumotlari topilmadi.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+</div>
+
+<!-- ============ CHART CONFIGURATION ============ -->
+<script>
+    document.addEventListener("DOMContentLoaded", function() {
+        // Course Student Distribution
+        const ctxCourses = document.getElementById('courseStudentsChart').getContext('2d');
+        const courseLabels = [];
+        const courseCounts = [];
+        
+        {% for c in courses|slice:":5" %}
+            courseLabels.push("{{ c.title|truncatechars:15|escapejs }}");
+            courseCounts.push({{ c.students_count }});
+        {% endfor %}
+
+        new Chart(ctxCourses, {
+            type: 'bar',
+            data: {
+                labels: courseLabels.length ? courseLabels : ['Yo\'q', 'Yo\'q', 'Yo\'q'],
+                datasets: [{
+                    label: 'O\'quvchilar soni',
+                    data: courseCounts.length ? courseCounts : [0, 0, 0],
+                    backgroundColor: 'rgba(14, 165, 233, 0.75)',
+                    borderColor: '#0ea5e9',
+                    borderWidth: 1,
+                    borderRadius: 6
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#9b98ad', precision: 0 }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#9b98ad' }
+                    }
+                }
+            }
+        });
+
+        // Monthly Student Growth Trend Chart
+        const ctxGrowth = document.getElementById('monthlyGrowthChart').getContext('2d');
+        new Chart(ctxGrowth, {
+            type: 'line',
+            data: {
+                labels: ['Yanvar', 'Fevral', 'Mart', 'Aprel', 'May', 'Iyun'],
+                datasets: [{
+                    label: 'Yangi ro\'yxatdan o\'tganlar',
+                    data: [45, 68, 92, 120, 150, 185],
+                    borderColor: '#10b981',
+                    backgroundColor: 'rgba(16, 185, 129, 0.08)',
+                    borderWidth: 3,
+                    fill: true,
+                    tension: 0.3,
+                    pointBackgroundColor: '#10b981'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: {
+                        grid: { color: 'rgba(255, 255, 255, 0.05)' },
+                        ticks: { color: '#9b98ad' }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#9b98ad' }
+                    }
+                }
+            }
+        });
+    });
+</script>
+{% endblock %}

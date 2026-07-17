@@ -1,0 +1,99 @@
+{% extends 'manager/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <div class="page-subtitle">Dashboard / Sozlamalar</div>
+        <h1 class="page-title">Mening Profilim</h1>
+    </div>
+</div>
+
+<div class="dashboard-grid">
+    <!-- ============ ACCOUNT DETAILS EDITOR ============ -->
+    <div class="panel-card">
+        <div class="panel-card-title">Shaxsiy ma'lumotlar</div>
+        <form method="POST" action="{% url 'manager:profile' %}">
+            {% csrf_token %}
+            <input type="hidden" name="action" value="update_profile">
+            
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+                <div class="form-group">
+                    <label for="first_name">Ism</label>
+                    <input type="text" name="first_name" id="first_name" class="form-control" value="{{ user.first_name }}">
+                </div>
+                <div class="form-group">
+                    <label for="last_name">Familiya</label>
+                    <input type="text" name="last_name" id="last_name" class="form-control" value="{{ user.last_name }}">
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="email">E-mail pochta</label>
+                <input type="email" name="email" id="email" class="form-control" value="{{ user.email }}" required>
+            </div>
+
+            <div class="form-group">
+                <label for="phone">Telefon raqam</label>
+                <input type="text" name="phone" id="phone" class="form-control" value="{{ user.phone }}">
+            </div>
+
+            <div class="form-group">
+                <label for="bio">Biografiya / Qo'shimcha ma'lumot</label>
+                <textarea name="bio" id="bio" rows="4" class="form-control">{{ user.bio }}</textarea>
+            </div>
+            
+            <div style="margin-top:20px; display:flex; justify-content:flex-end;">
+                <button type="submit" class="btn-primary"><i class="bi bi-save2"></i> Saqlash</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- ============ PASSWORD & SYSTEM SETTINGS ============ -->
+    <div style="display:flex; flex-direction:column; gap:24px;">
+        <!-- Change Password Card -->
+        <div class="panel-card">
+            <div class="panel-card-title">Parolni o'zgartirish</div>
+            <form method="POST" action="{% url 'manager:profile' %}">
+                {% csrf_token %}
+                <input type="hidden" name="action" value="change_password">
+                
+                <div class="form-group">
+                    <label for="password">Yangi parol</label>
+                    <input type="password" name="password" id="password" class="form-control" required placeholder="Kamida 8 ta belgidan iborat">
+                </div>
+
+                <div class="form-group">
+                    <label for="confirm_password">Yangi parolni tasdiqlash</label>
+                    <input type="password" name="confirm_password" id="confirm_password" class="form-control" required placeholder="Parolni qayta kiriting">
+                </div>
+                
+                <div style="margin-top:16px; display:flex; justify-content:flex-end;">
+                    <button type="submit" class="btn-secondary" style="color:var(--danger); border-color:rgba(239,68,68,0.2);"><i class="bi bi-key-fill"></i> Parolni yangilash</button>
+                </div>
+            </form>
+        </div>
+
+        <!-- Notification preferences (mock UI) -->
+        <div class="panel-card">
+            <div class="panel-card-title">Bildirishnoma sozlamalari</div>
+            <div style="display:flex; flex-direction:column; gap:14px;">
+                <label style="display:flex; align-items:center; justify-content:space-between; cursor:pointer; font-size:13.5px;">
+                    <div>
+                        <div style="font-weight:700;">Elektron pochta xabarlari</div>
+                        <div style="font-size:11.5px; color:var(--muted2); margin-top:2px;">Tizimdagi to'lovlar va hisobotlarni emailga yuborish</div>
+                    </div>
+                    <input type="checkbox" checked style="width:16px; height:16px; accent-color:var(--accent);">
+                </label>
+                <label style="display:flex; align-items:center; justify-content:space-between; cursor:pointer; font-size:13.5px; border-top:1px solid var(--line); padding-top:12px;">
+                    <div>
+                        <div style="font-weight:700;">Tizim bildirishnomalari</div>
+                        <div style="font-size:11.5px; color:var(--muted2); margin-top:2px;">Yangi arizalar va support savollarini dashboardda ko'rsatish</div>
+                    </div>
+                    <input type="checkbox" checked style="width:16px; height:16px; accent-color:var(--accent);">
+                </label>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

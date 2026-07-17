@@ -1,0 +1,115 @@
+{% extends 'manager/base.html' %}
+{% load static %}
+
+{% block content %}
+<div class="page-header">
+    <div>
+        <div class="page-subtitle">Dashboard / Kurslar</div>
+        <h1 class="page-title">Kurslar va Kontentlarni boshqarish</h1>
+    </div>
+    <div>
+        <!-- Link to standard admin or custom page if needed, for now quick view -->
+        <a href="/admin/courses/course/add/" class="btn-primary"><i class="bi bi-plus-lg"></i> Kurs qo'shish</a>
+    </div>
+</div>
+
+<div class="dashboard-grid">
+    <!-- ============ COURSES LISTING ============ -->
+    <div class="panel-card" style="padding:0; overflow:hidden;">
+        <div class="panel-card-title" style="padding:24px 24px 10px 24px; margin-bottom:0;">
+            <span>Mavjud Kurslar ({{ courses|length }} ta)</span>
+        </div>
+        <div class="table-responsive">
+            <table class="custom-table">
+                <thead>
+                    <tr>
+                        <th>Kurs</th>
+                        <th>Kategoriya</th>
+                        <th>O'quvchilar</th>
+                        <th>Darslar</th>
+                        <th>Narxi</th>
+                        <th>Holat</th>
+                        <th style="text-align:right;">Amallar</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for c in courses %}
+                    <tr>
+                        <td>
+                            <div style="display:flex; align-items:center; gap:12px; min-width:200px;">
+                                <div class="avatar-fallback" style="width:36px; height:36px; font-size:14px; background:linear-gradient(135deg, #0ea5e9, #0d9488)">{{ c.initial }}</div>
+                                <div>
+                                    <div style="font-weight:700;">{{ c.title|truncatechars:40 }}</div>
+                                    <div style="font-size:11px; color:var(--muted2);">Ustoz: {{ c.teacher.get_full_name|default:c.teacher.username }}</div>
+                                </div>
+                            </div>
+                        </td>
+                        <td style="font-weight:600; color:var(--muted);">{{ c.category.name|default:"—" }}</td>
+                        <td style="font-weight:700;">{{ c.students_count }} ta</td>
+                        <td>{{ c.lessons_count }} ta dars</td>
+                        <td style="font-weight:700;">{{ c.price_label }}</td>
+                        <td>
+                            <span class="badge {% if c.status == 'published' %}badge-success{% elif c.status == 'pending' %}badge-warning{% else %}badge-danger{% endif %}">
+                                {{ c.get_status_display }}
+                            </span>
+                        </td>
+                        <td>
+                            <div style="display:flex; gap:6px; justify-content:flex-end;">
+                                <form method="POST" action="{% url 'manager:courses' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="course_id" value="{{ c.id }}">
+                                    <input type="hidden" name="action" value="toggle_publish">
+                                    {% if c.status == 'published' %}
+                                        <button type="submit" class="btn-secondary" style="padding:6px 12px; font-size:12px; color:var(--warning);">
+                                            <i class="bi bi-eye-slash-fill"></i> Yashirish
+                                        </button>
+                                    {% else %}
+                                        <button type="submit" class="btn-secondary" style="padding:6px 12px; font-size:12px; color:var(--success);">
+                                            <i class="bi bi-eye-fill"></i> Nashr qilish
+                                        </button>
+                                    {% endif %}
+                                </form>
+
+                                <form method="POST" action="{% url 'manager:courses' %}" style="display:inline;">
+                                    {% csrf_token %}
+                                    <input type="hidden" name="course_id" value="{{ c.id }}">
+                                    <input type="hidden" name="action" value="toggle_featured">
+                                    <button type="submit" class="btn-secondary" style="padding:6px 12px; font-size:12px; {% if c.featured %}color:#ffd479; border-color:rgba(255,212,121,0.3);{% endif %}">
+                                        <i class="bi {% if c.featured %}bi-star-fill{% else %}bi-star{% endif %}"></i>
+                                    </button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% empty %}
+                    <tr>
+                        <td colspan="7" style="text-align:center; padding:30px; color:var(--muted2);">Kurslar topilmadi.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+    <!-- ============ CATEGORIES PANEL ============ -->
+    <div class="panel-card" style="align-self:flex-start;">
+        <div class="panel-card-title">
+            <span>Kurs Katelyariyalari</span>
+            <a href="/admin/courses/category/add/" style="font-size:12.5px; color:var(--accent); font-weight:700;"><i class="bi bi-plus-lg"></i> Kategoriya</a>
+        </div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+            {% for cat in categories %}
+            <div style="display:flex; justify-content:space-between; align-items:center; padding:10px 14px; background:var(--input-bg); border-radius:10px; border:1px solid var(--border);">
+                <div style="display:flex; align-items:center; gap:10px;">
+                    <span style="font-size:16px; color:var(--accent);"><i class="bi bi-folder2-open"></i></span>
+                    <span style="font-weight:700; font-size:13.5px;">{{ cat.name }}</span>
+                </div>
+                <span class="badge badge-success" style="font-size:10px;">Faol</span>
+            </div>
+            {% empty %}
+            <div style="text-align:center; color:var(--muted2); padding:10px 0;">Kategoriyalar mavjud emas.</div>
+            {% endfor %}
+        </div>
+    </div>
+</div>
+{% endblock %}
