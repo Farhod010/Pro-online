@@ -13,160 +13,208 @@
 <script src="proskill-db.js"></script>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  body{margin:0;font-family:'Manrope',system-ui,sans-serif}
-  ::selection{background:#10b981;color:#fff}
+  body{margin:0;font-family:'Manrope',system-ui,sans-serif;background:#eef1f6}
+  ::selection{background:#3b82f6;color:#fff}
   ::-webkit-scrollbar{width:9px;height:9px}
   ::-webkit-scrollbar-thumb{background:rgba(130,130,150,.28);border-radius:9px}
   ::-webkit-scrollbar-track{background:transparent}
   input,button,textarea,select{font-family:inherit}
   .admin-root{
-    --bg:#08070f; --grad1:rgba(16,185,129,.16); --grad2:rgba(16,185,129,.13);
-    --panel:rgba(255,255,255,.038); --panel2:rgba(255,255,255,.06); --solid:#0d0c17;
+    --bg:#eef1f6; --grad1:transparent; --grad2:transparent;
+    --panel:#ffffff; --panel2:#f8fafc; --solid:#ffffff;
+    --border:#e5e9f0; --line:#eef1f6;
+    --text:#1e2433; --muted:#64748b; --muted2:#94a3b8; --hover:#f1f5f9;
+    --sidebar:#ffffff; --topbar:#ffffff; --input:#f1f5f9;
+    --blue:#3b82f6; --blue-dark:#2563eb; --blue-soft:#eff6ff; --blue-border:#bfdbfe;
+  }
+  .admin-root[data-theme="dark"]{
+    --bg:#0b1220; --grad1:rgba(59,130,246,.12); --grad2:rgba(37,99,235,.08);
+    --panel:#121a2b; --panel2:#182238; --solid:#121a2b;
     --border:rgba(255,255,255,.08); --line:rgba(255,255,255,.05);
-    --text:#ece9f5; --muted:#9b98ad; --muted2:#76748a; --hover:rgba(255,255,255,.04);
-    --sidebar:rgba(11,10,20,.72); --topbar:rgba(10,9,17,.6); --input:rgba(255,255,255,.05);
+    --text:#e8eef9; --muted:#9aa8c0; --muted2:#6b7a94; --hover:rgba(255,255,255,.04);
+    --sidebar:#0f1729; --topbar:rgba(15,23,41,.88); --input:rgba(255,255,255,.05);
+    --blue:#60a5fa; --blue-dark:#3b82f6; --blue-soft:rgba(59,130,246,.14); --blue-border:rgba(59,130,246,.35);
   }
-  .admin-root[data-theme="light"]{
-    --bg:#f4f5fb; --grad1:rgba(16,185,129,.1); --grad2:rgba(16,185,129,.08);
-    --panel:#ffffff; --panel2:#ffffff; --solid:#ffffff;
-    --border:#e8e9f2; --line:#eef0f6;
-    --text:#191627; --muted:#6c6980; --muted2:#9c9aac; --hover:#f6f7fb;
-    --sidebar:rgba(255,255,255,.86); --topbar:rgba(255,255,255,.78); --input:#f4f5fa;
-  }
-  @keyframes barGrow{from{height:0}}
   @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
   @keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
-  @keyframes spin{to{transform:rotate(360deg)}}
+  .top-link{cursor:pointer;font-weight:600;font-size:14px;color:var(--muted);padding:8px 12px;border-radius:8px;transition:.15s}
+  .top-link:hover{color:var(--text);background:var(--hover)}
+  .top-link.active{color:var(--blue);background:var(--blue-soft)}
+  .btn-outline{cursor:pointer;border:1.5px solid var(--blue);background:transparent;color:var(--blue);font-weight:700;font-size:13.5px;padding:10px 20px;border-radius:10px}
+  .btn-outline:hover{background:var(--blue-soft)}
+  .btn-primary{cursor:pointer;border:none;background:var(--blue);color:#fff;font-weight:700;font-size:13.5px;padding:10px 18px;border-radius:10px}
+  .btn-primary:hover{background:var(--blue-dark)}
+  .btn-ghost{cursor:pointer;border:1.5px solid var(--border);background:var(--panel);color:var(--text);font-weight:700;font-size:13.5px;padding:10px 18px;border-radius:10px}
+  .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
+  .empty-illus{width:72px;height:72px;border-radius:18px;background:linear-gradient(145deg,#e0f2fe,#dbeafe);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 16px}
 </style>
 </helmet>
 <div class="admin-root" data-theme="{{ theme }}" style="min-height:100vh;background:var(--bg);color:var(--text)">
-  <div style="position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(900px 600px at 88% -10%,var(--grad1),transparent 60%),radial-gradient(800px 600px at 0% 12%,var(--grad2),transparent 58%)"></div>
 
-  <div style="position:relative;z-index:1;display:grid;grid-template-columns:248px 1fr;min-height:100vh">
-
-    <!-- ============ SIDEBAR ============ -->
-    <aside style="background:var(--sidebar);border-right:1px solid var(--border);backdrop-filter:blur(22px);display:flex;flex-direction:column;position:sticky;top:0;height:100vh">
-      <div style="display:flex;align-items:center;gap:11px;padding:20px 20px 18px">
-        <img src="logo.png" alt="ProSkill" style="width:38px;height:38px;border-radius:11px;object-fit:contain"/>
-        <div>
-          <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:15.5px;line-height:1">ProSkill <span style="color:#6ee7b7">IT</span></div>
-          <div style="font-size:11px;color:var(--muted2);font-weight:600;letter-spacing:.3px;margin-top:2px">O'QUVCHI</div>
-        </div>
-      </div>
-      <div style="flex:1;overflow-y:auto;padding:6px 12px 16px">
-        <sc-for list="{{ navGroups }}" as="g" hint-placeholder-count="5">
-          <div style="font-size:10.5px;font-weight:800;letter-spacing:1px;color:var(--muted2);padding:14px 10px 7px">{{ g.title }}</div>
-          <sc-for list="{{ g.items }}" as="it" hint-placeholder-count="3">
-            <div onClick="{{ it.onClick }}" style="cursor:pointer;display:flex;align-items:center;gap:11px;padding:9px 11px;border-radius:10px;margin-bottom:2px;font-weight:600;font-size:13.5px;position:relative;background:{{ it.bg }};color:{{ it.color }}" style-hover="background:var(--hover)">
-              <span style="display:flex;align-items:center;justify-content:center;width:18px;height:18px;color:{{ it.iconColor }}">{{ it.iconEl }}</span>
-              <span style="flex:1">{{ it.label }}</span>
-              <sc-if value="{{ it.badge }}" hint-placeholder-val="{{ false }}"><span style="font-size:10.5px;font-weight:800;padding:2px 7px;border-radius:20px;background:rgba(251,113,133,.18);color:#fb7185">{{ it.badge }}</span></sc-if>
-            </div>
-          </sc-for>
+  <!-- ============ TOP NAV (mohirdev style) ============ -->
+  <header style="position:sticky;top:0;z-index:50;background:var(--topbar);border-bottom:1px solid var(--border);box-shadow:0 1px 0 rgba(15,23,42,.03)">
+    <div style="max-width:1180px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;gap:20px">
+      <a href="ProSkill IT Academy.dc.html" style="text-decoration:none;display:flex;align-items:center;gap:10px;flex:none">
+        <img src="logo.png" alt="ProSkill" style="width:34px;height:34px;border-radius:10px;object-fit:contain"/>
+        <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:17px;color:var(--text);letter-spacing:-.3px">ProSkill <span style="color:var(--blue)">IT</span></div>
+      </a>
+      <nav style="display:flex;align-items:center;gap:4px;margin-left:18px;flex:1">
+        <sc-for list="{{ topNav }}" as="n" hint-placeholder-count="4">
+          <span onClick="{{ n.onClick }}" class="top-link {{ n.activeClass }}">{{ n.label }}</span>
         </sc-for>
-      </div>
-      <div style="padding:14px;border-top:1px solid var(--border)">
-        <a href="ProSkill IT Academy.dc.html" style="text-decoration:none"><div style="display:flex;align-items:center;gap:10px;padding:9px 11px;border-radius:10px;color:var(--muted);font-weight:600;font-size:13px" style-hover="background:var(--hover)"><span>←</span> Saytga qaytish</div></a>
-      </div>
-    </aside>
-
-    <!-- ============ MAIN ============ -->
-    <div style="display:flex;flex-direction:column;min-width:0">
-      <!-- TOPBAR -->
-      <header style="position:sticky;top:0;z-index:40;display:flex;align-items:center;gap:16px;padding:14px 26px;background:var(--topbar);backdrop-filter:blur(22px);border-bottom:1px solid var(--border)">
-        <div style="flex:1;max-width:420px;display:flex;align-items:center;gap:10px;background:var(--input);border:1px solid var(--border);border-radius:11px;padding:10px 14px">
-          <span style="color:var(--muted2)">⌕</span>
-          <input value="{{ search }}" onInput="{{ setSearch }}" placeholder="Foydalanuvchi, kurs, to'lov qidirish..." style="flex:1;background:transparent;border:none;outline:none;color:var(--text);font-size:13.5px" />
+      </nav>
+      <div style="display:flex;align-items:center;gap:10px;flex:none">
+        <div style="display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;background:var(--input);border:1px solid var(--border);font-weight:700;font-size:13px;color:var(--text)">
+          <span style="color:#f59e0b">★</span> {{ starPoints }}
         </div>
-        <div style="flex:1"></div>
-        <div onClick="{{ toggleTheme }}" style="cursor:pointer;width:40px;height:40px;border-radius:11px;border:1px solid var(--border);background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:16px">{{ themeIcon }}</div>
-        <div style="position:relative;width:40px;height:40px;border-radius:11px;border:1px solid var(--border);background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer">🔔<span style="position:absolute;top:7px;right:8px;width:7px;height:7px;border-radius:50%;background:#fb7185;border:2px solid var(--bg)"></span></div>
-        <div style="display:flex;align-items:center;gap:10px;padding-left:8px;border-left:1px solid var(--border)">
-          <div style="width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#10b981,#22c55e);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff">SA</div>
-          <div style="line-height:1.2"><div style="font-weight:700;font-size:13.5px">Aziz Karimov</div><div style="font-size:11.5px;color:var(--muted2)">aziz@gmail.com</div></div>
-        </div>
-      </header>
+        <div onClick="{{ toggleTheme }}" style="cursor:pointer;width:38px;height:38px;border-radius:50%;border:1px solid var(--border);background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:15px">{{ themeIcon }}</div>
+        <div style="position:relative;width:38px;height:38px;border-radius:50%;border:1px solid var(--border);background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer">🔔<span style="position:absolute;top:6px;right:7px;width:8px;height:8px;border-radius:50%;background:#ef4444;border:2px solid var(--panel)"></span></div>
+        <div onClick="{{ goProfile }}" style="cursor:pointer;width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#2563eb);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff">{{ userInitial }}</div>
+      </div>
+    </div>
+  </header>
 
-      <!-- CONTENT -->
-      <main style="padding:26px 30px 60px;min-width:0">
-        <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:24px;flex-wrap:wrap">
-          <div>
-            <div style="font-size:12.5px;color:var(--muted2);font-weight:600;margin-bottom:5px">{{ crumb }}</div>
-            <h1 style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:27px;letter-spacing:-.6px">{{ pageTitle }}</h1>
+  <!-- CONTENT -->
+  <main style="max-width:1180px;margin:0 auto;padding:28px 24px 70px;min-width:0">
+        <sc-if value="{{ showPageHead }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap">
+            <div>
+              <div style="font-size:12.5px;color:var(--muted2);font-weight:600;margin-bottom:5px">{{ crumb }}</div>
+              <h1 style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:26px;letter-spacing:-.5px">{{ pageTitle }}</h1>
+            </div>
           </div>
-          <sc-if value="{{ pageAction }}" hint-placeholder-val="{{ true }}">
-            <button onClick="{{ onPageAction }}" style="cursor:pointer;border:none;background:linear-gradient(135deg,#10b981,#22c55e);color:#fff;font-weight:700;font-size:13.5px;padding:11px 18px;border-radius:11px;box-shadow:0 10px 24px rgba(16,185,129,.32)">+ {{ pageAction }}</button>
-          </sc-if>
-        </div>
+        </sc-if>
 
-        <!-- ===== DASHBOARD ===== -->
+        <!-- ===== DASHBOARD (mohirdev style) ===== -->
         <sc-if value="{{ tabDashboard }}" hint-placeholder-val="{{ true }}">
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:16px">
-            <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="8">
-              <div style="background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px">
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:13px">
-                  <div style="width:36px;height:36px;border-radius:10px;background:{{ k.tint }};display:flex;align-items:center;justify-content:center;color:{{ k.color }}">{{ k.iconEl }}</div>
-                  <span style="font-size:11.5px;font-weight:700;color:{{ k.trendColor }}">{{ k.trend }}</span>
+          <!-- Kasblarim + Kurslarim + Faollar -->
+          <div style="display:grid;grid-template-columns:1fr 1fr 260px;gap:18px;margin-bottom:36px;align-items:stretch">
+            <!-- Kasblarim -->
+            <div class="card" style="padding:28px 22px;display:flex;flex-direction:column">
+              <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;margin-bottom:18px;padding:0 6px">Kasblarim</div>
+              <sc-if value="{{ hasCareers }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:12px;flex:1">
+                  <sc-for list="{{ myCareerCards }}" as="c" hint-placeholder-count="2">
+                    <div onClick="{{ c.onOpen }}" style="cursor:pointer;display:flex;gap:12px;align-items:center;padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--panel2)">
+                      <div style="width:48px;height:48px;border-radius:12px;background:{{ c.grad }};display:flex;align-items:center;justify-content:center;font-weight:800;color:#fff;flex:none">{{ c.initial }}</div>
+                      <div style="min-width:0;flex:1"><div style="font-weight:700;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.title }}</div><div style="font-size:12px;color:var(--muted2);margin-top:2px">{{ c.progress }}% · {{ c.teacher }}</div></div>
+                    </div>
+                  </sc-for>
+                  <button onClick="{{ goCatalog }}" class="btn-outline" style="margin-top:auto;align-self:center">Yana kasb tanlash</button>
                 </div>
-                <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:25px;letter-spacing:-.5px">{{ k.value }}</div>
-                <div style="font-size:12.5px;color:var(--muted);font-weight:500;margin-top:2px">{{ k.label }}</div>
-              </div>
-            </sc-for>
-          </div>
-
-          <div style="display:grid;grid-template-columns:1.5fr 1fr;gap:16px;margin-bottom:16px">
-            <div style="background:linear-gradient(135deg,rgba(16,185,129,.14),rgba(34,197,94,.07));border:1px solid rgba(16,185,129,.25);border-radius:18px;padding:22px">
-              <div style="font-size:12.5px;font-weight:700;color:#6ee7b7;margin-bottom:12px">DAVOM ETING</div>
-              <sc-if value="{{ continueCourse }}" hint-placeholder-val="{{ true }}">
-                <div style="display:flex;gap:16px;align-items:center">
-                  <div style="width:64px;height:64px;border-radius:14px;background:{{ continueCourse.grad }};display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans';font-weight:800;font-size:24px;color:#fff;flex:none">{{ continueCourse.initial }}</div>
-                  <div style="flex:1;min-width:0">
-                    <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:16px;margin-bottom:4px">{{ continueCourse.title }}</div>
-                    <div style="font-size:12.5px;color:var(--muted);margin-bottom:10px">Oxirgi: {{ continueCourse.last }}</div>
-                    <div style="height:8px;border-radius:8px;background:var(--line);overflow:hidden;margin-bottom:6px"><div style="height:100%;width:{{ continueCourse.progress }}%;background:linear-gradient(90deg,#10b981,#22c55e);border-radius:8px"></div></div>
-                    <div style="font-size:12px;color:var(--muted2)">{{ continueCourse.progress }}% tugatildi · {{ continueCourse.done }}/{{ continueCourse.total }} dars</div>
-                  </div>
-                  <button onClick="{{ continueCourse.onContinue }}" style="cursor:pointer;border:none;background:linear-gradient(135deg,#10b981,#22c55e);color:#fff;font-weight:700;font-size:14px;padding:13px 22px;border-radius:12px;white-space:nowrap;flex:none">Davom etish →</button>
+              </sc-if>
+              <sc-if value="{{ noCareers }}" hint-placeholder-val="{{ true }}">
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12px 8px 8px">
+                  <div class="empty-illus">🎓</div>
+                  <p style="font-size:13.5px;color:var(--muted);line-height:1.55;max-width:260px;margin-bottom:18px">Hayotingizni bugundan o'zgartiring — o'zingizga mos kasbni tanlang</p>
+                  <button onClick="{{ goCatalog }}" class="btn-outline">Kasb tanlash</button>
                 </div>
               </sc-if>
             </div>
-            <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:22px">
-              <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:16px;margin-bottom:16px">So'nggi test natijalari</div>
-              <div style="display:flex;flex-direction:column;gap:13px">
-                <sc-for list="{{ recentTests }}" as="t" hint-placeholder-count="3">
-                  <div style="display:flex;align-items:center;gap:12px">
-                    <div style="width:34px;height:34px;border-radius:9px;background:{{ t.tint }};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:{{ t.color }};flex:none">{{ t.score }}</div>
-                    <div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.title }}</div><div style="font-size:11.5px;color:var(--muted2)">{{ t.course }}</div></div>
-                    <span style="font-size:11.5px;font-weight:700;color:{{ t.color }}">{{ t.label }}</span>
-                  </div>
-                </sc-for>
+
+            <!-- Kurslarim -->
+            <div class="card" style="padding:28px 22px;display:flex;flex-direction:column">
+              <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;margin-bottom:18px;padding:0 6px">Kurslarim</div>
+              <sc-if value="{{ hasCourses }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:12px;flex:1">
+                  <sc-for list="{{ dashMyCourses }}" as="c" hint-placeholder-count="2">
+                    <div style="padding:12px;border-radius:12px;border:1px solid var(--border);background:var(--panel2)">
+                      <div style="font-weight:700;font-size:13.5px;margin-bottom:8px;line-height:1.3">{{ c.title }}</div>
+                      <div style="height:6px;border-radius:6px;background:var(--line);overflow:hidden;margin-bottom:6px"><div style="height:100%;width:{{ c.progress }}%;background:var(--blue);border-radius:6px"></div></div>
+                      <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:12px;color:var(--muted2)">{{ c.progress }}%</span><span onClick="{{ c.onContinue }}" style="cursor:pointer;font-size:12.5px;font-weight:700;color:var(--blue)">{{ c.cta }} →</span></div>
+                    </div>
+                  </sc-for>
+                  <button onClick="{{ goMyCourses }}" class="btn-outline" style="margin-top:auto;align-self:center">Barcha kurslarim</button>
+                </div>
+              </sc-if>
+              <sc-if value="{{ noCourses }}" hint-placeholder-val="{{ true }}">
+                <div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:12px 8px 8px">
+                  <div class="empty-illus">▶️</div>
+                  <p style="font-size:13.5px;color:var(--muted);line-height:1.55;max-width:260px;margin-bottom:18px">Tezkor kurslarda malakangizni oshiring</p>
+                  <button onClick="{{ goCatalog }}" class="btn-outline">Kurs tanlash</button>
+                </div>
+              </sc-if>
+            </div>
+
+            <!-- Haftalik faollar -->
+            <div class="card" style="padding:22px 18px;background:linear-gradient(180deg,#ffffff 0%,#f0f7ff 100%);border-color:var(--blue-border)">
+              <div style="display:flex;align-items:flex-start;gap:10px;margin-bottom:12px">
+                <div style="width:36px;height:36px;border-radius:10px;background:#fef3c7;display:flex;align-items:center;justify-content:center;font-size:18px;flex:none">👑</div>
+                <div>
+                  <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:15px;line-height:1.25">Haftalik faollar jadvali</div>
+                  <p style="font-size:12px;color:var(--muted);line-height:1.45;margin-top:6px">Siz bilan birga o'qiyotgan o'quvchilar reytingini ko'rishingiz mumkin.</p>
+                </div>
               </div>
+              <sc-if value="{{ canSeeLeaderboard }}" hint-placeholder-val="{{ false }}">
+                <div style="display:flex;flex-direction:column;gap:10px;margin-top:8px">
+                  <sc-for list="{{ leaderboard }}" as="u" hint-placeholder-count="5">
+                    <div style="display:flex;align-items:center;gap:10px">
+                      <div style="width:22px;font-weight:800;font-size:12px;color:{{ u.rankColor }}">{{ u.rank }}</div>
+                      <div style="width:30px;height:30px;border-radius:50%;background:{{ u.grad }};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex:none">{{ u.initial }}</div>
+                      <div style="flex:1;min-width:0"><div style="font-size:12.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ u.name }}</div><div style="font-size:11px;color:var(--muted2)">{{ u.points }} ball</div></div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{ noLeaderboard }}" hint-placeholder-val="{{ true }}">
+                <p style="font-size:12.5px;color:var(--blue);font-weight:600;line-height:1.45;margin:10px 0 14px">Faollar jadvalini ko'rish uchun kamida bitta kurs olgan bo'lishingiz kerak</p>
+                <button onClick="{{ goCatalog }}" class="btn-ghost" style="width:100%;background:var(--blue-soft);border-color:var(--blue-border);color:var(--blue)">Kasb yoki kurs tanlash</button>
+              </sc-if>
             </div>
           </div>
 
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:17px">Davom etayotgan kurslar</div><span onClick="{{ goMyCourses }}" style="cursor:pointer;font-size:13px;font-weight:600;color:#6ee7b7">Barchasi →</span></div>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px">
-            <sc-for list="{{ dashMyCourses }}" as="c" hint-placeholder-count="3">
-              <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;overflow:hidden">
-                <div style="height:90px;background:{{ c.grad }};display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans';font-weight:800;font-size:28px;color:rgba(255,255,255,.92)">{{ c.initial }}</div>
-                <div style="padding:16px">
-                  <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:14.5px;margin-bottom:10px;line-height:1.3;min-height:38px">{{ c.title }}</div>
-                  <div style="height:7px;border-radius:7px;background:var(--line);overflow:hidden;margin-bottom:7px"><div style="height:100%;width:{{ c.progress }}%;background:linear-gradient(90deg,#10b981,#22c55e);border-radius:7px"></div></div>
-                  <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:12px;color:var(--muted2)">{{ c.progress }}%</span><span onClick="{{ c.onContinue }}" style="cursor:pointer;font-size:12.5px;font-weight:700;color:#6ee7b7">{{ c.cta }} →</span></div>
+          <!-- Mashhur kasblarimiz -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <h2 style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:22px;letter-spacing:-.4px">Mashhur kasblarimiz</h2>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:16px">
+            <sc-for list="{{ popularCareers }}" as="c" hint-placeholder-count="3">
+              <div class="card" style="overflow:hidden;display:flex;flex-direction:column">
+                <div style="height:148px;background:{{ c.grad }};position:relative;padding:16px;display:flex;flex-direction:column;justify-content:flex-end">
+                  <div style="position:absolute;top:12px;left:12px;font-size:11px;font-weight:800;color:rgba(255,255,255,.9);letter-spacing:.2px">ProSkill IT</div>
+                  <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:20px;color:#fff;line-height:1.2;text-shadow:0 2px 12px rgba(0,0,0,.25)">{{ c.shortTitle }}</div>
+                  <div style="font-size:12px;color:rgba(255,255,255,.85);margin-top:4px">{{ c.teacher }}</div>
+                </div>
+                <div style="padding:16px 16px 18px;display:flex;flex-direction:column;flex:1">
+                  <div style="font-size:12px;color:var(--muted);margin-bottom:6px">👤 {{ c.students }} o'quvchi</div>
+                  <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:15px;line-height:1.3;margin-bottom:4px;min-height:40px">{{ c.title }}</div>
+                  <div style="font-size:12.5px;color:var(--muted2);margin-bottom:10px">{{ c.teacher }}</div>
+                  <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;color:var(--blue);margin-bottom:14px">{{ c.priceLabel }}</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:auto">
+                    <button onClick="{{ c.onDetail }}" class="btn-ghost" style="padding:10px 8px">Batafsil</button>
+                    <button onClick="{{ c.onBuy }}" class="btn-primary" style="padding:10px 8px">{{ c.cta }}</button>
+                  </div>
                 </div>
               </div>
             </sc-for>
           </div>
+          <div style="display:flex;justify-content:center;margin-bottom:40px">
+            <button onClick="{{ goCatalog }}" class="btn-outline">Barchasini ko'rish</button>
+          </div>
 
-          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px"><div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:17px">Siz uchun tavsiya</div><span onClick="{{ goCatalog }}" style="cursor:pointer;font-size:13px;font-weight:600;color:#6ee7b7">Katalog →</span></div>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
-            <sc-for list="{{ recommended }}" as="c" hint-placeholder-count="3">
-              <div onClick="{{ c.onOpen }}" style="cursor:pointer;background:var(--panel);border:1px solid var(--border);border-radius:18px;overflow:hidden" style-hover="border-color:rgba(16,185,129,.4)">
-                <div style="height:90px;background:{{ c.grad }};display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans';font-weight:800;font-size:28px;color:rgba(255,255,255,.92);position:relative"><span>{{ c.initial }}</span><span style="position:absolute;top:9px;right:9px;font-size:11px;font-weight:700;padding:4px 9px;border-radius:7px;background:rgba(0,0,0,.35);color:#ffd479">★ {{ c.rating }}</span></div>
-                <div style="padding:16px">
-                  <div style="font-size:11.5px;color:#6ee7b7;font-weight:700;margin-bottom:6px">{{ c.cat }}</div>
-                  <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:14.5px;margin-bottom:10px;line-height:1.3;min-height:38px">{{ c.title }}</div>
-                  <div style="display:flex;align-items:center;justify-content:space-between"><span style="font-size:12px;color:var(--muted2)">{{ c.lessons }} dars</span><span style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:15px">{{ c.priceLabel }}</span></div>
+          <!-- Mashhur kurslarimiz -->
+          <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+            <h2 style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:22px;letter-spacing:-.4px">Mashhur kurslarimiz</h2>
+            <span onClick="{{ goCatalog }}" style="cursor:pointer;font-size:13.5px;font-weight:700;color:var(--blue)">Barchasi →</span>
+          </div>
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
+            <sc-for list="{{ popularCourses }}" as="c" hint-placeholder-count="3">
+              <div class="card" style="overflow:hidden;display:flex;flex-direction:column">
+                <div style="height:130px;background:{{ c.grad }};display:flex;align-items:flex-end;padding:14px;position:relative">
+                  <span style="position:absolute;top:10px;right:10px;font-size:11px;font-weight:700;padding:4px 9px;border-radius:7px;background:rgba(0,0,0,.35);color:#ffd479">★ {{ c.rating }}</span>
+                  <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;color:#fff;line-height:1.2;text-shadow:0 2px 10px rgba(0,0,0,.3)">{{ c.shortTitle }}</div>
+                </div>
+                <div style="padding:16px;display:flex;flex-direction:column;flex:1">
+                  <div style="font-size:11.5px;color:var(--blue);font-weight:700;margin-bottom:6px">{{ c.cat }}</div>
+                  <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:14.5px;line-height:1.3;margin-bottom:10px;min-height:38px">{{ c.title }}</div>
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+                    <div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#2563eb);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">{{ c.teacherInitial }}</div>
+                    <span style="font-size:12.5px;color:var(--muted)">{{ c.teacher }}</span>
+                  </div>
+                  <div style="display:flex;align-items:center;justify-content:space-between;margin-top:auto;padding-top:12px;border-top:1px solid var(--line)">
+                    <span style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:16px;color:var(--blue)">{{ c.priceLabel }}</span>
+                    <button onClick="{{ c.onBuy }}" class="btn-primary" style="padding:8px 14px;font-size:12.5px">{{ c.cta }}</button>
+                  </div>
                 </div>
               </div>
             </sc-for>
@@ -175,26 +223,27 @@
 
 <!-- ===== CATALOG ===== -->
         <sc-if value="{{ tabCatalog }}" hint-placeholder-val="{{ false }}">
-          <div style="display:flex;gap:9px;margin-bottom:14px;flex-wrap:wrap">
+          <div style="display:flex;gap:9px;margin-bottom:18px;flex-wrap:wrap">
             <sc-for list="{{ catChips }}" as="c" hint-placeholder-count="6"><span onClick="{{ c.onClick }}" style="cursor:pointer;font-size:13px;font-weight:600;padding:9px 16px;border-radius:10px;border:1px solid {{ c.border }};background:{{ c.bg }};color:{{ c.color }}">{{ c.label }}</span></sc-for>
           </div>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:16px">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
             <sc-for list="{{ catalogCards }}" as="c" hint-placeholder-count="9">
-              <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;overflow:hidden">
-                <div style="height:130px;background:{{ c.grad }};display:flex;align-items:flex-end;padding:13px;position:relative">
-                  <span style="position:absolute;top:11px;left:11px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:7px;background:rgba(0,0,0,.32);color:#fff;backdrop-filter:blur(6px)">{{ c.level }}</span>
-                  <span style="position:absolute;top:11px;right:11px;font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:7px;background:rgba(0,0,0,.38);color:#ffd479;backdrop-filter:blur(6px)">★ {{ c.rating }}</span>
-                  <span style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:34px;color:rgba(255,255,255,.92);line-height:1">{{ c.initial }}</span>
+              <div class="card" style="overflow:hidden;display:flex;flex-direction:column">
+                <div style="height:140px;background:{{ c.grad }};display:flex;flex-direction:column;justify-content:flex-end;padding:14px;position:relative">
+                  <span style="position:absolute;top:11px;left:11px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:7px;background:rgba(0,0,0,.32);color:#fff">{{ c.level }}</span>
+                  <span style="position:absolute;top:11px;right:11px;font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:7px;background:rgba(0,0,0,.38);color:#ffd479">★ {{ c.rating }}</span>
+                  <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;color:#fff;line-height:1.2;text-shadow:0 2px 10px rgba(0,0,0,.3)">{{ c.title }}</div>
                 </div>
-                <div style="padding:16px">
-                  <div style="font-size:11.5px;color:#6ee7b7;font-weight:700;text-transform:uppercase;letter-spacing:.4px;margin-bottom:7px">{{ c.cat }}</div>
-                  <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:15px;line-height:1.3;margin-bottom:10px;min-height:40px">{{ c.title }}</div>
-                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px"><div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#10b981,#22c55e);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">{{ c.teacherInitial }}</div><span style="font-size:12.5px;color:var(--muted)">{{ c.teacher }}</span></div>
-                  <div style="display:flex;align-items:center;justify-content:space-between;padding-top:12px;border-top:1px solid var(--line)">
-                    <span style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:16px">{{ c.priceLabel }}</span>
-                    <sc-if value="{{ c.owned }}" hint-placeholder-val="{{ false }}"><span onClick="{{ c.onOpen }}" style="cursor:pointer;font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:9px;border:1px solid rgba(52,211,153,.4);background:rgba(52,211,153,.12);color:#6ee7b7">✓ Kursga kirish</span></sc-if>
-                    <sc-if value="{{ c.isFree }}" hint-placeholder-val="{{ false }}"><span onClick="{{ c.onEnroll }}" style="cursor:pointer;font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:9px;border:none;background:linear-gradient(135deg,#10b981,#22c55e);color:#fff">Bepul yozilish</span></sc-if>
-                    <sc-if value="{{ c.isPaid }}" hint-placeholder-val="{{ true }}"><span onClick="{{ c.onBuy }}" style="cursor:pointer;font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:9px;border:none;background:linear-gradient(135deg,#10b981,#22c55e);color:#fff">Sotib olish</span></sc-if>
+                <div style="padding:16px;display:flex;flex-direction:column;flex:1">
+                  <div style="font-size:12px;color:var(--muted);margin-bottom:6px">👤 {{ c.lessons }} dars · {{ c.cat }}</div>
+                  <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:15px;line-height:1.3;margin-bottom:8px;min-height:40px">{{ c.title }}</div>
+                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#2563eb);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">{{ c.teacherInitial }}</div><span style="font-size:12.5px;color:var(--muted)">{{ c.teacher }}</span></div>
+                  <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;color:var(--blue);margin-bottom:14px">{{ c.priceLabel }}</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:auto">
+                    <button onClick="{{ c.onOpen }}" class="btn-ghost" style="padding:10px 8px">Batafsil</button>
+                    <sc-if value="{{ c.owned }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onOpen }}" class="btn-primary" style="padding:10px 8px">Kirish</button></sc-if>
+                    <sc-if value="{{ c.isFree }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onEnroll }}" class="btn-primary" style="padding:10px 8px">Bepul</button></sc-if>
+                    <sc-if value="{{ c.isPaid }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.onBuy }}" class="btn-primary" style="padding:10px 8px">Sotib olish</button></sc-if>
                   </div>
                 </div>
               </div>
@@ -746,9 +795,7 @@
 
         <div data-anchor="admin-sections"></div>
 
-      </main>
-    </div>
-  </div>
+  </main>
 
   <!-- ===== CONFIRM MODAL ===== -->
   <sc-if value="{{ modal }}" hint-placeholder-val="{{ false }}">
@@ -913,7 +960,7 @@ class Component extends DCLogic {
     ];
     // ===== DB-backed: current student =====
     this.studentName="O'quvchi";
-    this.state={tab:"dashboard",theme:"dark",search:"",modal:null,toast:null,lessonCourse:null,currentLesson:null,completed:{},catFilter:"Hammasi",payFilter:"Hammasi",qaFilter:"Hammasi",accent:"#10b981"};
+    this.state={tab:"dashboard",theme:"light",search:"",modal:null,toast:null,lessonCourse:null,currentLesson:null,completed:{},catFilter:"Hammasi",payFilter:"Hammasi",qaFilter:"Hammasi",accent:"#3b82f6"};
     this.sync();
     this.state.completed=Object.assign({},this.completedSet);
     if(this.enrolled[0]){ this.state.lessonCourse=this.enrolled[0].id; var fm=this.modulesByCourse[this.enrolled[0].id]; if(fm&&fm[0]&&fm[0].lessons[0]) this.state.currentLesson=fm[0].lessons[0].key; }
@@ -1058,21 +1105,22 @@ class Component extends DCLogic {
     const stColor=s=>s==="active"||s==="paid"||s==="valid"||s==="visible"?"#34d399":(s==="pending"?"#fbbf24":"#fb7185");
     const stLabel=s=>({active:"Faol",blocked:"Bloklangan",pending:"Kutilmoqda",paid:"To'langan",failed:"Rad etilgan",valid:"Amal qiladi",revoked:"Bekor qilingan",visible:"Ko'rinadi",hidden:"Yashirilgan"}[s]||s);
 
-    // nav
-    const mk=(key,label,ico,badge)=>{const active=tab===key;return{key,label,iconEl:this.ic(ico),badge:badge||null,onClick:()=>this.setTab(key),active,bg:active?"linear-gradient(135deg,rgba(16,185,129,.2),rgba(16,185,129,.13))":"transparent",color:active?"var(--text)":"var(--muted)",iconColor:active?"#6ee7b7":"var(--muted2)"};};
-    const navGroups=[
-      {title:"ASOSIY",items:[mk("dashboard","Dashboard","dashboard"),mk("catalog","Kurslar","courses")]},
-      {title:"TA'LIM",items:[mk("mycourses","Mening Kurslarim","categories"),mk("lessons","Video Darslar","lessons"),mk("tests","Testlar","reports"),mk("certs","Sertifikatlar","certs")]},
-      {title:"HISOB",items:[mk("payments","To'lovlarim","payments"),mk("qa","Savollarim","notifications"),mk("reviews","Feedback","reviews"),mk("profile","Profil","manager")]}
+    // top nav (mohirdev style)
+    const topNavDefs=[
+      ["dashboard","Asosiy"],
+      ["catalog","Kasblar"],
+      ["mycourses","Kurslar"],
+      ["tests","Faollar jadvali"]
     ];
-    const _navUnused=[
-      {title:"X",items:[mk("students","s","student"),mk("modules","m","categories")]},
-      {title:"KONTENT",items:[mk("courses","Kurslar","courses"),mk("lessons","Modul & Darslar","lessons"),mk("categories","Kategoriyalar","categories"),mk("certs","Sertifikatlar","certs"),mk("reviews","Sharhlar","reviews")]},
-      {title:"MOLIYA",items:[mk("payments","To'lovlar","payments","2")]},
-      {title:"TIZIM",items:[mk("notifications","Bildirishnomalar","notifications"),mk("security","Xavfsizlik","security"),mk("logs","Activity Logs","logs"),mk("settings","Sozlamalar","settings")]}
-    ];
-    const meta={dashboard:["Xush kelibsiz","Mening sahifam",null],catalog:["Ta'lim","Kurslar katalogi",null],mycourses:["Ta'lim","Mening Kurslarim",null],lessons:["Ta'lim","Video Darslar",null],tests:["Ta'lim","Testlar",null],certs:["Ta'lim","Sertifikatlarim",null],payments:["Hisob","Mening To'lovlarim",null],qa:["Hisob","Savollarim",null],reviews:["Hisob","Mening Feedbackim",null],profile:["Hisob","Profil sozlamalari",null]};
+    const topNav=topNavDefs.map(([key,label])=>({
+      label, onClick:()=>this.setTab(key),
+      activeClass:tab===key?"active":""
+    }));
+    const meta={dashboard:["","",null],catalog:["Ta'lim","Kurslar va kasblar",null],mycourses:["Ta'lim","Mening Kurslarim",null],lessons:["Ta'lim","Video Darslar",null],tests:["Ta'lim","Testlar va faollik",null],certs:["Ta'lim","Sertifikatlarim",null],payments:["Hisob","Mening To'lovlarim",null],qa:["Hisob","Savollarim",null],reviews:["Hisob","Mening Feedbackim",null],profile:["Hisob","Profil sozlamalari",null]};
     const m=meta[tab]||["",""];
+    const showPageHead=tab!=="dashboard";
+    const userInitial=(this.studentName||"O").split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
+    const starPoints=Math.min(99, this.enrolled.reduce((s,e)=>s+Math.round(e.progress/10),0));
 
     // KPIs
     const _avgPr=this.enrolled.length?Math.round(this.enrolled.reduce((s,e)=>s+e.progress,0)/this.enrolled.length):0;
@@ -1105,13 +1153,53 @@ class Component extends DCLogic {
     const continueCourse=contE&&contC?{title:contC.title,grad:contC.grad,initial:contC.initial,last:contE.last,progress:this.progressFor(contE.id),done:contE.done,total:contE.total,onContinue:()=>this.continueCourse(contE)}:null;
     const recentTests=this.myTests.filter(t=>t.taken).slice(0,3).map(t=>({title:t.title,course:t.course,score:t.score,label:t.passed?"O'tdi":"Yiqildi",color:t.passed?"#34d399":"#fb7185",tint:t.passed?"rgba(52,211,153,.14)":"rgba(251,113,133,.14)"}));
     const dashMyCourses=this.enrolled.slice(0,3).map(e=>{const c=catObj(e.id);const pr=this.progressFor(e.id);return{title:c.title,grad:c.grad,initial:c.initial,progress:pr,cta:pr>=100?"Ko'rish":"Davom etish",onContinue:()=>this.continueCourse(e)};});
+    const hasCourses=this.enrolled.length>0;
+    const noCourses=!hasCourses;
+    // Kasblarim: enrolled as "careers" (same as courses for now)
+    const myCareerCards=this.enrolled.slice(0,3).map(e=>{const c=catObj(e.id);return{title:c.title,teacher:c.teacher,grad:c.grad,initial:c.initial,progress:this.progressFor(e.id),onOpen:()=>this.continueCourse(e)};});
+    const hasCareers=myCareerCards.length>0;
+    const noCareers=!hasCareers;
+    const canSeeLeaderboard=this.enrolled.length>0;
+    const noLeaderboard=!canSeeLeaderboard;
+    const leaderboardSeed=[
+      {name:"Nilufar Tosheva",points:980,grad:"linear-gradient(135deg,#3b82f6,#2563eb)"},
+      {name:"Akmal Yusupov",points:860,grad:"linear-gradient(135deg,#8b5cf6,#6366f1)"},
+      {name:this.studentName||"Siz",points:starPoints*12+120,grad:"linear-gradient(135deg,#10b981,#22c55e)"},
+      {name:"Gulnora Saidova",points:640,grad:"linear-gradient(135deg,#f59e0b,#f97316)"},
+      {name:"Sevara Yo'ldosheva",points:520,grad:"linear-gradient(135deg,#ec4899,#f43f5e)"}
+    ].sort((a,b)=>b.points-a.points).slice(0,5).map((u,i)=>({
+      ...u, rank:(i+1)+".", rankColor:i===0?"#f59e0b":(i===1?"#94a3b8":(i===2?"#b45309":"var(--muted2)")),
+      initial:u.name.split(" ").map(w=>w[0]).join("").slice(0,2)
+    }));
+    const leaderboard=leaderboardSeed;
+    const shortTitle=t=>{const s=(t||"").split(/[:—-]/)[0].trim();return s.length>28?s.slice(0,26)+"…":s;};
+    const courseCta=c=>{if(this.isEnrolled(c.id))return"Kirish";if(c.price===0)return"Bepul";return"Sotib olish";};
+    const courseAction=c=>{if(this.isEnrolled(c.id))return()=>this.openCourse(c.id);if(c.price===0)return()=>this.enrollFree(c);return()=>this.buyCourse(c);};
+    const popularCareers=this.catalog.slice(0,3).map((c,i)=>({
+      title:c.title, shortTitle:shortTitle(c.title), teacher:c.teacher, grad:c.grad, initial:c.initial,
+      students:[5,295,27][i]||(120+i*40), priceLabel:c.price===0?"Bepul":this.money(c.price),
+      cta:courseCta(c), onDetail:()=>this.openCourse(c.id), onBuy:courseAction(c)
+    }));
+    const popularCourses=this.catalog.filter(c=>!popularCareers.some(p=>p.title===c.title)).slice(0,3).map(c=>({
+      title:c.title, shortTitle:shortTitle(c.title), cat:c.cat, teacher:c.teacher, teacherInitial:c.teacherInitial,
+      grad:c.grad, rating:c.rating||4.8, priceLabel:c.price===0?"Bepul":this.money(c.price),
+      cta:courseCta(c), onBuy:courseAction(c)
+    }));
+    // fallback if not enough courses
+    if(popularCourses.length<3){
+      this.catalog.slice(0,3).forEach(c=>{
+        if(popularCourses.length>=3)return;
+        if(popularCourses.some(p=>p.title===c.title))return;
+        popularCourses.push({title:c.title,shortTitle:shortTitle(c.title),cat:c.cat,teacher:c.teacher,teacherInitial:c.teacherInitial,grad:c.grad,rating:c.rating||4.8,priceLabel:c.price===0?"Bepul":this.money(c.price),cta:courseCta(c),onBuy:courseAction(c)});
+      });
+    }
     const recommended=this.catalog.filter(c=>!this.isEnrolled(c.id)).slice(0,3).map(c=>({title:c.title,cat:c.cat,grad:c.grad,initial:c.initial,rating:c.rating,lessons:c.lessons,priceLabel:c.price===0?"Bepul":this.money(c.price).replace(" so'm",""),onOpen:()=>this.openCourse(c.id)}));
 
     // ===== Catalog =====
     const cats=["Hammasi","Python","Backend","Frontend","Grafik dizayn","SMM","Data Science","Mobil dasturlash","Ingliz tili","Kompyuter savodxonligi"];
-    const catChips=cats.map(c=>({label:c,onClick:()=>this.setState({catFilter:c}),border:st.catFilter===c?"rgba(16,185,129,.6)":"var(--border)",bg:st.catFilter===c?"rgba(16,185,129,.16)":"var(--panel)",color:st.catFilter===c?"#d1fae5":"var(--muted)"}));
+    const catChips=cats.map(c=>({label:c,onClick:()=>this.setState({catFilter:c}),border:st.catFilter===c?"var(--blue-border)":"var(--border)",bg:st.catFilter===c?"var(--blue-soft)":"var(--panel)",color:st.catFilter===c?"var(--blue)":"var(--muted)"}));
     const q=st.search.toLowerCase();
-    const catalogCards=this.catalog.filter(c=>(st.catFilter==="Hammasi"||c.cat===st.catFilter)&&(q===""||c.title.toLowerCase().includes(q)||c.teacher.toLowerCase().includes(q))).map(c=>{const owned=this.isEnrolled(c.id);const free=c.price===0;return{...c,priceLabel:free?"Bepul":this.money(c.price).replace(" so'm",""),owned,isFree:!owned&&free,isPaid:!owned&&!free,onOpen:()=>this.openCourse(c.id),onEnroll:()=>this.enrollFree(c),onBuy:()=>this.buyCourse(c)};});
+    const catalogCards=this.catalog.filter(c=>(st.catFilter==="Hammasi"||c.cat===st.catFilter)&&(q===""||c.title.toLowerCase().includes(q)||c.teacher.toLowerCase().includes(q))).map(c=>{const owned=this.isEnrolled(c.id);const free=c.price===0;return{...c,priceLabel:free?"Bepul":this.money(c.price),owned,isFree:!owned&&free,isPaid:!owned&&!free,onOpen:()=>this.openCourse(c.id),onEnroll:()=>this.enrollFree(c),onBuy:()=>this.buyCourse(c)};});
 
     // ===== My Courses (enrolled) =====
     const enrolledCards=this.enrolled.map(e=>{const c=catObj(e.id);const pr=this.progressFor(e.id);const done=pr>=100;return{title:c.title,teacher:c.teacher,grad:c.grad,initial:c.initial,progress:pr,done:e.done,total:e.total,completed:done,inProgress:!done,cta:pr===0?"Boshlash":"Davom etish",badge:done?"Tugatilgan":(e.type==="free"?"Bepul":"Sotib olingan"),badgeTint:done?"rgba(52,211,153,.18)":"rgba(0,0,0,.3)",badgeColor:done?"#6ee7b7":"#fff",onContinue:()=>this.continueCourse(e),onCert:()=>this.setState({tab:"certs"})};});
@@ -1129,12 +1217,15 @@ class Component extends DCLogic {
     return {
       theme:st.theme, themeIcon:st.theme==="dark"?"☀":"☾", toggleTheme:()=>this.toggleTheme(),
       search:st.search, setSearch:e=>this.setSearch(e),
-      navGroups, crumb:m[0], pageTitle:m[1], pageAction:m[2], onPageAction:()=>this.notify("Amal (demo)"),
-      goCatalog:()=>this.setTab("catalog"), goMyCourses:()=>this.setTab("mycourses"),
+      topNav, userInitial, starPoints, showPageHead,
+      crumb:m[0], pageTitle:m[1], pageAction:m[2], onPageAction:()=>this.notify("Amal (demo)"),
+      goCatalog:()=>this.setTab("catalog"), goMyCourses:()=>this.setTab("mycourses"), goProfile:()=>this.setTab("profile"),
       // tab flags
       tabDashboard:tab==="dashboard",tabLessons:tab==="lessons",tabCerts:tab==="certs",tabReviews:tab==="reviews",
       tabCatalog:tab==="catalog",tabMyCourses:tab==="mycourses",tabTests:tab==="tests",tabPayments:tab==="payments",tabQa:tab==="qa",tabProfile:tab==="profile",
       kpis, continueCourse, recentTests, dashMyCourses, recommended,
+      hasCourses, noCourses, hasCareers, noCareers, myCareerCards,
+      canSeeLeaderboard, noLeaderboard, leaderboard, popularCareers, popularCourses,
       // catalog
       catChips, catalogCards,
       // my courses
