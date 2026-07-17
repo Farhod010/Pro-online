@@ -54,20 +54,22 @@
   @keyframes dotC{0%,55%{background:rgba(255,255,255,.4);width:14px}66%,88%{background:#fff;width:18px}100%{background:rgba(255,255,255,.4);width:14px}}
   .cline{height:7px;border-radius:4px;background:rgba(255,255,255,.55)}
 
-  /* ===== 3D Ustozlar karuseli ===== */
+  /* ===== 3D Ustozlar karuseli (keng / uzun aylanma) ===== */
   .t3d-wrap{
-    perspective:1200px;perspective-origin:50% 45%;
-    height:420px;display:flex;align-items:center;justify-content:center;
+    perspective:1800px;perspective-origin:50% 42%;
+    height:480px;display:flex;align-items:center;justify-content:center;
     position:relative;user-select:none;
+    max-width:1100px;margin:0 auto;overflow:visible;
   }
   .t3d-stage{
     width:100%;height:100%;position:relative;
     display:flex;align-items:center;justify-content:center;
+    overflow:visible;
   }
   .t3d-ring{
-    position:relative;width:200px;height:280px;
+    position:relative;width:220px;height:300px;
     transform-style:preserve-3d;
-    animation:t3dSpin 28s linear infinite;
+    animation:t3dSpin 36s linear infinite;
   }
   .t3d-wrap:hover .t3d-ring,
   .t3d-ring.is-paused{
@@ -80,7 +82,7 @@
   .t3d-card{
     position:absolute;inset:0;
     transform-style:preserve-3d;
-    -webkit-box-reflect:below 10px linear-gradient(transparent 60%,rgba(0,0,0,.25));
+    -webkit-box-reflect:below 12px linear-gradient(transparent 55%,rgba(0,0,0,.22));
   }
   .t3d-inner{
     width:100%;height:100%;
@@ -141,10 +143,10 @@
     text-align:center;font-size:13px;color:#8d8aa0;margin-top:8px;font-weight:500;
   }
   .t3d-floor{
-    position:absolute;left:50%;bottom:28px;width:70%;height:40px;
+    position:absolute;left:50%;bottom:18px;width:92%;height:56px;
     transform:translateX(-50%);
-    background:radial-gradient(ellipse at center,rgba(168,85,247,.22),transparent 70%);
-    filter:blur(8px);pointer-events:none;
+    background:radial-gradient(ellipse at center,rgba(168,85,247,.28),transparent 72%);
+    filter:blur(12px);pointer-events:none;
   }
 </style>
 </helmet>
@@ -296,11 +298,11 @@
       </section>
       </sc-if>
 
-      <section style="padding:28px 0 48px">
+      <section style="padding:28px 0 56px;overflow:visible">
         <div style="display:flex;align-items:end;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:12px">
           <div>
             <h2 style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:30px;letter-spacing:-.7px">Ustozlarimiz</h2>
-            <p style="color:#8d8aa0;font-size:15px;margin-top:6px">Soha mutaxassislari — 3D karuselda tanishing</p>
+            <p style="color:#8d8aa0;font-size:15px;margin-top:6px">Soha mutaxassislari — keng 3D karuselda tanishing</p>
           </div>
         </div>
         <div class="t3d-wrap" title="Sichqoncha bilan to'xtatish">
@@ -1321,7 +1323,8 @@ class Component extends DCLogic {
     });
     teachers3dBase=teachers3dBase.slice(0,7);
     const n3d=Math.max(teachers3dBase.length,1);
-    const radius=Math.round(210+n3d*12);
+    // Keng aylanma — radius kattaroq, kartalar bir-biridan uzoqroq
+    const radius=Math.round(380+n3d*28);
     const teachers3d=teachers3dBase.map((t,i)=>{
       const meta=teacherMeta[t.name]||{photo:"https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&h=600&q=80",bio:"ProSkill IT Academy ustozi.",role:"Ustoz"};
       const angle=(360/n3d)*i;
