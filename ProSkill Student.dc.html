@@ -13,7 +13,8 @@
 <script src="proskill-db.js"></script>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
-  body{margin:0;font-family:'Manrope',system-ui,sans-serif;background:#eef1f6}
+  html{font-size:clamp(16px, 0.5vw + 14px, 19px);-webkit-text-size-adjust:100%}
+  body{margin:0;font-family:'Manrope',system-ui,sans-serif;background:#eef1f6;font-size:1rem;overflow-x:hidden}
   ::selection{background:#3b82f6;color:#fff}
   ::-webkit-scrollbar{width:9px;height:9px}
   ::-webkit-scrollbar-thumb{background:rgba(130,130,150,.28);border-radius:9px}
@@ -47,19 +48,21 @@
   .btn-ghost{cursor:pointer;border:1.5px solid var(--border);background:var(--panel);color:var(--text);font-weight:700;font-size:13.5px;padding:10px 18px;border-radius:10px}
   .card{background:var(--panel);border:1px solid var(--border);border-radius:16px;box-shadow:0 1px 2px rgba(15,23,42,.04)}
   .empty-illus{width:72px;height:72px;border-radius:18px;background:linear-gradient(145deg,#e0f2fe,#dbeafe);display:flex;align-items:center;justify-content:center;font-size:32px;margin:0 auto 16px}
-  .stu-top{max-width:1180px;margin:0 auto;padding:0 24px;height:64px;display:flex;align-items:center;gap:20px}
-  .stu-main{max-width:1180px;margin:0 auto;padding:28px 24px 70px;min-width:0}
-  .stu-dash-row{display:grid;grid-template-columns:1fr 1fr 260px;gap:18px;margin-bottom:36px;align-items:stretch}
-  .stu-cards-3{display:grid;grid-template-columns:repeat(3,1fr);gap:18px}
-  .stu-nav{display:flex;align-items:center;gap:4px;margin-left:18px;flex:1;flex-wrap:wrap}
+  .stu-top{max-width:min(1400px,96vw);margin:0 auto;padding:0 clamp(12px,2vw,28px);height:auto;min-height:68px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;padding-top:10px;padding-bottom:10px}
+  .stu-main{max-width:min(1400px,96vw);margin:0 auto;padding:clamp(18px,2.5vw,36px) clamp(12px,2vw,28px) 70px;min-width:0}
+  .stu-dash-row{display:grid;grid-template-columns:1fr 1fr minmax(220px,280px);gap:clamp(14px,1.5vw,22px);margin-bottom:36px;align-items:stretch}
+  .stu-cards-3{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:clamp(14px,1.5vw,22px)}
+  .stu-nav{display:flex;align-items:center;gap:4px;margin-left:12px;flex:1;flex-wrap:wrap}
   img{max-width:100%;height:auto}
   @media (max-width:1024px){
+    html{font-size:16px}
     .stu-dash-row{grid-template-columns:1fr 1fr;gap:14px}
     .stu-dash-row > :last-child{grid-column:1/-1}
-    .stu-cards-3{grid-template-columns:repeat(2,1fr)}
+    .stu-cards-3{grid-template-columns:repeat(2,minmax(0,1fr))}
   }
   @media (max-width:768px){
-    .stu-top{padding:0 12px;height:auto;min-height:56px;flex-wrap:wrap;padding-top:10px;padding-bottom:10px;gap:10px}
+    html{font-size:16px}
+    .stu-top{padding:10px 12px;min-height:56px;gap:10px}
     .stu-nav{margin-left:0;width:100%;order:3}
     .stu-main{padding:16px 12px 50px}
     .stu-dash-row{grid-template-columns:1fr}
@@ -77,7 +80,7 @@
         <img src="logo.png" alt="ProSkill" style="width:34px;height:34px;border-radius:10px;object-fit:contain"/>
         <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:17px;color:var(--text);letter-spacing:-.3px">ProSkill <span style="color:var(--blue)">IT</span></div>
       </a>
-      <nav style="display:flex;align-items:center;gap:4px;margin-left:18px;flex:1">
+      <nav class="stu-nav">
         <sc-for list="{{ topNav }}" as="n" hint-placeholder-count="4">
           <span onClick="{{ n.onClick }}" class="top-link {{ n.activeClass }}">{{ n.label }}</span>
         </sc-for>
@@ -94,7 +97,7 @@
   </header>
 
   <!-- CONTENT -->
-  <main style="max-width:1180px;margin:0 auto;padding:28px 24px 70px;min-width:0">
+  <main class="stu-main">
         <sc-if value="{{ showPageHead }}" hint-placeholder-val="{{ false }}">
           <div style="display:flex;align-items:flex-end;justify-content:space-between;gap:16px;margin-bottom:22px;flex-wrap:wrap">
             <div>
@@ -107,7 +110,7 @@
         <!-- ===== DASHBOARD (mohirdev style) ===== -->
         <sc-if value="{{ tabDashboard }}" hint-placeholder-val="{{ true }}">
           <!-- Kasblarim + Kurslarim + Faollar -->
-          <div style="display:grid;grid-template-columns:1fr 1fr 260px;gap:18px;margin-bottom:36px;align-items:stretch">
+          <div class="stu-dash-row">
             <!-- Kasblarim -->
             <div class="card" style="padding:28px 22px;display:flex;flex-direction:column">
               <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;margin-bottom:18px;padding:0 6px">Kasblarim</div>
@@ -186,7 +189,7 @@
           <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
             <h2 style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:22px;letter-spacing:-.4px">Mashhur kasblarimiz</h2>
           </div>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px;margin-bottom:16px">
+          <div class="stu-cards-3" style="margin-bottom:16px">
             <sc-for list="{{ popularCareers }}" as="c" hint-placeholder-count="3">
               <div class="card" style="overflow:hidden;display:flex;flex-direction:column">
                 <div style="height:148px;background:{{ c.grad }};position:relative;padding:16px;display:flex;flex-direction:column;justify-content:flex-end">
@@ -216,7 +219,7 @@
             <h2 style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:22px;letter-spacing:-.4px">Mashhur kurslarimiz</h2>
             <span onClick="{{ goCatalog }}" style="cursor:pointer;font-size:13.5px;font-weight:700;color:var(--blue)">Barchasi →</span>
           </div>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
+          <div class="stu-cards-3">
             <sc-for list="{{ popularCourses }}" as="c" hint-placeholder-count="3">
               <div class="card" style="overflow:hidden;display:flex;flex-direction:column">
                 <div style="height:130px;background:{{ c.grad }};display:flex;align-items:flex-end;padding:14px;position:relative">
@@ -245,7 +248,7 @@
           <div style="display:flex;gap:9px;margin-bottom:18px;flex-wrap:wrap">
             <sc-for list="{{ catChips }}" as="c" hint-placeholder-count="6"><span onClick="{{ c.onClick }}" style="cursor:pointer;font-size:13px;font-weight:600;padding:9px 16px;border-radius:10px;border:1px solid {{ c.border }};background:{{ c.bg }};color:{{ c.color }}">{{ c.label }}</span></sc-for>
           </div>
-          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:18px">
+          <div class="stu-cards-3">
             <sc-for list="{{ catalogCards }}" as="c" hint-placeholder-count="9">
               <div class="card" style="overflow:hidden;display:flex;flex-direction:column">
                 <div style="height:140px;background:{{ c.grad }};display:flex;flex-direction:column;justify-content:flex-end;padding:14px;position:relative">
