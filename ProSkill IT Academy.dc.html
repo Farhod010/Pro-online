@@ -148,6 +148,105 @@
     background:radial-gradient(ellipse at center,rgba(168,85,247,.28),transparent 72%);
     filter:blur(12px);pointer-events:none;
   }
+
+  /* ===== Responsive layout helpers ===== */
+  .page-main{max-width:1240px;margin:0 auto;padding:0 28px}
+  .site-header{position:sticky;top:0;z-index:60;display:flex;align-items:center;justify-content:space-between;gap:14px;padding:15px 30px;backdrop-filter:blur(20px);background:rgba(9,8,16,.62);border-bottom:1px solid rgba(255,255,255,.07);flex-wrap:wrap}
+  .site-header-left{display:flex;align-items:center;gap:40px;min-width:0}
+  .site-nav{display:flex;gap:28px;align-items:center}
+  .site-header-right{display:flex;align-items:center;gap:13px;flex-wrap:wrap}
+  .menu-btn{display:none;cursor:pointer;width:42px;height:42px;border-radius:11px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:#fff;font-size:20px;align-items:center;justify-content:center}
+  .mobile-nav{display:none;width:100%;flex-direction:column;gap:4px;padding:8px 0 4px;border-top:1px solid rgba(255,255,255,.08)}
+  .mobile-nav.open{display:flex}
+  .mobile-nav-item{cursor:pointer;padding:12px 14px;border-radius:11px;font-weight:600;font-size:14.5px;color:#d7d4e4}
+  .mobile-nav-item:hover{background:rgba(255,255,255,.05);color:#fff}
+
+  .hero-grid{display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;padding:74px 0 60px}
+  .hero-title{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:clamp(32px,5.5vw,58px);line-height:1.04;letter-spacing:-1.2px;margin-bottom:22px;text-wrap:balance}
+  .hero-lead{font-size:clamp(15px,2vw,18px);line-height:1.6;color:#aaa7bb;max-width:480px;margin-bottom:34px}
+
+  .grid-cats{display:grid;grid-template-columns:repeat(5,1fr);gap:14px}
+  .grid-courses{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+  .grid-features{display:grid;grid-template-columns:repeat(4,1fr);gap:18px}
+  .grid-testimonials{display:grid;grid-template-columns:repeat(3,1fr);gap:20px}
+  .grid-2{display:grid;grid-template-columns:1.55fr 1fr;gap:32px;align-items:start}
+  .grid-checkout{display:grid;grid-template-columns:1.3fr 1fr;gap:26px;align-items:start}
+  .grid-learn{display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:36px}
+  .grid-login{display:grid;grid-template-columns:1fr 1fr;min-height:100vh}
+  .section-head{display:flex;align-items:end;justify-content:space-between;margin-bottom:22px;gap:12px;flex-wrap:wrap}
+  .section-title{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:clamp(22px,3.5vw,30px);letter-spacing:-.7px}
+  .cta-banner{position:relative;border-radius:28px;overflow:hidden;background:linear-gradient(120deg,#3b1d6e,#1e2270);border:1px solid rgba(255,255,255,.12);padding:56px 50px;text-align:center}
+  .cta-title{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:clamp(24px,4vw,38px);letter-spacing:-1px;margin-bottom:14px}
+  .footer-inner{max-width:1240px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px}
+  .course-hero-media{height:min(300px,48vw);border-radius:22px;position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:30px;overflow:hidden}
+  .sticky-buy{position:sticky;top:90px}
+  img,video{max-width:100%;height:auto}
+  button,input,textarea,select{max-width:100%}
+
+  /* Tablet */
+  @media (max-width:1024px){
+    .page-main{padding:0 20px}
+    .site-header{padding:12px 18px}
+    .site-nav{gap:16px}
+    .site-header-left{gap:18px}
+    .hero-grid{gap:32px;padding:48px 0 40px}
+    .grid-cats{grid-template-columns:repeat(3,1fr)}
+    .grid-courses{grid-template-columns:repeat(2,1fr);gap:16px}
+    .grid-features{grid-template-columns:repeat(2,1fr)}
+    .grid-testimonials{grid-template-columns:repeat(2,1fr)}
+    .grid-2{grid-template-columns:1fr;gap:22px}
+    .sticky-buy{position:static}
+    .t3d-wrap{height:400px;perspective:1100px;max-width:100%}
+    .t3d-stage{transform:scale(.78)}
+    .t3d-card:hover .t3d-inner{transform:scale(1.1) translateY(-8px)}
+    .cta-banner{padding:40px 28px}
+  }
+
+  /* Phone / small tablet */
+  @media (max-width:768px){
+    .site-header{padding:10px 14px}
+    .site-nav{display:none}
+    .menu-btn{display:flex}
+    .hide-sm{display:none !important}
+    .page-main{padding:0 14px}
+    .hero-grid{grid-template-columns:1fr;gap:28px;padding:28px 0 32px}
+    .hero-lead{margin-bottom:22px}
+    .grid-cats{grid-template-columns:repeat(2,1fr);gap:10px}
+    .grid-courses{grid-template-columns:1fr;gap:14px}
+    .grid-features{grid-template-columns:1fr}
+    .grid-testimonials{grid-template-columns:1fr}
+    .grid-2,.grid-checkout,.grid-learn{grid-template-columns:1fr}
+    .grid-login{grid-template-columns:1fr}
+    .login-visual{display:none !important}
+    .cta-banner{padding:32px 18px;border-radius:20px}
+    .footer-inner{flex-direction:column;align-items:flex-start;gap:14px}
+    .t3d-wrap{height:340px;perspective:800px;overflow:hidden}
+    .t3d-stage{transform:scale(.52)}
+    .t3d-ring{width:180px;height:250px}
+    .t3d-hint{font-size:12px;padding:0 10px;line-height:1.45}
+    .t3d-card:hover .t3d-inner{transform:scale(1.08) translateY(-6px)}
+    .course-hero-media{height:200px}
+    .dash-layout{grid-template-columns:1fr !important}
+    .dash-sidebar{position:static !important;height:auto !important;border-right:none !important;border-bottom:1px solid rgba(255,255,255,.08)}
+  }
+
+  /* Small phones */
+  @media (max-width:420px){
+    .grid-cats{grid-template-columns:1fr 1fr;gap:8px}
+    .cat-card{padding:14px 12px !important}
+    .site-header-right button{padding:9px 12px !important;font-size:12.5px !important}
+    .t3d-stage{transform:scale(.46)}
+    .t3d-wrap{height:300px}
+  }
+
+  /* Hover previews on touch: always show dots lightly */
+  @media (hover:none){
+    .cprev .cdots{opacity:.7}
+    .cprev .cf1{animation:cfA 3.6s infinite}
+    .cprev .cf2{animation:cfB 3.6s infinite}
+    .cprev .cf3{animation:cfC 3.6s infinite}
+    .t3d-wrap:active .t3d-ring{animation-play-state:paused}
+  }
 </style>
 </helmet>
 <div style="min-height:100vh;color:#ece9f5;font-family:'Manrope',sans-serif;position:relative;overflow-x:hidden">
@@ -156,43 +255,55 @@
   <div style="position:relative;z-index:1">
 
     <sc-if value="{{ isChrome }}" hint-placeholder-val="{{ true }}">
-    <header style="position:sticky;top:0;z-index:60;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:15px 30px;backdrop-filter:blur(20px);background:rgba(9,8,16,.62);border-bottom:1px solid rgba(255,255,255,.07);flex-wrap:wrap">
-      <div style="display:flex;align-items:center;gap:40px">
-        <div onClick="{{ goLanding }}" style="display:flex;align-items:center;gap:11px;cursor:pointer">
+    <header class="site-header">
+      <div class="site-header-left">
+        <div onClick="{{ goLanding }}" style="display:flex;align-items:center;gap:11px;cursor:pointer;flex:none">
           <img src="logo.png" alt="ProSkill" style="width:40px;height:40px;border-radius:12px;object-fit:contain"/>
           <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18.5px;letter-spacing:-.4px">ProSkill <span style="color:#bd8cff">IT</span></div>
         </div>
-        <nav style="display:flex;gap:28px">
+        <nav class="site-nav">
           <sc-for list="{{ navItems }}" as="item" hint-placeholder-count="4">
-            <span onClick="{{ item.onClick }}" style="cursor:pointer;font-weight:600;font-size:14.5px;color:#b4b1c6;transition:color .2s" style-hover="color:#ffffff">{{ item.label }}</span>
+            <span onClick="{{ item.onClick }}" style="cursor:pointer;font-weight:600;font-size:14.5px;color:#b4b1c6;transition:color .2s;white-space:nowrap" style-hover="color:#ffffff">{{ item.label }}</span>
           </sc-for>
         </nav>
       </div>
-      <div style="display:flex;align-items:center;gap:13px">
+      <div class="site-header-right">
         <sc-if value="{{ loggedIn }}" hint-placeholder-val="{{ false }}">
-          <button onClick="{{ goDashboard }}" style="cursor:pointer;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:#fff;font-weight:600;font-size:14px;padding:10px 18px;border-radius:11px">Boshqaruv paneli</button>
-          <div onClick="{{ goDashboard }}" style="cursor:pointer;width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#a855f7,#6366f1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff">{{ userInitial }}</div>
+          <button onClick="{{ goDashboard }}" class="hide-sm" style="cursor:pointer;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.05);color:#fff;font-weight:600;font-size:14px;padding:10px 18px;border-radius:11px">Boshqaruv paneli</button>
+          <div onClick="{{ goDashboard }}" style="cursor:pointer;width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#a855f7,#6366f1);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:15px;color:#fff;flex:none">{{ userInitial }}</div>
         </sc-if>
         <sc-if value="{{ notLoggedIn }}" hint-placeholder-val="{{ true }}">
-          <span onClick="{{ goLogin }}" style="cursor:pointer;font-weight:600;font-size:14.5px;color:#d7d4e4;padding:10px 8px">Kirish</span>
+          <span onClick="{{ goLogin }}" class="hide-sm" style="cursor:pointer;font-weight:600;font-size:14.5px;color:#d7d4e4;padding:10px 8px">Kirish</span>
           <button onClick="{{ goLogin }}" style="cursor:pointer;border:none;background:linear-gradient(135deg,#a855f7,#6366f1);color:#fff;font-weight:700;font-size:14px;padding:11px 20px;border-radius:11px;box-shadow:0 10px 26px rgba(168,85,247,.4)">Ro'yxatdan o'tish</button>
         </sc-if>
+        <div onClick="{{ toggleMenu }}" class="menu-btn" aria-label="Menu">{{ menuIcon }}</div>
       </div>
+      <nav class="mobile-nav {{ menuOpenClass }}">
+        <sc-for list="{{ navItems }}" as="item" hint-placeholder-count="4">
+          <span onClick="{{ item.onClickMobile }}" class="mobile-nav-item">{{ item.label }}</span>
+        </sc-for>
+        <sc-if value="{{ notLoggedIn }}" hint-placeholder-val="{{ true }}">
+          <span onClick="{{ goLoginMobile }}" class="mobile-nav-item">Kirish</span>
+        </sc-if>
+        <sc-if value="{{ loggedIn }}" hint-placeholder-val="{{ false }}">
+          <span onClick="{{ goDashboardMobile }}" class="mobile-nav-item">Boshqaruv paneli</span>
+        </sc-if>
+      </nav>
     </header>
     </sc-if>
 
     <!-- ============ LANDING ============ -->
     <sc-if value="{{ isLanding }}" hint-placeholder-val="{{ true }}">
-    <main style="max-width:1240px;margin:0 auto;padding:0 28px">
+    <main class="page-main">
 
-      <section style="display:grid;grid-template-columns:1.05fr .95fr;gap:48px;align-items:center;padding:74px 0 60px">
-        <div style="animation:fadeUp .7s ease both">
+      <section class="hero-grid">
+        <div style="animation:fadeUp .7s ease both;min-width:0">
           <div style="display:inline-flex;align-items:center;gap:9px;padding:8px 15px;border-radius:100px;background:rgba(168,85,247,.12);border:1px solid rgba(168,85,247,.28);font-size:13px;font-weight:600;color:#cdb0ff;margin-bottom:26px">
             <span style="width:7px;height:7px;border-radius:50%;background:#a855f7;animation:pulseGlow 2s infinite"></span>
             O'zbekistondagi #1 IT ta'lim platformasi
           </div>
-          <h1 style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:58px;line-height:1.04;letter-spacing:-1.6px;margin-bottom:22px;text-wrap:balance">Kelajak kasbini<br><span style="background:linear-gradient(120deg,#c79bff,#8b9bff);-webkit-background-clip:text;background-clip:text;color:transparent">bugun o'rgan.</span></h1>
-          <p style="font-size:18px;line-height:1.6;color:#aaa7bb;max-width:480px;margin-bottom:34px">Python, Frontend, dizayn, sun'iy intellekt va boshqalar — sohaning eng kuchli ustozlaridan video darslar. Sotib ol, o'rgan, sertifikat ol.</p>
+          <h1 class="hero-title">Kelajak kasbini<br><span style="background:linear-gradient(120deg,#c79bff,#8b9bff);-webkit-background-clip:text;background-clip:text;color:transparent">bugun o'rgan.</span></h1>
+          <p class="hero-lead">Python, Frontend, dizayn, sun'iy intellekt va boshqalar — sohaning eng kuchli ustozlaridan video darslar. Sotib ol, o'rgan, sertifikat ol.</p>
           <div style="display:flex;gap:14px;flex-wrap:wrap;margin-bottom:42px">
             <button onClick="{{ goCourses }}" style="cursor:pointer;border:none;background:linear-gradient(135deg,#a855f7,#6366f1);color:#fff;font-weight:700;font-size:15.5px;padding:16px 30px;border-radius:14px;box-shadow:0 14px 34px rgba(168,85,247,.42)">Kurslarni ko'rish</button>
             <button onClick="{{ goLogin }}" style="cursor:pointer;border:1px solid rgba(255,255,255,.16);background:rgba(255,255,255,.04);color:#fff;font-weight:700;font-size:15.5px;padding:16px 28px;border-radius:14px">Bepul ro'yxatdan o'tish</button>
@@ -206,7 +317,7 @@
             </sc-for>
           </div>
         </div>
-        <div style="position:relative;animation:fadeUp .9s ease both">
+        <div style="position:relative;animation:fadeUp .9s ease both;min-width:0">
           <div style="position:absolute;inset:-30px;background:radial-gradient(circle at 60% 40%,rgba(168,85,247,.35),transparent 65%);filter:blur(20px)"></div>
           <div style="position:relative;background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.1);border-radius:26px;padding:24px;backdrop-filter:blur(20px);box-shadow:0 40px 90px rgba(0,0,0,.5);animation:floaty 6s ease-in-out infinite">
             <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
@@ -228,11 +339,11 @@
       </section>
 
       <section style="padding:30px 0">
-        <div style="display:flex;align-items:end;justify-content:space-between;margin-bottom:22px">
-          <h2 style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:30px;letter-spacing:-.7px">Yo'nalishlar</h2>
+        <div class="section-head">
+          <h2 class="section-title">Yo'nalishlar</h2>
           <span onClick="{{ goCourses }}" style="cursor:pointer;font-size:14px;font-weight:600;color:#bd8cff">Barchasi →</span>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:14px">
+        <div class="grid-cats">
           <sc-for list="{{ landingCats }}" as="c" hint-placeholder-count="10">
             <div onClick="{{ c.onClick }}" class="cat-card" style="cursor:pointer;background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:20px 16px;transition:transform .2s,border-color .2s,background .2s" style-hover="transform:translateY(-4px);border-color:rgba(168,85,247,.4);background:rgba(255,255,255,.06)">
               <div style="width:52px;height:52px;border-radius:14px;background:{{ c.iconBg }};display:flex;align-items:center;justify-content:center;margin-bottom:14px;border:1px solid {{ c.iconBorder }};box-shadow:0 8px 20px {{ c.iconShadow }}">
@@ -246,14 +357,14 @@
       </section>
 
       <section style="padding:44px 0 20px">
-        <div style="display:flex;align-items:end;justify-content:space-between;margin-bottom:24px">
+        <div class="section-head" style="margin-bottom:24px">
           <div>
-            <h2 style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:30px;letter-spacing:-.7px">Mashhur kurslar</h2>
+            <h2 class="section-title">Mashhur kurslar</h2>
             <p style="color:#8d8aa0;font-size:15px;margin-top:6px">Eng ko'p sotib olingan kurslar</p>
           </div>
-          <span onClick="{{ goCourses }}" style="cursor:pointer;font-size:14px;font-weight:600;color:#bd8cff">Barcha kurslar →</span>
+          <span onClick="{{ goCourses }}" style="cursor:pointer;font-size:14px;font-weight:600;color:#bd8cff;white-space:nowrap">Barcha kurslar →</span>
         </div>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:22px">
+        <div class="grid-courses">
           <sc-for list="{{ popularCourses }}" as="c" hint-placeholder-count="6">
             <div onClick="{{ c.onOpen }}" style="cursor:pointer;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);border-radius:22px;overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s" style-hover="transform:translateY(-6px);border-color:rgba(168,85,247,.4);box-shadow:0 26px 60px rgba(0,0,0,.45)">
               <div class="cprev" style="height:150px;background:{{ c.grad }};position:relative;overflow:hidden">
@@ -286,9 +397,9 @@
 
       <sc-if value="{{ showFeatures }}" hint-placeholder-val="{{ true }}">
       <section style="padding:54px 0">
-        <h2 style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:30px;letter-spacing:-.7px;margin-bottom:8px">Nega ProSkill?</h2>
+        <h2 class="section-title" style="margin-bottom:8px">Nega ProSkill?</h2>
         <p style="color:#8d8aa0;font-size:15px;margin-bottom:28px">Boshqa o'quv markazlardan farqimiz</p>
-        <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:18px">
+        <div class="grid-features">
           <sc-for list="{{ features }}" as="f" hint-placeholder-count="4">
             <div style="background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:24px">
               <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:15px;color:#a855f7;margin-bottom:16px">{{ f.num }}</div>
@@ -301,9 +412,9 @@
       </sc-if>
 
       <section style="padding:28px 0 56px;overflow:visible">
-        <div style="display:flex;align-items:end;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:12px">
+        <div class="section-head" style="margin-bottom:8px">
           <div>
-            <h2 style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:30px;letter-spacing:-.7px">Ustozlarimiz</h2>
+            <h2 class="section-title">Ustozlarimiz</h2>
             <p style="color:#8d8aa0;font-size:15px;margin-top:6px">Soha mutaxassislari — keng 3D karuselda tanishing</p>
           </div>
         </div>
@@ -341,8 +452,8 @@
 
       <sc-if value="{{ showTestimonials }}" hint-placeholder-val="{{ true }}">
       <section style="padding:30px 0 56px">
-        <h2 style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:30px;letter-spacing:-.7px;margin-bottom:24px">O'quvchilar fikri</h2>
-        <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:20px">
+        <h2 class="section-title" style="margin-bottom:24px">O'quvchilar fikri</h2>
+        <div class="grid-testimonials">
           <sc-for list="{{ testimonials }}" as="t" hint-placeholder-count="3">
             <div style="background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:26px">
               <div style="color:#ffd479;font-size:15px;margin-bottom:14px">★★★★★</div>
@@ -358,10 +469,10 @@
       </sc-if>
 
       <section style="padding:20px 0 70px">
-        <div style="position:relative;border-radius:28px;overflow:hidden;background:linear-gradient(120deg,#3b1d6e,#1e2270);border:1px solid rgba(255,255,255,.12);padding:56px 50px;text-align:center">
+        <div class="cta-banner">
           <div style="position:absolute;inset:0;background:radial-gradient(600px 300px at 50% 0%,rgba(168,85,247,.4),transparent 60%);pointer-events:none"></div>
           <div style="position:relative">
-            <h2 style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:38px;letter-spacing:-1px;margin-bottom:14px">Bugun o'rganishni boshlang</h2>
+            <h2 class="cta-title">Bugun o'rganishni boshlang</h2>
             <p style="font-size:17px;color:#cdc9e0;max-width:520px;margin:0 auto 30px">Ro'yxatdan o'ting, kursni tanlang va kelajak kasbingizni egallang.</p>
             <div style="display:flex;gap:14px;justify-content:center;flex-wrap:wrap">
               <button onClick="{{ goCourses }}" style="cursor:pointer;border:none;background:#fff;color:#1a1340;font-weight:800;font-size:15.5px;padding:16px 32px;border-radius:14px">Kurslarni ko'rish</button>
@@ -373,7 +484,7 @@
     </main>
 
     <footer style="border-top:1px solid rgba(255,255,255,.07);padding:40px 28px;background:rgba(0,0,0,.2)">
-      <div style="max-width:1240px;margin:0 auto;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:20px">
+      <div class="footer-inner">
         <div style="display:flex;align-items:center;gap:11px">
           <img src="logo.png" alt="ProSkill" style="width:36px;height:36px;border-radius:11px;object-fit:contain"/>
           <div><div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:15px">ProSkill IT Academy</div><div style="font-size:12.5px;color:#8d8aa0">© 2026 · Barcha huquqlar himoyalangan</div></div>
@@ -387,7 +498,7 @@
 
     <!-- ============ COURSES LIST ============ -->
     <sc-if value="{{ isCourses }}" hint-placeholder-val="{{ false }}">
-    <main style="max-width:1240px;margin:0 auto;padding:44px 28px 80px">
+    <main class="page-main" style="padding-top:44px;padding-bottom:80px">
       <div style="margin-bottom:30px">
         <h1 style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:40px;letter-spacing:-1.2px;margin-bottom:10px">Barcha kurslar</h1>
         <p style="color:#9b98ad;font-size:16px">{{ resultCount }} ta kurs topildi — kelajak kasbingizni tanlang</p>
@@ -409,7 +520,7 @@
           <span onClick="{{ l.onClick }}" style="cursor:pointer;font-size:13px;font-weight:600;padding:7px 14px;border-radius:100px;border:1px solid {{ l.borderc }};background:{{ l.bgc }};color:{{ l.textc }}">{{ l.name }}</span>
         </sc-for>
       </div>
-      <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:22px">
+      <div class="grid-courses">
         <sc-for list="{{ filteredCourses }}" as="c" hint-placeholder-count="9">
           <div onClick="{{ c.onOpen }}" style="cursor:pointer;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);border-radius:22px;overflow:hidden;transition:transform .25s,border-color .25s,box-shadow .25s" style-hover="transform:translateY(-6px);border-color:rgba(168,85,247,.4);box-shadow:0 26px 60px rgba(0,0,0,.45)">
             <div class="cprev" style="height:148px;background:{{ c.grad }};position:relative;overflow:hidden">
@@ -441,12 +552,12 @@
 
     <!-- ============ COURSE DETAIL ============ -->
     <sc-if value="{{ isCourse }}" hint-placeholder-val="{{ false }}">
-    <main style="max-width:1240px;margin:0 auto;padding:30px 28px 80px">
+    <main class="page-main" style="padding-top:30px;padding-bottom:80px">
       <div onClick="{{ goCourses }}" style="cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-size:14px;color:#9b98ad;font-weight:600;margin-bottom:22px">← Kurslarga qaytish</div>
-      <div style="display:grid;grid-template-columns:1.55fr 1fr;gap:32px;align-items:start">
-        <div>
+      <div class="grid-2">
+        <div style="min-width:0">
           <div style="font-size:13px;color:#bd8cff;font-weight:700;text-transform:uppercase;letter-spacing:.6px;margin-bottom:12px">{{ cur.cat }}</div>
-          <h1 style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:38px;line-height:1.12;letter-spacing:-1px;margin-bottom:18px">{{ cur.title }}</h1>
+          <h1 style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:clamp(26px,5vw,38px);line-height:1.12;letter-spacing:-1px;margin-bottom:18px">{{ cur.title }}</h1>
           <div style="display:flex;gap:24px;flex-wrap:wrap;margin-bottom:26px;font-size:14px;color:#b4b1c6">
             <span style="color:#ffd479;font-weight:700">★ {{ cur.rating }}</span>
             <span>{{ cur.students }} o'quvchi</span>
@@ -454,14 +565,14 @@
             <span>{{ cur.hours }} soat video</span>
             <span style="color:#cdb0ff;font-weight:600">{{ cur.level }}</span>
           </div>
-          <div style="height:300px;border-radius:22px;background:{{ cur.grad }};position:relative;display:flex;align-items:center;justify-content:center;margin-bottom:30px;overflow:hidden">
+          <div class="course-hero-media" style="background:{{ cur.grad }}">
             <div style="position:absolute;inset:0;background:rgba(0,0,0,.18)"></div>
             <div style="position:relative;width:80px;height:80px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;color:#1a1340;font-size:28px;box-shadow:0 14px 40px rgba(0,0,0,.4)">▶</div>
-            <div style="position:absolute;bottom:18px;left:20px;font-family:'Plus Jakarta Sans';font-weight:800;font-size:64px;color:rgba(255,255,255,.85)">{{ cur.initial }}</div>
+            <div style="position:absolute;bottom:18px;left:20px;font-family:'Plus Jakarta Sans';font-weight:800;font-size:clamp(36px,10vw,64px);color:rgba(255,255,255,.85)">{{ cur.initial }}</div>
           </div>
 
           <h2 style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:24px;margin-bottom:16px">Nimalarni o'rganasiz</h2>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:13px;margin-bottom:36px">
+          <div class="grid-learn">
             <sc-for list="{{ learnPoints }}" as="p" hint-placeholder-count="4">
               <div style="display:flex;gap:11px;align-items:flex-start;background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);border-radius:14px;padding:15px">
                 <span style="color:#34d399;font-weight:800;font-size:15px">✓</span>
@@ -487,9 +598,9 @@
           </div>
         </div>
 
-        <div style="position:sticky;top:90px">
+        <div class="sticky-buy">
           <div style="background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid rgba(255,255,255,.1);border-radius:22px;padding:26px;backdrop-filter:blur(20px)">
-            <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:6px">
+            <div style="display:flex;align-items:baseline;gap:12px;margin-bottom:6px;flex-wrap:wrap">
               <span style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:34px">{{ cur.priceLabel }}</span>
               <span style="font-size:16px;color:#6f6d7e;text-decoration:line-through">{{ cur.oldLabel }}</span>
             </div>
@@ -526,10 +637,10 @@
 
     <!-- ============ CHECKOUT ============ -->
     <sc-if value="{{ isCheckout }}" hint-placeholder-val="{{ false }}">
-    <main style="max-width:840px;margin:0 auto;padding:44px 28px 80px">
+    <main style="max-width:840px;margin:0 auto;padding:44px 16px 80px">
       <div onClick="{{ backToCourse }}" style="cursor:pointer;display:inline-flex;align-items:center;gap:7px;font-size:14px;color:#9b98ad;font-weight:600;margin-bottom:22px">← Kursga qaytish</div>
-      <h1 style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:34px;letter-spacing:-1px;margin-bottom:30px">To'lov</h1>
-      <div style="display:grid;grid-template-columns:1.3fr 1fr;gap:26px;align-items:start">
+      <h1 style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:clamp(26px,5vw,34px);letter-spacing:-1px;margin-bottom:30px">To'lov</h1>
+      <div class="grid-checkout">
         <div style="background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:26px">
           <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:17px;margin-bottom:18px">To'lov usulini tanlang</div>
           <div style="display:flex;flex-direction:column;gap:12px;margin-bottom:24px">
@@ -571,8 +682,8 @@
 
     <!-- ============ VIDEO LESSON ============ -->
     <sc-if value="{{ isLesson }}" hint-placeholder-val="{{ false }}">
-    <main style="max-width:1340px;margin:0 auto;padding:24px 24px 70px;display:grid;grid-template-columns:1fr 360px;gap:26px;align-items:start">
-      <div>
+    <main class="grid-2" style="max-width:1340px;margin:0 auto;padding:24px 16px 70px;grid-template-columns:1fr minmax(260px,360px)">
+      <div style="min-width:0">
         <div onClick="{{ goCourses }}" style="cursor:pointer;font-size:13.5px;color:#9b98ad;font-weight:600;margin-bottom:16px">← Barcha kurslar</div>
         <div style="position:relative;border-radius:20px;overflow:hidden;background:#000;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center">
           <sc-if value="{{ lessonLocked }}" hint-placeholder-val="{{ false }}">
@@ -617,7 +728,7 @@
         </div>
       </div>
 
-      <aside style="background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);border-radius:18px;overflow:hidden;position:sticky;top:24px">
+      <aside class="sticky-buy" style="background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);border-radius:18px;overflow:hidden">
         <div style="padding:18px 18px 16px;border-bottom:1px solid rgba(255,255,255,.07)">
           <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:15.5px;margin-bottom:4px">Kurs darslari</div>
           <div style="font-size:12.5px;color:#8d8aa0">{{ lessonCourse.totalLessons }} ta dars</div>
@@ -640,8 +751,8 @@
 
     <!-- ============ LOGIN / REGISTER ============ -->
     <sc-if value="{{ isLogin }}" hint-placeholder-val="{{ false }}">
-    <main style="min-height:100vh;display:grid;grid-template-columns:1fr 1fr">
-      <div style="display:flex;align-items:center;justify-content:center;padding:40px">
+    <main class="grid-login">
+      <div style="display:flex;align-items:center;justify-content:center;padding:28px 16px">
         <div style="width:100%;max-width:400px">
           <div onClick="{{ goLanding }}" style="cursor:pointer;display:flex;align-items:center;gap:11px;margin-bottom:40px">
             <img src="logo.png" alt="ProSkill" style="width:42px;height:42px;border-radius:12px;object-fit:contain"/>
@@ -707,7 +818,7 @@
           </sc-if>
         </div>
       </div>
-      <div style="position:relative;overflow:hidden;background:linear-gradient(150deg,#2b1259,#1a1d5c);display:flex;align-items:center;justify-content:center;padding:50px">
+      <div class="login-visual" style="position:relative;overflow:hidden;background:linear-gradient(150deg,#2b1259,#1a1d5c);display:flex;align-items:center;justify-content:center;padding:50px">
         <div style="position:absolute;inset:0;background:radial-gradient(600px 400px at 70% 30%,rgba(168,85,247,.4),transparent 60%)"></div>
         <div style="position:relative;max-width:420px">
           <h2 style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:34px;line-height:1.15;letter-spacing:-1px;margin-bottom:18px">Bilim — eng yaxshi investitsiya.</h2>
@@ -724,9 +835,9 @@
 
     <!-- ============ DASHBOARD ============ -->
     <sc-if value="{{ isDashboard }}" hint-placeholder-val="{{ false }}">
-    <div style="display:grid;grid-template-columns:262px 1fr;min-height:100vh">
+    <div class="dash-layout" style="display:grid;grid-template-columns:262px 1fr;min-height:100vh">
       <!-- SIDEBAR -->
-      <aside style="background:rgba(10,9,18,.6);border-right:1px solid rgba(255,255,255,.07);padding:24px 18px;display:flex;flex-direction:column;backdrop-filter:blur(20px)">
+      <aside class="dash-sidebar" style="background:rgba(10,9,18,.6);border-right:1px solid rgba(255,255,255,.07);padding:24px 18px;display:flex;flex-direction:column;backdrop-filter:blur(20px)">
         <div onClick="{{ goLanding }}" style="cursor:pointer;display:flex;align-items:center;gap:11px;padding:0 8px;margin-bottom:30px">
           <img src="logo.png" alt="ProSkill" style="width:38px;height:38px;border-radius:11px;object-fit:contain"/>
           <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:16.5px">ProSkill <span style="color:#bd8cff">IT</span></div>
@@ -757,7 +868,7 @@
 
         <!-- OVERVIEW -->
         <sc-if value="{{ tabOverview }}" hint-placeholder-val="{{ false }}">
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:16px;margin-bottom:26px">
+          <div class="grid-features" style="margin-bottom:26px">
             <sc-for list="{{ statCards }}" as="s" hint-placeholder-count="4">
               <div style="background:rgba(255,255,255,.04);border:1px solid rgba(255,255,255,.08);border-radius:18px;padding:20px">
                 <div style="width:40px;height:40px;border-radius:11px;background:{{ s.tint }};display:flex;align-items:center;justify-content:center;margin-bottom:14px"><span style="width:14px;height:14px;border-radius:5px;background:{{ s.color }}"></span></div>
@@ -1170,6 +1281,7 @@ class Component extends DCLogic {
     this.state = {
       route:"landing", user:null, dashTab:"overview", authMode:"login", regRole:"student",
       loginEmail:"", loginPassword:"", loginError:null, regName:"", regEmail:"", regPassword:"",
+      menuOpen:false,
 
       selected:"c1", currentLesson:"c1-0-0",
       enrollments:["c1","c4"],
@@ -1177,6 +1289,17 @@ class Component extends DCLogic {
       category:"Hammasi", level:"Hammasi", search:"",
       toast:null
     };
+  }
+
+  toggleMenu(){ this.setState(s=>({menuOpen:!s.menuOpen})); }
+  closeMenu(){ if(this.state.menuOpen) this.setState({menuOpen:false}); }
+
+  componentDidMount(){
+    this._onResize=()=>{ clearTimeout(this._rz); this._rz=setTimeout(()=>{ try{this.forceUpdate();}catch(e){} },150); };
+    try{ window.addEventListener("resize", this._onResize); }catch(e){}
+  }
+  componentWillUnmount(){
+    try{ window.removeEventListener("resize", this._onResize); }catch(e){}
   }
 
   money(n){ return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g," ")+" so'm"; }
@@ -1195,7 +1318,7 @@ class Component extends DCLogic {
   }
 
   // ---- Navigatsiya ----
-  nav(r){ this.setState({route:r}); try{window.scrollTo(0,0);}catch(e){} }
+  nav(r){ this.setState({route:r,menuOpen:false}); try{window.scrollTo(0,0);}catch(e){} }
   notify(msg){ this.setState({toast:msg}); clearTimeout(this._t); this._t=setTimeout(()=>this.setState({toast:null}),2600); }
 
   openCourse(id){ this.setState({route:"course",selected:id}); try{window.scrollTo(0,0);}catch(e){} }
@@ -1384,8 +1507,10 @@ class Component extends DCLogic {
     });
     teachers3dBase=teachers3dBase.slice(0,7);
     const n3d=Math.max(teachers3dBase.length,1);
-    // Keng aylanma — radius kattaroq, kartalar bir-biridan uzoqroq
-    const radius=Math.round(380+n3d*28);
+    // Responsive radius: telefon/planshet/kompyuter
+    let vw=1200; try{vw=window.innerWidth||1200;}catch(e){}
+    const radiusBase=vw<480?200:(vw<768?260:(vw<1024?320:380));
+    const radius=Math.round(radiusBase+n3d*(vw<768?14:28));
     const teachers3d=teachers3dBase.map((t,i)=>{
       const meta=teacherMeta[t.name]||{photo:"https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&h=600&q=80",bio:"ProSkill IT Academy ustozi.",role:"Ustoz"};
       const angle=(360/n3d)*i;
@@ -1476,8 +1601,18 @@ class Component extends DCLogic {
       userInitial: st.user? st.user.name.split(" ").map(w=>w[0]).join("").slice(0,2):"",
       // nav handlers
       goLanding:()=>this.nav("landing"), goCourses:()=>this.nav("courses"), goLogin:()=>this.nav("login"),
-      goDashboard:()=>this.setState({route:"dashboard"}), logout:()=>this.logout(),
-      navItems:[{label:"Bosh sahifa",onClick:()=>this.nav("landing")},{label:"Kurslar",onClick:()=>this.nav("courses")},{label:"Kategoriyalar",onClick:()=>this.nav("courses")},{label:"Ustozlar",onClick:()=>this.nav("landing")}],
+      goDashboard:()=>this.setState({route:"dashboard",menuOpen:false}), logout:()=>this.logout(),
+      toggleMenu:()=>this.toggleMenu(),
+      menuOpenClass:st.menuOpen?"open":"",
+      menuIcon:st.menuOpen?"✕":"☰",
+      goLoginMobile:()=>{this.closeMenu();this.nav("login");},
+      goDashboardMobile:()=>this.setState({route:"dashboard",menuOpen:false}),
+      navItems:[
+        {label:"Bosh sahifa",onClick:()=>this.nav("landing"),onClickMobile:()=>this.nav("landing")},
+        {label:"Kurslar",onClick:()=>this.nav("courses"),onClickMobile:()=>this.nav("courses")},
+        {label:"Kategoriyalar",onClick:()=>this.nav("courses"),onClickMobile:()=>this.nav("courses")},
+        {label:"Ustozlar",onClick:()=>this.nav("landing"),onClickMobile:()=>this.nav("landing")}
+      ],
       // landing
       heroStats:[{value:"18k+",label:"O'quvchilar"},{value:"42",label:"Kurslar"},{value:"25+",label:"Ustozlar"},{value:"96%",label:"Tugatish"}],
       heroProgress:[{title:"Python asoslari",pct:78},{title:"Frontend",pct:45},{title:"Grafik dizayn",pct:62}],
