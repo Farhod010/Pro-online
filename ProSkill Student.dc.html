@@ -107,6 +107,7 @@
     .stu-dash-row{grid-template-columns:1fr 1fr;gap:14px}
     .stu-dash-row > :last-child{grid-column:1/-1}
     .stu-cards-3{grid-template-columns:repeat(2,minmax(0,1fr))}
+    .stu-cards-4{grid-template-columns:repeat(2,minmax(0,1fr))}
   }
   @media (max-width:768px){
     html{font-size:16px}
@@ -115,6 +116,7 @@
     .stu-main{padding:16px 12px 50px}
     .stu-dash-row{grid-template-columns:1fr}
     .stu-cards-3{grid-template-columns:1fr}
+    .stu-cards-4{grid-template-columns:1fr}
     .top-link{font-size:13px;padding:6px 10px}
   }
 </style>
@@ -303,39 +305,49 @@
           </div>
         </sc-if>
 
-<!-- ===== CATALOG ===== -->
+<!-- ===== KASBLAR (faqat kasblar katalogi) ===== -->
         <sc-if value="{{ tabCatalog }}" hint-placeholder-val="{{ false }}">
-          <div style="display:flex;gap:9px;margin-bottom:18px;flex-wrap:wrap">
-            <sc-for list="{{ catChips }}" as="c" hint-placeholder-count="6"><span onClick="{{ c.onClick }}" style="cursor:pointer;font-size:13px;font-weight:600;padding:9px 16px;border-radius:10px;border:1px solid {{ c.border }};background:{{ c.bg }};color:{{ c.color }}">{{ c.label }}</span></sc-for>
+          <h1 class="kasb-page-title">Kasblar</h1>
+
+          <div style="display:flex;gap:8px;margin-bottom:22px;flex-wrap:wrap">
+            <sc-for list="{{ catChips }}" as="c" hint-placeholder-count="8">
+              <span onClick="{{ c.onClick }}" class="kasb-chip {{ c.onClass }}">{{ c.label }}</span>
+            </sc-for>
           </div>
-          <div class="stu-cards-3">
-            <sc-for list="{{ catalogCards }}" as="c" hint-placeholder-count="9">
+
+          <div class="stu-cards-4">
+            <sc-for list="{{ catalogCards }}" as="c" hint-placeholder-count="8">
               <div class="card" style="overflow:hidden;display:flex;flex-direction:column">
-                <div class="cprev" style="height:148px;background:{{ c.grad }}">
+                <div class="cprev" style="height:150px;background:{{ c.grad }}">
                   <div class="cf cf1" style="background-image:url('{{ c.img1 }}')"></div>
                   <div class="cf cf2" style="background-image:url('{{ c.img2 }}')"></div>
                   <div class="cf cf3" style="background-image:url('{{ c.img3 }}')"></div>
                   <div class="cshade"></div>
-                  <span style="position:absolute;top:11px;left:11px;font-size:11px;font-weight:700;padding:4px 10px;border-radius:7px;background:rgba(0,0,0,.35);color:#fff;z-index:3">{{ c.level }}</span>
-                  <span style="position:absolute;top:11px;right:11px;font-size:11.5px;font-weight:700;padding:4px 9px;border-radius:7px;background:rgba(0,0,0,.4);color:#ffd479;z-index:3">★ {{ c.rating }}</span>
-                  <div style="position:absolute;left:14px;right:14px;bottom:12px;z-index:3;font-family:'Plus Jakarta Sans';font-weight:800;font-size:17px;color:#fff;line-height:1.2;text-shadow:0 2px 10px rgba(0,0,0,.35)">{{ c.title }}</div>
+                  <div style="position:absolute;top:12px;left:12px;font-size:11px;font-weight:800;color:rgba(255,255,255,.92);z-index:3;letter-spacing:.2px">ProSkill IT</div>
+                  <div style="position:absolute;left:14px;right:14px;bottom:14px;z-index:3">
+                    <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;color:#fff;line-height:1.2;text-shadow:0 2px 12px rgba(0,0,0,.35)">{{ c.shortTitle }}</div>
+                  </div>
                   <div class="cdots"><span class="cdot"></span><span class="cdot"></span><span class="cdot"></span></div>
                 </div>
-                <div style="padding:16px;display:flex;flex-direction:column;flex:1">
-                  <div style="font-size:12px;color:var(--muted);margin-bottom:6px">👤 {{ c.lessons }} dars · {{ c.cat }}</div>
-                  <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:15px;line-height:1.3;margin-bottom:8px;min-height:40px">{{ c.title }}</div>
-                  <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px"><div style="width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#2563eb);display:flex;align-items:center;justify-content:center;font-size:10px;font-weight:700;color:#fff">{{ c.teacherInitial }}</div><span style="font-size:12.5px;color:var(--muted)">{{ c.teacher }}</span></div>
-                  <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;color:var(--blue);margin-bottom:14px">{{ c.priceLabel }}</div>
-                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:auto">
-                    <button onClick="{{ c.onOpen }}" class="btn-ghost" style="padding:10px 8px">Batafsil</button>
-                    <sc-if value="{{ c.owned }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onOpen }}" class="btn-primary" style="padding:10px 8px">Kirish</button></sc-if>
-                    <sc-if value="{{ c.isFree }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onEnroll }}" class="btn-primary" style="padding:10px 8px">Bepul</button></sc-if>
-                    <sc-if value="{{ c.isPaid }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.onBuy }}" class="btn-primary" style="padding:10px 8px">Sotib olish</button></sc-if>
+                <div style="padding:14px 16px 16px;display:flex;flex-direction:column;flex:1">
+                  <div style="font-size:12.5px;color:var(--muted);margin-bottom:8px">👤 {{ c.studentsLabel }} o'quvchi</div>
+                  <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:15px;line-height:1.3;margin-bottom:4px;min-height:40px">{{ c.title }}</div>
+                  <div style="font-size:13px;color:var(--muted2);margin-bottom:10px">{{ c.teacher }}</div>
+                  <div class="kasb-price">{{ c.priceLabel }}</div>
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:auto">
+                    <button onClick="{{ c.onOpen }}" class="btn-ghost" style="padding:10px 8px;font-size:13px">Batafsil</button>
+                    <sc-if value="{{ c.owned }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onOpen }}" class="btn-primary" style="padding:10px 8px;font-size:13px">Kirish</button></sc-if>
+                    <sc-if value="{{ c.isFree }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onEnroll }}" class="btn-primary" style="padding:10px 8px;font-size:13px">Bepul</button></sc-if>
+                    <sc-if value="{{ c.isPaid }}" hint-placeholder-val="{{ true }}"><button onClick="{{ c.onBuy }}" class="btn-primary" style="padding:10px 8px;font-size:13px">Sotib olish</button></sc-if>
                   </div>
                 </div>
               </div>
             </sc-for>
           </div>
+
+          <sc-if value="{{ noKasblar }}" hint-placeholder-val="{{ false }}">
+            <div style="text-align:center;padding:48px 20px;color:var(--muted);font-size:14.5px">Bu yo'nalishda hozircha kasb yo'q</div>
+          </sc-if>
         </sc-if>
 
 <!-- ===== REPORTS ===== -->
@@ -1273,9 +1285,10 @@ class Component extends DCLogic {
       label, onClick:()=>this.setTab(key),
       activeClass:tab===key?"active":""
     }));
-    const meta={dashboard:["","",null],catalog:["Ta'lim","Kurslar va kasblar",null],mycourses:["Ta'lim","Mening Kurslarim",null],lessons:["Ta'lim","Video Darslar",null],tests:["Ta'lim","Testlar va faollik",null],certs:["Ta'lim","Sertifikatlarim",null],payments:["Hisob","Mening To'lovlarim",null],qa:["Hisob","Savollarim",null],reviews:["Hisob","Mening Feedbackim",null],profile:["Hisob","Profil sozlamalari",null]};
+    const meta={dashboard:["","",null],catalog:["","",null],mycourses:["Ta'lim","Mening Kurslarim",null],lessons:["Ta'lim","Video Darslar",null],tests:["Ta'lim","Testlar va faollik",null],certs:["Ta'lim","Sertifikatlarim",null],payments:["Hisob","Mening To'lovlarim",null],qa:["Hisob","Savollarim",null],reviews:["Hisob","Mening Feedbackim",null],profile:["Hisob","Profil sozlamalari",null]};
     const m=meta[tab]||["",""];
-    const showPageHead=tab!=="dashboard";
+    // Kasblar va dashboard o'z sarlavhasini ichida ko'rsatadi
+    const showPageHead=tab!=="dashboard"&&tab!=="catalog";
     const userInitial=(this.studentName||"O").split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
     const starPoints=Math.min(99, this.enrolled.reduce((s,e)=>s+Math.round(e.progress/10),0));
 
@@ -1355,11 +1368,37 @@ class Component extends DCLogic {
     }
     const recommended=this.catalog.filter(c=>!this.isEnrolled(c.id)).slice(0,3).map(c=>({title:c.title,cat:c.cat,grad:c.grad,initial:c.initial,rating:c.rating,lessons:c.lessons,priceLabel:c.price===0?"Bepul":this.money(c.price).replace(" so'm",""),onOpen:()=>this.openCourse(c.id)}));
 
-    // ===== Catalog =====
-    const cats=["Hammasi","Python","Backend","Frontend","Grafik dizayn","SMM","Data Science","Mobil dasturlash","Ingliz tili","Kompyuter savodxonligi"];
-    const catChips=cats.map(c=>({label:c,onClick:()=>this.setState({catFilter:c}),border:st.catFilter===c?"var(--blue-border)":"var(--border)",bg:st.catFilter===c?"var(--blue-soft)":"var(--panel)",color:st.catFilter===c?"var(--blue)":"var(--muted)"}));
+    // ===== Kasblar katalogi (faqat kasblar) =====
+    const cats=["Barchasi","Python","Frontend","Backend","Full Stack","Sun'iy intellekt","Data Science","Grafik dizayn","SMM","Mobil dasturlash","Kompyuter savodxonligi","Ingliz tili"];
+    // Full Stack = Backend + Frontend filter alias
+    const catMatch=(c,filter)=>{
+      if(filter==="Barchasi"||filter==="Hammasi") return true;
+      if(filter==="Full Stack") return c.cat==="Backend"||c.cat==="Frontend"||(c.title||"").toLowerCase().indexOf("full")>=0;
+      return c.cat===filter;
+    };
+    const activeFilter=st.catFilter==="Hammasi"?"Barchasi":st.catFilter;
+    const catChips=cats.map(c=>({
+      label:c,
+      onClick:()=>this.setState({catFilter:c==="Barchasi"?"Hammasi":c}),
+      onClass:(activeFilter===c||(c==="Barchasi"&&(st.catFilter==="Hammasi"||!st.catFilter)))?"on":""
+    }));
     const q=st.search.toLowerCase();
-    const catalogCards=this.catalog.filter(c=>(st.catFilter==="Hammasi"||c.cat===st.catFilter)&&(q===""||c.title.toLowerCase().includes(q)||c.teacher.toLowerCase().includes(q))).map(c=>{const owned=this.isEnrolled(c.id);const free=c.price===0;return{...c,priceLabel:free?"Bepul":this.money(c.price),owned,isFree:!owned&&free,isPaid:!owned&&!free,onOpen:()=>this.openCourse(c.id),onEnroll:()=>this.enrollFree(c),onBuy:()=>this.buyCourse(c)};});
+    const catalogCards=this.catalog.filter(c=>catMatch(c,activeFilter)&&(q===""||c.title.toLowerCase().includes(q)||c.teacher.toLowerCase().includes(q))).map((c,i)=>{
+      const owned=this.isEnrolled(c.id);const free=c.price===0;
+      const shortTitle=(c.title||"").split(/[:—-]/)[0].trim();
+      const studentsLabel=[5,295,27,48,12,64,33,19,8,41][i%10];
+      return{
+        ...c,
+        shortTitle:shortTitle.length>32?shortTitle.slice(0,30)+"…":shortTitle,
+        studentsLabel,
+        priceLabel:free?"Bepul":this.money(c.price),
+        owned,isFree:!owned&&free,isPaid:!owned&&!free,
+        onOpen:()=>this.openCourse(c.id),
+        onEnroll:()=>this.enrollFree(c),
+        onBuy:()=>this.buyCourse(c)
+      };
+    });
+    const noKasblar=catalogCards.length===0;
 
     // ===== My Courses (enrolled) =====
     const enrolledCards=this.enrolled.map(e=>{const c=catObj(e.id);const pr=this.progressFor(e.id);const done=pr>=100;return{title:c.title,teacher:c.teacher,grad:c.grad,initial:c.initial,progress:pr,done:e.done,total:e.total,completed:done,inProgress:!done,cta:pr===0?"Boshlash":"Davom etish",badge:done?"Tugatilgan":(e.type==="free"?"Bepul":"Sotib olingan"),badgeTint:done?"rgba(52,211,153,.18)":"rgba(0,0,0,.3)",badgeColor:done?"#6ee7b7":"#fff",onContinue:()=>this.continueCourse(e),onCert:()=>this.setState({tab:"certs"})};});
@@ -1386,8 +1425,8 @@ class Component extends DCLogic {
       kpis, continueCourse, recentTests, dashMyCourses, recommended,
       hasCourses, noCourses, hasCareers, noCareers, myCareerCards,
       canSeeLeaderboard, noLeaderboard, leaderboard, popularCareers, popularCourses,
-      // catalog
-      catChips, catalogCards,
+      // kasblar
+      catChips, catalogCards, noKasblar,
       // my courses
       enrolledCards,
       // player
