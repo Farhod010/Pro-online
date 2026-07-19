@@ -843,17 +843,96 @@
           </div>
         </sc-if>
 
-        <!-- ===== TESTS (student) ===== -->
+        <!-- ===== FAOLLAR JADVALI ===== -->
         <sc-if value="{{ tabTests }}" hint-placeholder-val="{{ false }}">
-          <div style="display:flex;flex-direction:column;gap:12px">
-            <sc-for list="{{ studentTestRows }}" as="t" hint-placeholder-count="4">
-              <div style="background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px 20px;display:flex;align-items:center;gap:16px">
-                <div style="width:44px;height:44px;border-radius:12px;background:{{ t.iconBg }};display:flex;align-items:center;justify-content:center;font-size:18px;flex:none">{{ t.icon }}</div>
-                <div style="flex:1;min-width:0"><div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:15px">{{ t.title }}</div><div style="font-size:12.5px;color:var(--muted2)">{{ t.course }} · {{ t.linked }} · {{ t.questions }} savol</div></div>
-                <sc-if value="{{ t.taken }}" hint-placeholder-val="{{ false }}"><div style="text-align:right;margin-right:6px"><div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;color:{{ t.scoreColor }}">{{ t.score }}%</div><div style="font-size:11.5px;font-weight:700;color:{{ t.scoreColor }}">{{ t.resultLabel }}</div></div></sc-if>
-                <button onClick="{{ t.onTake }}" style="cursor:pointer;border:{{ t.btnBorder }};background:{{ t.btnBg }};color:{{ t.btnColor }};font-weight:700;font-size:13.5px;padding:11px 20px;border-radius:11px;white-space:nowrap">{{ t.btnLabel }}</button>
+          <!-- Podium: 2 | 1 | 3 -->
+          <div class="podium">
+            <div class="podium-card">
+              <div class="podium-avatar {{ podium2.filledClass }}">{{ podium2.avatar }}</div>
+              <div class="podium-name">2-o'rin egasi</div>
+              <div class="podium-sub">{{ podium2.name }}</div>
+              <div class="podium-badges">
+                <span class="podium-badge" style="background:#f3e8d8;color:#92400e">2</span>
+                <span class="podium-badge" style="background:#fef9c3;color:#a16207">★ {{ podium2.stars }}</span>
               </div>
-            </sc-for>
+            </div>
+            <div class="podium-card first">
+              <div style="font-size:28px;margin-bottom:6px;line-height:1">👑</div>
+              <div class="podium-avatar {{ podium1.filledClass }}">{{ podium1.avatar }}</div>
+              <div class="podium-name">1-o'rin egasi</div>
+              <div class="podium-sub">{{ podium1.name }}</div>
+              <div class="podium-badges">
+                <span class="podium-badge" style="background:#fde68a;color:#92400e">1</span>
+                <span class="podium-badge" style="background:#fef9c3;color:#a16207">★ {{ podium1.stars }}</span>
+              </div>
+            </div>
+            <div class="podium-card">
+              <div class="podium-avatar {{ podium3.filledClass }}">{{ podium3.avatar }}</div>
+              <div class="podium-name">3-o'rin egasi</div>
+              <div class="podium-sub">{{ podium3.name }}</div>
+              <div class="podium-badges">
+                <span class="podium-badge" style="background:#e5e7eb;color:#4b5563">3</span>
+                <span class="podium-badge" style="background:#fef9c3;color:#a16207">★ {{ podium3.stars }}</span>
+              </div>
+            </div>
+          </div>
+
+          <div class="faol-table-card">
+            <div class="faol-table-head">
+              <div>
+                <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;margin-bottom:6px">Faollar jadvali</div>
+                <div style="font-size:12.5px;color:var(--muted2);display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                  So'nggi yangilanish vaqti:
+                  <span style="display:inline-block;width:72px;height:8px;border-radius:6px;background:linear-gradient(90deg,#bfdbfe,#e2e8f0)"></span>
+                  <span style="font-weight:600;color:var(--muted)">{{ faolUpdated }}</span>
+                </div>
+              </div>
+              <div style="display:flex;gap:10px;flex-wrap:wrap">
+                <select class="faol-select" onChange="{{ onFaolPeriod }}">
+                  <option value="week">Haftalik</option>
+                  <option value="month">Oylik</option>
+                  <option value="all">Umumiy</option>
+                </select>
+                <select class="faol-select" onChange="{{ onFaolCourse }}">
+                  <option value="">Barcha kurslar</option>
+                  <sc-for list="{{ faolCourseOptions }}" as="o" hint-placeholder-count="3">
+                    <option value="{{ o.id }}">{{ o.title }}</option>
+                  </sc-for>
+                </select>
+              </div>
+            </div>
+
+            <div class="faol-th">
+              <span>№</span>
+              <span>O'Quvchilar</span>
+              <span>Ball</span>
+              <span>Boshlash Sanasi</span>
+            </div>
+
+            <sc-if value="{{ hasFaolRows }}" hint-placeholder-val="{{ false }}">
+              <sc-for list="{{ faolRows }}" as="r" hint-placeholder-count="5">
+                <div class="faol-tr">
+                  <span style="font-weight:700;color:var(--muted)">{{ r.num }}</span>
+                  <div style="display:flex;align-items:center;gap:10px;min-width:0">
+                    <div style="width:34px;height:34px;border-radius:50%;background:{{ r.grad }};display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex:none">{{ r.initial }}</div>
+                    <span style="font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.name }}</span>
+                  </div>
+                  <span style="font-weight:700;color:var(--blue)">{{ r.points }}</span>
+                  <span style="color:var(--muted2)">{{ r.joined }}</span>
+                </div>
+              </sc-for>
+            </sc-if>
+
+            <sc-if value="{{ noFaolRows }}" hint-placeholder-val="{{ true }}">
+              <div class="faol-empty">
+                <div class="faol-empty-art">
+                  <div style="font-size:72px;line-height:1;filter:drop-shadow(0 12px 20px rgba(59,130,246,.25))">🛸</div>
+                </div>
+                <div style="font-size:14.5px;color:var(--muted);font-weight:600">Hozircha ma'lumot yo'q</div>
+                <div style="font-size:13px;color:var(--muted2);margin-top:6px;max-width:320px;margin-left:auto;margin-right:auto;line-height:1.45">Kurs oling va faollashib, reytingda joy egallang</div>
+                <button onClick="{{ goCatalog }}" class="btn-primary" style="margin-top:18px;padding:11px 22px">Kasb tanlash</button>
+              </div>
+            </sc-if>
           </div>
         </sc-if>
 
@@ -1326,10 +1405,10 @@ class Component extends DCLogic {
       label, onClick:()=>this.setTab(key),
       activeClass:tab===key?"active":""
     }));
-    const meta={dashboard:["","",null],catalog:["","",null],mycourses:["Ta'lim","Mening Kurslarim",null],lessons:["Ta'lim","Video Darslar",null],tests:["Ta'lim","Testlar va faollik",null],certs:["Ta'lim","Sertifikatlarim",null],payments:["Hisob","Mening To'lovlarim",null],qa:["Hisob","Savollarim",null],reviews:["Hisob","Mening Feedbackim",null],profile:["Hisob","Profil sozlamalari",null]};
+    const meta={dashboard:["","",null],catalog:["","",null],mycourses:["Ta'lim","Mening Kurslarim",null],lessons:["Ta'lim","Video Darslar",null],tests:["","",null],certs:["Ta'lim","Sertifikatlarim",null],payments:["Hisob","Mening To'lovlarim",null],qa:["Hisob","Savollarim",null],reviews:["Hisob","Mening Feedbackim",null],profile:["Hisob","Profil sozlamalari",null]};
     const m=meta[tab]||["",""];
-    // Kasblar va dashboard o'z sarlavhasini ichida ko'rsatadi
-    const showPageHead=tab!=="dashboard"&&tab!=="catalog";
+    // Kasblar, Faollar, dashboard o'z sarlavhasini ichida ko'rsatadi
+    const showPageHead=tab!=="dashboard"&&tab!=="catalog"&&tab!=="tests";
     const userInitial=(this.studentName||"O").split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
     const starPoints=Math.min(99, this.enrolled.reduce((s,e)=>s+Math.round(e.progress/10),0));
 
@@ -1372,17 +1451,39 @@ class Component extends DCLogic {
     const noCareers=!hasCareers;
     const canSeeLeaderboard=this.enrolled.length>0;
     const noLeaderboard=!canSeeLeaderboard;
+    // Faollar jadvali — to'liq sahifa + sidebar mini
+    const faolPeriod=st.faolPeriod||"week";
     const leaderboardSeed=[
-      {name:"Nilufar Tosheva",points:980,grad:"linear-gradient(135deg,#3b82f6,#2563eb)"},
-      {name:"Akmal Yusupov",points:860,grad:"linear-gradient(135deg,#8b5cf6,#6366f1)"},
-      {name:this.studentName||"Siz",points:starPoints*12+120,grad:"linear-gradient(135deg,#10b981,#22c55e)"},
-      {name:"Gulnora Saidova",points:640,grad:"linear-gradient(135deg,#f59e0b,#f97316)"},
-      {name:"Sevara Yo'ldosheva",points:520,grad:"linear-gradient(135deg,#ec4899,#f43f5e)"}
-    ].sort((a,b)=>b.points-a.points).slice(0,5).map((u,i)=>({
+      {name:"Nilufar Tosheva",points:980,grad:"linear-gradient(135deg,#3b82f6,#2563eb)",joined:"12 Yan 2026"},
+      {name:"Akmal Yusupov",points:860,grad:"linear-gradient(135deg,#8b5cf6,#6366f1)",joined:"02 Fev 2026"},
+      {name:this.studentName||"Siz",points:starPoints*12+120,grad:"linear-gradient(135deg,#10b981,#22c55e)",joined:"02 May 2026"},
+      {name:"Gulnora Saidova",points:640,grad:"linear-gradient(135deg,#f59e0b,#f97316)",joined:"05 Mar 2026"},
+      {name:"Sevara Yo'ldosheva",points:520,grad:"linear-gradient(135deg,#ec4899,#f43f5e)",joined:"19 May 2026"},
+      {name:"Dilshod Karimov",points:410,grad:"linear-gradient(135deg,#06b6d4,#0ea5e9)",joined:"30 Apr 2026"}
+    ].sort((a,b)=>b.points-a.points).map((u,i)=>({
       ...u, rank:(i+1)+".", rankColor:i===0?"#f59e0b":(i===1?"#94a3b8":(i===2?"#b45309":"var(--muted2)")),
       initial:u.name.split(" ").map(w=>w[0]).join("").slice(0,2)
     }));
-    const leaderboard=leaderboardSeed;
+    const leaderboard=leaderboardSeed.slice(0,5);
+    // Podium 1/2/3 — kurs bo'lmasa "Mavjud emas"
+    const emptyPodium={name:"Mavjud emas",avatar:"👤",stars:0,filledClass:""};
+    const mkPodium=(entry,fallbackStars)=>({
+      name:entry?entry.name:"Mavjud emas",
+      avatar:entry?entry.initial:"👤",
+      stars:entry?Math.round(entry.points/100):fallbackStars,
+      filledClass:entry?"filled":""
+    });
+    const podium1=canSeeLeaderboard?mkPodium(leaderboardSeed[0],0):emptyPodium;
+    const podium2=canSeeLeaderboard?mkPodium(leaderboardSeed[1],0):emptyPodium;
+    const podium3=canSeeLeaderboard?mkPodium(leaderboardSeed[2],0):emptyPodium;
+    const faolRows=canSeeLeaderboard?leaderboardSeed.map((u,i)=>({
+      num:i+1, name:u.name, initial:u.initial, grad:u.grad,
+      points:u.points+" ball", joined:u.joined
+    })):[];
+    const hasFaolRows=faolRows.length>0;
+    const noFaolRows=!hasFaolRows;
+    const faolUpdated=canSeeLeaderboard?"Hozir":"—";
+    const faolCourseOptions=this.enrolled.map(e=>({id:e.id,title:catObj(e.id).title||"Kurs"}));
     const shortTitle=t=>{const s=(t||"").split(/[:—-]/)[0].trim();return s.length>28?s.slice(0,26)+"…":s;};
     const courseCta=c=>{if(this.isEnrolled(c.id))return"Kirish";if(c.price===0)return"Bepul";return"Sotib olish";};
     const courseAction=c=>{if(this.isEnrolled(c.id))return()=>this.openCourse(c.id);if(c.price===0)return()=>this.enrollFree(c);return()=>this.buyCourse(c);};
@@ -1466,6 +1567,9 @@ class Component extends DCLogic {
       kpis, continueCourse, recentTests, dashMyCourses, recommended,
       hasCourses, noCourses, hasCareers, noCareers, myCareerCards,
       canSeeLeaderboard, noLeaderboard, leaderboard, popularCareers, popularCourses,
+      podium1, podium2, podium3, faolRows, hasFaolRows, noFaolRows, faolUpdated, faolCourseOptions,
+      onFaolPeriod:(e)=>this.setState({faolPeriod:e.target.value}),
+      onFaolCourse:(e)=>this.setState({faolCourse:e.target.value}),
       // kasblar
       catChips, catalogCards, noKasblar,
       // my courses
