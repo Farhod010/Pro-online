@@ -1241,7 +1241,12 @@ class Component extends DCLogic {
       lessonCourseList:(()=>{
         const DB=window.ProSkillDB;const me=DB&&DB.currentUser();
         if(!DB||!me) return [];
-        return DB.table("courses").filter(c=>c.teacherId===me.id).map(c=>{
+        const mine=DB.table("courses").filter(c=>c.teacherId===me.id);
+        // tanlangan kurs yo'q yoki o'chirilgan bo'lsa — birinchisini olish
+        if(mine.length && !mine.some(c=>c.id===st.lessonCourse)){
+          setTimeout(()=>this.setState({lessonCourse:mine[0].id}),0);
+        }
+        return mine.map(c=>{
           const sel=st.lessonCourse===c.id;
           const ls=DB.lessonsOf(c.id);
           return{
