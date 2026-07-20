@@ -391,8 +391,12 @@
   }
   function toggleFeatured(id) { var c = byId("courses", id); if (c) { c.featured = !c.featured; save(); } return { ok: true }; }
   function addCourse(row, byUser, role) {
-    var c = insert("courses", Object.assign({ rating: 0, status: "draft", featured: false }, row));
-    log(byUser || "Teacher", role || "teacher", "Yangi kurs yaratdi", c.title, "content");
+    if (!row || !row.title) return { ok: false, error: "Kurs nomi majburiy" };
+    var c = insert("courses", Object.assign({
+      rating: 0, status: "draft", featured: false, level: "Boshlang'ich",
+      price: 0, desc: "", comment: "", cat: "Python"
+    }, row));
+    log(byUser || "Teacher", role || "teacher", "Yangi kurs yaratdi", c.title + " (draft)", "content");
     return { ok: true, course: c };
   }
 

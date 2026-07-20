@@ -735,6 +735,56 @@
     </div>
   </sc-if>
 
+  <!-- ===== YANGI KURS FORMA ===== -->
+  <sc-if value="{{ showCourseForm }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeCourseForm }}" style="position:fixed;inset:0;z-index:110;background:rgba(4,3,9,.7);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px">
+      <div onClick="{{ stopProp }}" style="background:var(--solid);border:1px solid var(--border);border-radius:20px;padding:28px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;animation:pop .25s ease both;box-shadow:0 30px 70px rgba(0,0,0,.55)">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
+          <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:20px">+ Yangi kurs</div>
+          <span onClick="{{ closeCourseForm }}" style="cursor:pointer;width:34px;height:34px;border-radius:10px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:16px">✕</span>
+        </div>
+        <p style="font-size:13.5px;color:var(--muted);margin-bottom:20px;line-height:1.45">Kurs draft sifatida saqlanadi. Keyin «Tekshiruvga» yuborishingiz mumkin.</p>
+
+        <label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">Kurs nomi *</label>
+        <input value="{{ newCourseTitle }}" onInput="{{ onNewTitle }}" placeholder="Masalan: Python — 0 dan Professionalgacha" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:11px;padding:12px 14px;color:var(--text);font-size:14px;outline:none;margin-bottom:14px" />
+
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
+          <div>
+            <label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">Kategoriya *</label>
+            <select value="{{ newCourseCat }}" onChange="{{ onNewCat }}" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:11px;padding:12px 14px;color:var(--text);font-size:14px;outline:none">
+              <sc-for list="{{ catOptions }}" as="o" hint-placeholder-count="6">
+                <option value="{{ o }}">{{ o }}</option>
+              </sc-for>
+            </select>
+          </div>
+          <div>
+            <label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">Daraja</label>
+            <select value="{{ newCourseLevel }}" onChange="{{ onNewLevel }}" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:11px;padding:12px 14px;color:var(--text);font-size:14px;outline:none">
+              <option value="Boshlang'ich">Boshlang'ich</option>
+              <option value="O'rta">O'rta</option>
+              <option value="Professional">Professional</option>
+            </select>
+          </div>
+        </div>
+
+        <label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">Narx (so'm)</label>
+        <input value="{{ newCoursePrice }}" onInput="{{ onNewPrice }}" type="number" min="0" step="10000" placeholder="0 = bepul" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:11px;padding:12px 14px;color:var(--text);font-size:14px;outline:none;margin-bottom:14px" />
+
+        <label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">Qisqa tavsif</label>
+        <textarea value="{{ newCourseDesc }}" onInput="{{ onNewDesc }}" rows="3" placeholder="Kurs haqida qisqacha..." style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:11px;padding:12px 14px;color:var(--text);font-size:14px;outline:none;resize:vertical;margin-bottom:12px"></textarea>
+
+        <sc-if value="{{ courseFormError }}" hint-placeholder-val="{{ false }}">
+          <div style="background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.3);border-radius:11px;padding:11px 13px;font-size:13px;color:#fb7185;margin-bottom:14px">{{ courseFormError }}</div>
+        </sc-if>
+
+        <div style="display:flex;gap:10px;margin-top:8px">
+          <button onClick="{{ closeCourseForm }}" style="cursor:pointer;flex:1;border:1px solid var(--border);background:var(--panel);color:var(--text);font-weight:700;font-size:14px;padding:13px;border-radius:12px">Bekor qilish</button>
+          <button onClick="{{ submitNewCourse }}" style="cursor:pointer;flex:1.2;border:none;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-weight:800;font-size:14px;padding:13px;border-radius:12px;box-shadow:0 10px 24px rgba(99,102,241,.35)">Yaratish (draft)</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
   <!-- ===== TOAST ===== -->
   <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
     <div style="position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:120;background:var(--solid);border:1px solid rgba(99,102,241,.4);color:var(--text);font-weight:600;font-size:14px;padding:14px 22px;border-radius:13px;box-shadow:0 20px 50px rgba(0,0,0,.4);display:flex;align-items:center;gap:11px;animation:fadeUp .3s ease both"><span style="width:9px;height:9px;border-radius:50%;background:#34d399"></span>{{ toast }}</div>
@@ -938,7 +988,41 @@ class Component extends DCLogic {
       {id:"—",student:"Akmal Yusupov",course:"Python — Professionalgacha",date:"Tayyorlanmoqda",ready:false}
     ];
     this.state={tab:"dashboard",theme:"dark",search:"",userFilter:"Hammasi",modal:null,toast:null,lessonCourse:"t1",builderCourse:"t1",courseFilter:"Hammasi",qaFilter:"Hammasi",audience:"all",logFilter:"Hammasi",accent:"#6366f1",
+      showCourseForm:false,newCourseTitle:"",newCourseCat:"Python",newCourseLevel:"Boshlang'ich",newCoursePrice:"690000",newCourseDesc:"",courseFormError:null,
       permissions:{Manager:{users:true,payments:true,courses:false,settings:false},Teacher:{users:false,payments:false,courses:true,settings:false},Student:{users:false,payments:false,courses:false,settings:false}}};
+  }
+
+  openCourseForm(){
+    this.setState({showCourseForm:true,courseFormError:null,newCourseTitle:"",newCourseCat:"Python",newCourseLevel:"Boshlang'ich",newCoursePrice:"690000",newCourseDesc:""});
+  }
+  closeCourseForm(){ this.setState({showCourseForm:false,courseFormError:null}); }
+  stopProp(e){ if(e&&e.stopPropagation)e.stopPropagation(); }
+
+  submitNewCourse(){
+    const DB=window.ProSkillDB;
+    const me=DB?DB.currentUser():null;
+    if(!DB||!me){ this.notify("Avval teacher sifatida kiring"); return; }
+    const st=this.state;
+    const title=(st.newCourseTitle||"").trim();
+    if(!title){ this.setState({courseFormError:"Kurs nomini kiriting"}); return; }
+    const price=Math.max(0, parseInt(String(st.newCoursePrice||"0").replace(/\s/g,""),10)||0);
+    const cat=st.newCourseCat||"Python";
+    const level=st.newCourseLevel||"Boshlang'ich";
+    const desc=(st.newCourseDesc||"").trim()||(title+" — yangi kurs.");
+    const r=DB.addCourse({
+      title:title, cat:cat, teacherId:me.id, price:price, rating:0,
+      level:level, status:"draft", featured:false, desc:desc, comment:""
+    }, me.name, "teacher");
+    if(!r||!r.ok){ this.setState({courseFormError:(r&&r.error)||"Kurs yaratilmadi"}); return; }
+    // Boshlang'ich modul + 3 dars
+    const c=r.course;
+    const mod=DB.insert("modules",{courseId:c.id, title:"Modul 1 — Kirish va asoslar", order:0});
+    ["Kursga kirish va tanishuv","Ish muhitini sozlash","Birinchi dastur"].forEach(function(lt,li){
+      DB.insert("lessons",{moduleId:mod.id, courseId:c.id, title:lt, duration:(8+li)+":00", free:li===0, order:li});
+    });
+    this.setState({showCourseForm:false,courseFormError:null,tab:"mycourses",lessonCourse:c.id});
+    this.notify('"'+title+'" draft sifatida yaratildi ✓');
+    this.forceUpdate();
   }
 
   // ---- Icons ----
@@ -1039,7 +1123,8 @@ class Component extends DCLogic {
     return {
       theme:st.theme, themeIcon:st.theme==="dark"?"☀":"☾", toggleTheme:()=>this.toggleTheme(),
       search:st.search, setSearch:e=>this.setSearch(e),
-      navGroups, crumb:m[0], pageTitle:m[1], pageAction:m[2], onPageAction:()=>{if(st.tab==="mycourses")this.setState({modal:{title:"Yangi kurs yaratish",msg:"Kurs draft sifatida yaratiladi va tekshiruvga yuborilgandan keyin published bo'ladi.",confirm:"Yaratish",icon:"+",onConfirm:()=>this.notify("Yangi kurs yaratildi ✓")}});else this.notify((m[2]||"")+" qo'shish (demo)");},
+      navGroups, crumb:m[0], pageTitle:m[1], pageAction:m[2],
+      onPageAction:()=>{if(st.tab==="mycourses")this.openCourseForm();else if(st.tab==="tests")this.notify("Yangi test (demo)");else this.notify((m[2]||"")+" qo'shish (demo)");},
       goCourses:()=>this.setTab("courses"), goUsers:()=>this.setTab("users"),
       // tab flags
       tabDashboard:tab==="dashboard",tabLessons:tab==="lessons",tabCerts:tab==="certs",tabReviews:tab==="reviews",tabStudents:tab==="students",
@@ -1049,6 +1134,21 @@ class Component extends DCLogic {
       modal:st.modal, modalTitle:st.modal?st.modal.title:"", modalMsg:st.modal?st.modal.msg:"", modalConfirm:st.modal?st.modal.confirm:"", modalIcon:st.modal?st.modal.icon:"", modalTint:st.modal&&st.modal.danger?"rgba(251,113,133,.16)":"rgba(99,102,241,.16)", modalBtn:st.modal&&st.modal.danger?"linear-gradient(135deg,#f43f5e,#fb7185)":"linear-gradient(135deg,#6366f1,#8b5cf6)",
       closeModal:()=>this.closeModal(), confirmModal:()=>this.confirmModal(),
       toast:st.toast,
+      // yangi kurs forma
+      showCourseForm:!!st.showCourseForm,
+      newCourseTitle:st.newCourseTitle||"", newCourseCat:st.newCourseCat||"Python",
+      newCourseLevel:st.newCourseLevel||"Boshlang'ich", newCoursePrice:st.newCoursePrice||"0",
+      newCourseDesc:st.newCourseDesc||"", courseFormError:st.courseFormError||null,
+      catOptions:["Python","Frontend","Backend","Grafik dizayn","SMM","Data Science","Sun'iy intellekt","Mobil dasturlash","Ingliz tili","Kompyuter savodxonligi"],
+      onNewTitle:(e)=>this.setState({newCourseTitle:e.target.value,courseFormError:null}),
+      onNewCat:(e)=>this.setState({newCourseCat:e.target.value}),
+      onNewLevel:(e)=>this.setState({newCourseLevel:e.target.value}),
+      onNewPrice:(e)=>this.setState({newCoursePrice:e.target.value}),
+      onNewDesc:(e)=>this.setState({newCourseDesc:e.target.value}),
+      openCourseForm:()=>this.openCourseForm(),
+      closeCourseForm:()=>this.closeCourseForm(),
+      stopProp:(e)=>this.stopProp(e),
+      submitNewCourse:()=>this.submitNewCourse(),
       // ===== REPORTS =====
       rangeChips:["Bugun","Hafta","Oy","Yil"].map((l,i)=>({label:l,onClick:()=>this.notify(l+" bo'yicha hisobot (demo)"),border:i===2?"rgba(99,102,241,.6)":"var(--border)",bg:i===2?"rgba(99,102,241,.16)":"var(--panel)",color:i===2?"#e0e7ff":"var(--muted)"})),
       reportKpis:[{label:"Oylik daromad",value:"312 mln",trend:"+8.4%"},{label:"Yangi studentlar",value:"1 240",trend:"+9.1%"},{label:"Sotuvlar",value:"2 180",trend:"+12%"},{label:"O'rtacha chek",value:"720k",trend:"+3.2%"}],
@@ -1084,7 +1184,7 @@ class Component extends DCLogic {
 
       // ===== MY COURSES (DB — faqat o'z kurslarim) =====
       myCourseCards:(()=>{const DB=window.ProSkillDB;if(!DB)return [];const me=DB.currentUser();if(!me)return [];const map={published:["Published","#34d399","rgba(52,211,153,.14)"],pending:["Tekshiruvda","#fbbf24","rgba(251,191,36,.14)"],draft:["Draft","#9b98ad","rgba(255,255,255,.08)"],rejected:["Rad etilgan","#fb7185","rgba(251,113,133,.14)"]};return DB.table("courses").filter(c=>c.teacherId===me.id).map(c=>{const mm=map[c.status]||map.draft;const mods=DB.modulesOf(c.id);const ls=DB.lessonsOf(c.id);return{id:c.id,title:c.title,cat:c.cat,price:c.price,modules:mods.length,lessons:ls.length,status:c.status,comment:c.comment||"",grad:this.grads[c.cat]||"linear-gradient(135deg,#6366f1,#8b5cf6)",initial:c.cat.charAt(0),priceLabel:c.price===0?"Bepul":this.money(c.price).replace(" so'm",""),statusLabel:mm[0],statusColor:mm[1],statusTint:mm[2],hasComment:!!c.comment,canSubmit:c.status==="draft"||c.status==="rejected",onEdit:()=>this.setState({tab:"modules",lessonCourse:c.id}),onSubmit:()=>{DB.setCourseStatus(c.id,"pending",me.name,"teacher");this.notify('"'+c.title+'" tekshiruvga yuborildi ✓');this.forceUpdate();}};});})(),
-      onCreateCourse:()=>this.ask({title:"Yangi kurs yaratish",msg:"Kurs yaratish formasi ochiladi. Kurs draft sifatida saqlanadi va tekshiruvga yuborilgandan keyin published bo'ladi.",confirm:"Yaratish",icon:"+",onConfirm:()=>this.notify("Yangi kurs draft sifatida yaratildi ✓")}),
+      onCreateCourse:()=>this.openCourseForm(),
 
       // ===== MODULES (boshqaruv) =====
       onAddModule:()=>this.notify("Yangi modul qo'shildi (demo)"),
