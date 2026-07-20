@@ -749,24 +749,12 @@
         <label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">Kurs nomi *</label>
         <input value="{{ newCourseTitle }}" onInput="{{ onNewTitle }}" placeholder="Masalan: Python — 0 dan Professionalgacha" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:11px;padding:12px 14px;color:var(--text);font-size:14px;outline:none;margin-bottom:14px" />
 
-        <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-          <div>
-            <label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">Kategoriya *</label>
-            <select value="{{ newCourseCat }}" onChange="{{ onNewCat }}" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:11px;padding:12px 14px;color:var(--text);font-size:14px;outline:none">
-              <sc-for list="{{ catOptions }}" as="o" hint-placeholder-count="6">
-                <option value="{{ o }}">{{ o }}</option>
-              </sc-for>
-            </select>
-          </div>
-          <div>
-            <label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">Daraja</label>
-            <select value="{{ newCourseLevel }}" onChange="{{ onNewLevel }}" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:11px;padding:12px 14px;color:var(--text);font-size:14px;outline:none">
-              <option value="Boshlang'ich">Boshlang'ich</option>
-              <option value="O'rta">O'rta</option>
-              <option value="Professional">Professional</option>
-            </select>
-          </div>
-        </div>
+        <label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">Kategoriya *</label>
+        <select value="{{ newCourseCat }}" onChange="{{ onNewCat }}" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:11px;padding:12px 14px;color:var(--text);font-size:14px;outline:none;margin-bottom:14px">
+          <sc-for list="{{ catOptions }}" as="o" hint-placeholder-count="6">
+            <option value="{{ o }}">{{ o }}</option>
+          </sc-for>
+        </select>
 
         <label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">Narx (so'm)</label>
         <input value="{{ newCoursePrice }}" onInput="{{ onNewPrice }}" type="number" min="0" step="10000" placeholder="0 = bepul" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:11px;padding:12px 14px;color:var(--text);font-size:14px;outline:none;margin-bottom:14px" />
@@ -1008,7 +996,8 @@ class Component extends DCLogic {
     if(!title){ this.setState({courseFormError:"Kurs nomini kiriting"}); return; }
     const price=Math.max(0, parseInt(String(st.newCoursePrice||"0").replace(/\s/g,""),10)||0);
     const cat=st.newCourseCat||"Python";
-    const level=st.newCourseLevel||"Boshlang'ich";
+    // Daraja formadan olib tashlangan — default Boshlang'ich
+    const level="Boshlang'ich";
     const desc=(st.newCourseDesc||"").trim()||(title+" — yangi kurs.");
     const r=DB.addCourse({
       title:title, cat:cat, teacherId:me.id, price:price, rating:0,
