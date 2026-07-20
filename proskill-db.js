@@ -399,6 +399,33 @@
     log(byUser || "Teacher", role || "teacher", "Yangi kurs yaratdi", c.title + " (draft)", "content");
     return { ok: true, course: c };
   }
+  function deleteCourse(id, byUser, role) {
+    var c = byId("courses", id);
+    if (!c) return { ok: false, error: "Kurs topilmadi" };
+    var title = c.title;
+    // bog'liq ma'lumotlarni tozalash
+    data.lessons = data.lessons.filter(function (l) { return l.courseId !== id; });
+    data.modules = data.modules.filter(function (m) { return m.courseId !== id; });
+    data.enrollments = data.enrollments.filter(function (e) { return e.courseId !== id; });
+    data.payments = data.payments.filter(function (p) { return p.courseId !== id; });
+    data.certificates = data.certificates.filter(function (x) { return x.courseId !== id; });
+    data.reviews = data.reviews.filter(function (r) { return r.courseId !== id; });
+    data.questions = data.questions.filter(function (q) { return q.courseId !== id; });
+    // testlar
+    var testIds = data.tests.filter(function (t) { return t.courseId === id; }).map(function (t) { return t.id; });
+    data.testResults = data.testResults.filter(function (tr) { return testIds.indexOf(tr.testId) < 0; });
+    data.tests = data.tests.filter(function (t) { return t.courseId !== id; });
+    // progress (lesson ids of this course)
+    var lessonIds = {};
+    // lessons already filtered; progress may reference old lesson ids — drop orphans if needed
+    data.progress = (data.progress || []).filter(function (p) {
+      // keep progress if lesson still exists
+      return data.lessons.some(function (l) { return l.id === p.lessonId; });
+    });
+    remove("courses", id);
+    log(byUser || "Teacher", role || "teacher", "Kursni o'chirdi", title, "content");
+    return { ok: true };
+  }
 
   // ---------- ANALYTICS ----------
   function money(n) { return (n || 0).toString().replace(/\B(?=(\d{3})+(?!\d))/g, " ") + " so'm"; }
@@ -447,7 +474,7 @@
     addReview: addReview, askQuestion: askQuestion, answerQuestion: answerQuestion,
     notify: notify, notificationsOf: notificationsOf, markNotifRead: markNotifRead, log: log,
     setUserStatus: setUserStatus, setUserRole: setUserRole, deleteUser: deleteUser,
-    setCourseStatus: setCourseStatus, toggleFeatured: toggleFeatured, addCourse: addCourse,
+    setCourseStatus: setCourseStatus, toggleFeatured: toggleFeatured, addCourse: addCourse, deleteCourse: deleteCourse,
     analytics: analytics, topCourses: topCourses, money: money
   };
 })();

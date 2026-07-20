@@ -574,9 +574,10 @@
                   <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:15px;margin-bottom:6px;line-height:1.3;min-height:40px">{{ c.title }}</div>
                   <div style="font-size:12.5px;color:var(--muted2);margin-bottom:12px">{{ c.modules }} modul · {{ c.lessons }} dars · {{ c.priceLabel }}</div>
                   <sc-if value="{{ c.hasComment }}" hint-placeholder-val="{{ false }}"><div style="background:rgba(251,113,133,.08);border:1px solid rgba(251,113,133,.22);border-radius:10px;padding:9px 11px;margin-bottom:12px;font-size:12px;color:#fb9aa8;line-height:1.4">⚠ Manager: {{ c.comment }}</div></sc-if>
-                  <div style="display:flex;gap:8px">
+                  <div style="display:flex;gap:8px;flex-wrap:wrap">
                     <button onClick="{{ c.onEdit }}" style="cursor:pointer;flex:1;border:1px solid var(--border);background:var(--panel);color:var(--text);font-weight:600;font-size:13px;padding:10px;border-radius:10px">Tahrirlash</button>
                     <sc-if value="{{ c.canSubmit }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onSubmit }}" style="cursor:pointer;border:none;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-weight:700;font-size:13px;padding:10px 14px;border-radius:10px;white-space:nowrap">Tekshiruvga</button></sc-if>
+                    <button onClick="{{ c.onDelete }}" style="cursor:pointer;border:1px solid rgba(251,113,133,.35);background:rgba(251,113,133,.1);color:#fb7185;font-weight:700;font-size:13px;padding:10px 12px;border-radius:10px" title="O'chirish">🗑</button>
                   </div>
                 </div>
               </div>
@@ -1183,7 +1184,38 @@ class Component extends DCLogic {
       moduleList:(this.modulesByCourse[st.lessonCourse]||[]).map((m,mi)=>({title:m.title,count:m.lessons.length,onAdd:()=>this.notify("Yangi dars qo'shish (demo)"),lessons:m.lessons.map(l=>({title:l.title,duration:l.duration,iconEl:this.ic("video",13),onPreview:()=>this.notify('"'+l.title+'" preview (demo)'),onDelete:()=>this.deleteItem(l.title)}))})),
 
       // ===== MY COURSES (DB — faqat o'z kurslarim) =====
-      myCourseCards:(()=>{const DB=window.ProSkillDB;if(!DB)return [];const me=DB.currentUser();if(!me)return [];const map={published:["Published","#34d399","rgba(52,211,153,.14)"],pending:["Tekshiruvda","#fbbf24","rgba(251,191,36,.14)"],draft:["Draft","#9b98ad","rgba(255,255,255,.08)"],rejected:["Rad etilgan","#fb7185","rgba(251,113,133,.14)"]};return DB.table("courses").filter(c=>c.teacherId===me.id).map(c=>{const mm=map[c.status]||map.draft;const mods=DB.modulesOf(c.id);const ls=DB.lessonsOf(c.id);return{id:c.id,title:c.title,cat:c.cat,price:c.price,modules:mods.length,lessons:ls.length,status:c.status,comment:c.comment||"",grad:this.grads[c.cat]||"linear-gradient(135deg,#6366f1,#8b5cf6)",initial:c.cat.charAt(0),priceLabel:c.price===0?"Bepul":this.money(c.price).replace(" so'm",""),statusLabel:mm[0],statusColor:mm[1],statusTint:mm[2],hasComment:!!c.comment,canSubmit:c.status==="draft"||c.status==="rejected",onEdit:()=>this.setState({tab:"modules",lessonCourse:c.id}),onSubmit:()=>{DB.setCourseStatus(c.id,"pending",me.name,"teacher");this.notify('"'+c.title+'" tekshiruvga yuborildi ✓');this.forceUpdate();}};});})(),
+      myCourseCards:(()=>{
+        const DB=window.ProSkillDB;if(!DB)return [];const me=DB.currentUser();if(!me)return [];
+        const map={published:["Published","#34d399","rgba(52,211,153,.14)"],pending:["Tekshiruvda","#fbbf24","rgba(251,191,36,.14)"],draft:["Draft","#9b98ad","rgba(255,255,255,.08)"],rejected:["Rad etilgan","#fb7185","rgba(251,113,133,.14)"]};
+        return DB.table("courses").filter(c=>c.teacherId===me.id).map(c=>{
+          const mm=map[c.status]||map.draft;const mods=DB.modulesOf(c.id);const ls=DB.lessonsOf(c.id);
+          return{
+            id:c.id,title:c.title,cat:c.cat,price:c.price,modules:mods.length,lessons:ls.length,status:c.status,comment:c.comment||"",
+            grad:this.grads[c.cat]||"linear-gradient(135deg,#6366f1,#8b5cf6)",initial:c.cat.charAt(0),
+            priceLabel:c.price===0?"Bepul":this.money(c.price).replace(" so'm",""),
+            statusLabel:mm[0],statusColor:mm[1],statusTint:mm[2],hasComment:!!c.comment,
+            canSubmit:c.status==="draft"||c.status==="rejected",
+            onEdit:()=>this.setState({tab:"modules",lessonCourse:c.id}),
+            onSubmit:()=>{DB.setCourseStatus(c.id,"pending",me.name,"teacher");this.notify('"'+c.title+'" tekshiruvga yuborildi ✓');this.forceUpdate();},
+            onDelete:()=>this.ask({
+              title:"Kursni o'chirish",
+              msg:'"'+c.title+'" butunlay o\'chiriladi (modullar, darslar, yozilishlar bilan). Qaytarib bo\'lmaydi.',
+              confirm:"O'chirish",danger:true,icon:"🗑",
+              onConfirm:()=>{
+                const r=DB.deleteCourse(c.id,me.name,"teacher");
+                if(r&&r.ok){
+                  if(this.state.lessonCourse===c.id){
+                    const left=DB.table("courses").filter(x=>x.teacherId===me.id);
+                    this.setState({lessonCourse:left[0]?left[0].id:null});
+                  }
+                  this.notify('"'+c.title+'" o\'chirildi');
+                  this.forceUpdate();
+                } else this.notify((r&&r.error)||"O'chirib bo'lmadi");
+              }
+            })
+          };
+        });
+      })(),
       onCreateCourse:()=>this.openCourseForm(),
 
       // ===== MODULES (boshqaruv) =====
