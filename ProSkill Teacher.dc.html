@@ -221,11 +221,17 @@
               <div style="display:flex;flex-direction:column;gap:13px">
                 <sc-for list="{{ recentUsers }}" as="u" hint-placeholder-count="5">
                   <div style="display:flex;align-items:center;gap:12px">
-                    <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex:none">{{ u.initial }}</div>
+                    <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex:none;overflow:hidden">
+                      <sc-if value="{{ u.hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ u.avatar }}" alt="" style="width:100%;height:100%;object-fit:cover"/></sc-if>
+                      <sc-if value="{{ u.noAvatar }}" hint-placeholder-val="{{ true }}"><span>{{ u.initial }}</span></sc-if>
+                    </div>
                     <div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:600">{{ u.name }}</div><div style="font-size:12px;color:var(--muted2);margin-top:1px">{{ u.email }}</div></div>
                     <span style="font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:7px;background:{{ u.roleTint }};color:{{ u.roleColor }}">{{ u.role }}</span>
                   </div>
                 </sc-for>
+                <sc-if value="{{ noMyStudents }}" hint-placeholder-val="{{ false }}">
+                  <div style="font-size:13px;color:var(--muted2);text-align:center;padding:12px 0">Hali o'quvchi yo'q</div>
+                </sc-if>
               </div>
             </div>
           </div>
@@ -343,7 +349,13 @@
             </div>
             <sc-for list="{{ myStudentRows }}" as="s" hint-placeholder-count="6">
               <div style="display:grid;grid-template-columns:1.8fr 2fr 1.6fr 1fr 1fr 1.1fr;gap:12px;padding:13px 22px;align-items:center;border-bottom:1px solid var(--line)">
-                <div style="display:flex;align-items:center;gap:11px;min-width:0"><div style="width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex:none">{{ s.initial }}</div><div style="min-width:0"><div style="font-size:13.5px;font-weight:600">{{ s.name }}</div><div style="font-size:11.5px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ s.email }}</div></div></div>
+                <div style="display:flex;align-items:center;gap:11px;min-width:0">
+                  <div style="width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex:none;overflow:hidden">
+                    <sc-if value="{{ s.hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ s.avatar }}" alt="" style="width:100%;height:100%;object-fit:cover"/></sc-if>
+                    <sc-if value="{{ s.noAvatar }}" hint-placeholder-val="{{ true }}"><span>{{ s.initial }}</span></sc-if>
+                  </div>
+                  <div style="min-width:0"><div style="font-size:13.5px;font-weight:600">{{ s.name }}</div><div style="font-size:11.5px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ s.email }}</div></div>
+                </div>
                 <span style="font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ s.course }}</span>
                 <div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;border-radius:6px;background:var(--line);overflow:hidden"><div style="height:100%;width:{{ s.progress }}%;background:linear-gradient(90deg,#6366f1,#8b5cf6)"></div></div><span style="font-size:12px;color:var(--muted2);width:32px">{{ s.progress }}%</span></div>
                 <span style="font-size:13px;font-weight:600;color:var(--muted)">{{ s.test }}</span>
@@ -351,6 +363,9 @@
                 <span onClick="{{ s.onView }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:6px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text);justify-self:start">Batafsil</span>
               </div>
             </sc-for>
+            <sc-if value="{{ noMyStudents }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:36px;text-align:center;color:var(--muted2);font-size:14px">Hali o'quvchi yo'q — kursga yozilganlar shu yerda chiqadi</div>
+            </sc-if>
           </div>
         </sc-if>
 
@@ -727,14 +742,26 @@
             <sc-for list="{{ progressRows }}" as="s" hint-placeholder-count="6">
               <div style="background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px 20px">
                 <div style="display:flex;align-items:center;gap:13px;margin-bottom:12px">
-                  <div style="width:38px;height:38px;border-radius:10px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex:none">{{ s.initial }}</div>
-                  <div style="flex:1"><div style="font-size:14px;font-weight:600">{{ s.name }}</div><div style="font-size:12px;color:var(--muted2)">{{ s.course }}</div></div>
+                  <div style="width:44px;height:44px;border-radius:12px;background:linear-gradient(135deg,#6366f1,#8b5cf6);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;flex:none;overflow:hidden;box-shadow:0 6px 16px rgba(99,102,241,.28)">
+                    <sc-if value="{{ s.hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ s.avatar }}" alt="" style="width:100%;height:100%;object-fit:cover"/></sc-if>
+                    <sc-if value="{{ s.noAvatar }}" hint-placeholder-val="{{ true }}"><span>{{ s.initial }}</span></sc-if>
+                  </div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:14.5px;font-weight:700">{{ s.name }}</div>
+                    <div style="font-size:12px;color:var(--muted2)">{{ s.course }} · {{ s.email }}</div>
+                  </div>
                   <div style="text-align:right"><div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;color:#a5b4fc">{{ s.progress }}%</div><div style="font-size:11.5px;color:var(--muted2)">{{ s.done }}/{{ s.total }} dars</div></div>
                 </div>
                 <div style="height:8px;border-radius:8px;background:var(--line);overflow:hidden;margin-bottom:12px"><div style="height:100%;width:{{ s.progress }}%;background:linear-gradient(90deg,#6366f1,#8b5cf6);border-radius:8px"></div></div>
-                <div style="display:flex;gap:20px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)"><span>📍 Oxirgi: <b style="color:var(--text)">{{ s.last }}</b></span><span>📝 Test: <b style="color:var(--text)">{{ s.test }}</b></span><span>📦 Topshiriq: <b style="color:var(--text)">{{ s.assignment }}</b></span><span>🎓 Sertifikat: <b style="color:{{ s.certColor }}">{{ s.certLabel }}</b></span></div>
+                <div style="display:flex;gap:20px;flex-wrap:wrap;font-size:12.5px;color:var(--muted)"><span>📍 Oxirgi: <b style="color:var(--text)">{{ s.last }}</b></span><span>📝 Test: <b style="color:var(--text)">{{ s.test }}</b></span><span>💬 Izoh: <b style="color:var(--text)">{{ s.comments }}</b></span><span>🎓 Sertifikat: <b style="color:{{ s.certColor }}">{{ s.certLabel }}</b></span></div>
               </div>
             </sc-for>
+            <sc-if value="{{ noProgressRows }}" hint-placeholder-val="{{ false }}">
+              <div style="background:var(--panel);border:1px dashed var(--border);border-radius:16px;padding:40px;text-align:center;color:var(--muted2)">
+                <div style="font-size:15px;font-weight:700;margin-bottom:6px;color:var(--muted)">Hali o'quvchi yo'q</div>
+                <div style="font-size:13.5px">Kurslaringizga yozilgan o'quvchilar shu yerda rasm va progress bilan chiqadi</div>
+              </div>
+            </sc-if>
           </div>
         </sc-if>
 
@@ -1497,7 +1524,6 @@ class Component extends DCLogic {
     const paymentDonut=[{label:"Published",count:2,pct:40,color:"#34d399"},{label:"Tekshiruvda (pending)",count:1,pct:20,color:"#fbbf24"},{label:"Draft / Rejected",count:2,pct:40,color:"#fb7185"}];
 
     const topCourses=this.myCourses.filter(c=>c.status==="published").sort((a,b)=>b.students-a.students).slice(0,5).map(c=>({title:c.title,students:c.students.toLocaleString("ru-RU"),initial:c.initial,grad:c.grad,revenue:c.rating+" ★"}));
-    const recentUsers=this.myStudents.slice(0,5).map(s=>({name:s.name,email:s.course,initial:s.initial,role:s.progress+"%",roleTint:"rgba(99,102,241,.16)",roleColor:"#a5b4fc"}));
 
     // current teacher (header + profile)
     const DB=window.ProSkillDB;
@@ -1511,13 +1537,90 @@ class Component extends DCLogic {
     const meNoAvatar=!meHasAvatar;
     const meCourses=me&&DB?DB.table("courses").filter(c=>c.teacherId===me.id):[];
     const meCourseCount=String(meCourses.length||0);
-    const meStudentLabel="4 080";
     const profName=st.profName!=null&&st.profName!==""?st.profName:meName;
     const profSpec=st.profSpec!=null?String(st.profSpec):(me&&me.spec?String(me.spec):"");
     const profPhone=st.profPhone!=null?String(st.profPhone):(me&&me.phone?String(me.phone):"+998 90 000 00 00");
     const profBio=st.profBio!=null?String(st.profBio):(me&&me.bio?String(me.bio):"");
     const profExp=st.profExp!=null?String(st.profExp):(me&&me.experience?String(me.experience):"8");
     const profTelegram=st.profTelegram!=null?String(st.profTelegram):(me&&me.telegram?String(me.telegram):"@sardor_dev");
+
+    // Real enrolled students for this teacher (with avatars + progress)
+    const teacherStudents=(()=>{
+      if(!DB||!me) return [];
+      const mine=DB.table("courses").filter(c=>c.teacherId===me.id);
+      const courseIds=mine.map(c=>c.id);
+      const titleById={}; mine.forEach(c=>{ titleById[c.id]=c.title; });
+      const rows=[];
+      (DB.raw().enrollments||[]).filter(e=>courseIds.indexOf(e.courseId)>=0).forEach(e=>{
+        const stu=DB.byId("users",e.studentId);
+        if(!stu) return;
+        const pc=DB.progressCount(e.studentId,e.courseId);
+        const pr=DB.progressFor(e.studentId,e.courseId);
+        let last="Boshlanmagan";
+        const mods=DB.modulesOf(e.courseId);
+        const doneSet={};
+        (DB.raw().progress||[]).filter(p=>p.studentId===e.studentId).forEach(p=>{ doneSet[p.lessonId]=true; });
+        mods.forEach((m,mi)=>{
+          const ls=DB.table("lessons").filter(l=>l.moduleId===m.id).sort((a,b)=>(a.order||0)-(b.order||0));
+          ls.forEach((l,li)=>{ if(doneSet[l.id]) last=(mi+1)+"-modul, "+(li+1)+"-dars"; });
+        });
+        if(pr>=100) last="Tugatilgan";
+        let testLabel="—";
+        (DB.table("tests")||[]).filter(t=>t.courseId===e.courseId).forEach(t=>{
+          const r=DB.testResultFor(e.studentId,t.id);
+          if(r) testLabel=r.percentage+"%";
+        });
+        const hasCert=(DB.raw().certificates||[]).some(c=>c.studentId===e.studentId&&c.courseId===e.courseId)||pr>=100;
+        const commentCnt=(DB.raw().comments||[]).filter(c=>c.studentId===e.studentId&&c.courseId===e.courseId).length;
+        const name=stu.name||"O'quvchi";
+        const avatar=stu.avatar?String(stu.avatar):"";
+        rows.push({
+          studentId:stu.id,courseId:e.courseId,
+          name:name,email:stu.email||"",
+          course:titleById[e.courseId]||DB.courseTitle(e.courseId),
+          progress:pr,done:pc.done,total:pc.total,last:last,test:testLabel,
+          comments:commentCnt?commentCnt+" ta":"0",
+          cert:hasCert,
+          initial:(name||"O").split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase(),
+          avatar:avatar,hasAvatar:!!avatar,noAvatar:!avatar
+        });
+      });
+      return rows.sort((a,b)=>b.progress-a.progress);
+    })();
+    const meStudentLabel=String(teacherStudents.length);
+    const recentUsers=teacherStudents.slice(0,5).map(s=>({
+      name:s.name,email:s.course,initial:s.initial,role:s.progress+"%",
+      roleTint:"rgba(99,102,241,.16)",roleColor:"#a5b4fc",
+      avatar:s.avatar,hasAvatar:s.hasAvatar,noAvatar:s.noAvatar
+    }));
+    const qSearch=(st.search||"").toLowerCase();
+    const myStudentRows=teacherStudents
+      .filter(s=>qSearch===""||s.name.toLowerCase().includes(qSearch)||s.email.toLowerCase().includes(qSearch)||s.course.toLowerCase().includes(qSearch))
+      .map(s=>({
+        ...s,
+        certColor:s.cert?"#34d399":"var(--muted)",
+        certLabel:s.cert?"Olgan ✓":"Yo'q",
+        onView:()=>this.setState({tab:"progress",courseFilter:s.course,search:""})
+      }));
+    const progressRows=teacherStudents
+      .filter(s=>st.courseFilter==="Hammasi"||s.course===st.courseFilter)
+      .filter(s=>qSearch===""||s.name.toLowerCase().includes(qSearch)||s.email.toLowerCase().includes(qSearch))
+      .map(s=>({
+        ...s,
+        certLabel:s.cert?"Olgan":"Yo'q",
+        certColor:s.cert?"#34d399":"var(--muted)"
+      }));
+    const progressChips=["Hammasi"].concat(meCourses.map(c=>c.title)).map(f=>({
+      label:f==="Hammasi"?"Barcha kurslar":(f.length>28?f.slice(0,26)+"…":f),
+      onClick:()=>this.setState({courseFilter:f}),
+      border:st.courseFilter===f?"rgba(99,102,241,.6)":"var(--border)",
+      bg:st.courseFilter===f?"rgba(99,102,241,.16)":"var(--panel)",
+      color:st.courseFilter===f?"#e0e7ff":"var(--muted)"
+    }));
+    // default course filter if stale
+    if(st.courseFilter!=="Hammasi"&&meCourses.length&&!meCourses.some(c=>c.title===st.courseFilter)){
+      setTimeout(()=>this.setState({courseFilter:"Hammasi"}),0);
+    }
 
     return {
       theme:st.theme, themeIcon:st.theme==="dark"?"☀":"☾", toggleTheme:()=>this.toggleTheme(),
@@ -1544,7 +1647,7 @@ class Component extends DCLogic {
       logout:()=>this.logout(),
       navGroups, crumb:m[0], pageTitle:m[1], pageAction:m[2],
       onPageAction:()=>{if(st.tab==="mycourses")this.openCourseForm();else if(st.tab==="tests")this.notify("Yangi test (demo)");else this.notify((m[2]||"")+" qo'shish (demo)");},
-      goCourses:()=>this.setTab("courses"), goUsers:()=>this.setTab("users"),
+      goCourses:()=>this.setTab("mycourses"), goUsers:()=>this.setTab("students"),
       // tab flags
       tabDashboard:tab==="dashboard",tabLessons:tab==="lessons",tabCerts:tab==="certs",tabReviews:tab==="reviews",tabStudents:tab==="students",
       tabMyCourses:tab==="mycourses",tabModules:tab==="modules",tabTests:tab==="tests",tabProgress:tab==="progress",tabQa:tab==="qa",tabProfile:tab==="profile",
@@ -1588,10 +1691,8 @@ class Component extends DCLogic {
       teacherRows:this.teachers.map(t=>({...t,studentsLabel:t.students.toLocaleString("ru-RU"),statusColor:stColor(t.status),statusLabel:stLabel(t.status),isPending:t.status==="pending",
         onApprove:()=>{t.status="active";this.notify(t.name+" tasdiqlandi ✓");this.forceUpdate();},onView:()=>this.notify(t.name+" profili (demo)"),onBlock:()=>this.blockUser(t)})),
 
-      // ===== MY STUDENTS (view-only) =====
-      myStudentRows:this.myStudents.filter(s=>{const q=st.search.toLowerCase();return q===""||s.name.toLowerCase().includes(q);}).map(s=>({...s,certColor:s.cert?"#34d399":"var(--muted)",certLabel:s.cert?"Olgan ✓":"Yo'q",onView:()=>this.setState({tab:"progress",courseFilter:"Hammasi"})})),
-      studentRows:this.students.map(s=>{const blocked=s.status==="blocked";return{...s,initial:s.name.split(" ").map(w=>w[0]).join("").slice(0,2),statusColor:stColor(s.status),statusLabel:stLabel(s.status),toggleIcon:blocked?"✓":"⛔",
-        onEnroll:()=>this.notify(s.name+" kursga qo'lda yozildi ✓"),onToggle:()=>{s.status=blocked?"active":"blocked";this.notify(blocked?s.name+" faollashtirildi":s.name+" bloklandi");this.forceUpdate();}};}),
+      // ===== MY STUDENTS (DB) =====
+      myStudentRows, noMyStudents:myStudentRows.length===0,
 
       // ===== COURSES =====
       courseRows:this.courses.filter(c=>{const q=st.search.toLowerCase();return q===""||c.title.toLowerCase().includes(q)||c.teacher.toLowerCase().includes(q);}).map(c=>{const pub=c.status==="published";return{...c,studentsLabel:c.students.toLocaleString("ru-RU"),priceLabel:c.price===0?"Bepul":this.money(c.price).replace(" so'm",""),statusLabel:pub?"Published":"Draft",statusColor:pub?"#34d399":"#fbbf24",statusTint:pub?"rgba(52,211,153,.14)":"rgba(251,191,36,.14)",toggleLabel:pub?"Draft":"Publish",
@@ -1732,8 +1833,7 @@ class Component extends DCLogic {
       assignmentCards:this.myAssignments.map(a=>({...a,onGrade:()=>this.notify('"'+a.title+'" — '+a.pending+" javob baholanmoqda (demo)")})),
 
       // ===== STUDENT PROGRESS =====
-      progressChips:["Hammasi","Python — Professionalgacha","Backend: Django"].map(f=>({label:f==="Hammasi"?"Barcha kurslar":f,onClick:()=>this.setState({courseFilter:f}),border:st.courseFilter===f?"rgba(99,102,241,.6)":"var(--border)",bg:st.courseFilter===f?"rgba(99,102,241,.16)":"var(--panel)",color:st.courseFilter===f?"#e0e7ff":"var(--muted)"})),
-      progressRows:this.myStudents.filter(s=>st.courseFilter==="Hammasi"||s.course===st.courseFilter).filter(s=>{const q=st.search.toLowerCase();return q===""||s.name.toLowerCase().includes(q);}).map(s=>({...s,certLabel:s.cert?"Olgan":"Yo'q",certColor:s.cert?"#34d399":"var(--muted)"})),
+      progressChips, progressRows, noProgressRows:progressRows.length===0,
 
       // ===== Q&A =====
       qaChips:["Hammasi","unanswered","answered"].map(f=>({label:f==="Hammasi"?"Barchasi":(f==="unanswered"?"Javobsiz":"Javob berilgan"),onClick:()=>this.setState({qaFilter:f}),border:st.qaFilter===f?"rgba(99,102,241,.6)":"var(--border)",bg:st.qaFilter===f?"rgba(99,102,241,.16)":"var(--panel)",color:st.qaFilter===f?"#e0e7ff":"var(--muted)"})),
