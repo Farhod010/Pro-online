@@ -254,7 +254,26 @@
 
   // ---------- HELPERS ----------
   function userName(id) { var u = byId("users", id); return u ? u.name : "—"; }
+  function userAvatar(id) { var u = byId("users", id); return (u && u.avatar) ? u.avatar : ""; }
   function courseTitle(id) { var c = byId("courses", id); return c ? c.title : "—"; }
+  function updateProfile(id, patch, byUser) {
+    var u = byId("users", id);
+    if (!u) return { ok: false, error: "Foydalanuvchi topilmadi" };
+    var allowed = { name: 1, bio: 1, spec: 1, phone: 1, avatar: 1, telegram: 1, experience: 1 };
+    var clean = {};
+    Object.keys(patch || {}).forEach(function (k) {
+      if (!allowed[k]) return;
+      var v = patch[k];
+      if (k === "avatar") {
+        clean[k] = v ? String(v) : "";
+      } else {
+        clean[k] = v == null ? "" : String(v);
+      }
+    });
+    update("users", id, clean);
+    log(byUser || u.name, u.role || "user", "Profilni yangiladi", u.name, "content");
+    return { ok: true, user: byId("users", id) };
+  }
   function lessonsOf(courseId) { return data.lessons.filter(function (l) { return l.courseId === courseId; }); }
   function modulesOf(courseId) { return data.modules.filter(function (m) { return m.courseId === courseId; }).sort(function (a, b) { return a.order - b.order; }); }
 
@@ -542,7 +561,7 @@
     raw: function () { return data; },
     table: table, byId: byId, insert: insert, update: update, remove: remove, save: save, reset: reset,
     session: session, currentUser: currentUser, login: login, loginAs: loginAs, register: register, logout: logout,
-    userName: userName, courseTitle: courseTitle, lessonsOf: lessonsOf, modulesOf: modulesOf,
+    userName: userName, userAvatar: userAvatar, updateProfile: updateProfile, courseTitle: courseTitle, lessonsOf: lessonsOf, modulesOf: modulesOf,
     isEnrolled: isEnrolled, enrollmentsOf: enrollmentsOf, isDone: isDone, progressFor: progressFor, progressCount: progressCount,
     enrollFree: enrollFree, requestPayment: requestPayment, approvePayment: approvePayment, rejectPayment: rejectPayment, manualEnroll: manualEnroll,
     completeLesson: completeLesson, submitTest: submitTest, testResultFor: testResultFor, issueCertificate: issueCertificate,

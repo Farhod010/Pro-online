@@ -182,7 +182,10 @@
         </div>
         <div onClick="{{ toggleTheme }}" style="cursor:pointer;width:38px;height:38px;border-radius:50%;border:1px solid var(--border);background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:15px">{{ themeIcon }}</div>
         <div style="position:relative;width:38px;height:38px;border-radius:50%;border:1px solid var(--border);background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer">🔔<span style="position:absolute;top:6px;right:7px;width:8px;height:8px;border-radius:50%;background:#ef4444;border:2px solid var(--panel)"></span></div>
-        <div onClick="{{ goProfile }}" style="cursor:pointer;width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#2563eb);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff">{{ userInitial }}</div>
+        <div onClick="{{ goProfile }}" style="cursor:pointer;width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#2563eb);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:13px;color:#fff;overflow:hidden" title="Profil">
+          <sc-if value="{{ userHasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ userAvatar }}" alt="" style="width:100%;height:100%;object-fit:cover"/></sc-if>
+          <sc-if value="{{ userNoAvatar }}" hint-placeholder-val="{{ true }}"><span>{{ userInitial }}</span></sc-if>
+        </div>
       </div>
     </div>
   </header>
@@ -991,21 +994,33 @@
         <sc-if value="{{ tabProfile }}" hint-placeholder-val="{{ false }}">
           <div style="display:grid;grid-template-columns:1fr 1.4fr;gap:16px;align-items:start">
             <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:24px;text-align:center">
-              <div style="width:96px;height:96px;border-radius:50%;margin:0 auto 16px;background:linear-gradient(135deg,#10b981,#22c55e);display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans';font-weight:800;font-size:34px;color:#fff">SA</div>
-              <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:18px">Aziz Karimov</div>
-              <div style="font-size:13px;color:#6ee7b7;font-weight:600;margin-bottom:14px">O'quvchi · ProSkill IT Academy</div>
-              <div style="display:flex;justify-content:center;gap:20px;padding-top:16px;border-top:1px solid var(--border)"><div><div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:17px">5</div><div style="font-size:11.5px;color:var(--muted2)">Kurs</div></div><div><div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:17px">4 080</div><div style="font-size:11.5px;color:var(--muted2)">O'quvchi</div></div><div><div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:17px;color:#fbbf24">4.9★</div><div style="font-size:11.5px;color:var(--muted2)">Reyting</div></div></div>
+              <div style="position:relative;width:112px;height:112px;margin:0 auto 14px">
+                <div style="width:112px;height:112px;border-radius:50%;background:linear-gradient(135deg,#10b981,#22c55e);display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans';font-weight:800;font-size:34px;color:#fff;overflow:hidden;border:3px solid rgba(110,231,183,.35)">
+                  <sc-if value="{{ userHasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ userAvatar }}" alt="" style="width:100%;height:100%;object-fit:cover"/></sc-if>
+                  <sc-if value="{{ userNoAvatar }}" hint-placeholder-val="{{ true }}"><span>{{ userInitial }}</span></sc-if>
+                </div>
+                <label style="position:absolute;right:2px;bottom:2px;width:36px;height:36px;border-radius:50%;background:linear-gradient(135deg,#10b981,#22c55e);border:2px solid var(--panel);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:15px;box-shadow:0 8px 18px rgba(16,185,129,.35)" title="Rasm yuklash">
+                  📷
+                  <input type="file" accept="image/png,image/jpeg,image/webp,image/jpg" onChange="{{ onAvatarFile }}" style="position:absolute;inset:0;opacity:0;cursor:pointer;width:100%;height:100%"/>
+                </label>
+              </div>
+              <div style="font-size:12px;color:var(--muted2);margin-bottom:10px">Rasm reytingda hammaga ko'rinadi</div>
+              <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:18px">{{ userName }}</div>
+              <div style="font-size:13px;color:#6ee7b7;font-weight:600;margin-bottom:6px">O'quvchi · ProSkill IT Academy</div>
+              <div style="font-size:12.5px;color:var(--muted2);margin-bottom:14px">{{ userEmail }}</div>
+              <div style="display:flex;justify-content:center;gap:20px;padding-top:16px;border-top:1px solid var(--border)"><div><div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:17px">{{ userCourseCount }}</div><div style="font-size:11.5px;color:var(--muted2)">Kurs</div></div><div><div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:17px">{{ userReviewCount }}</div><div style="font-size:11.5px;color:var(--muted2)">Fikr</div></div><div><div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:17px;color:#fbbf24">★</div><div style="font-size:11.5px;color:var(--muted2)">Reyting</div></div></div>
+              <sc-if value="{{ userHasAvatar }}" hint-placeholder-val="{{ false }}">
+                <button onClick="{{ removeAvatar }}" style="cursor:pointer;margin-top:14px;width:100%;border:1px solid var(--border);background:var(--panel);color:var(--muted);font-weight:600;font-size:13px;padding:10px;border-radius:11px">Rasmni olib tashlash</button>
+              </sc-if>
             </div>
             <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:24px">
               <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:16px;margin-bottom:16px">Profil ma'lumotlari</div>
               <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px">
-                <div><label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">Ism-familiya</label><input value="Aziz Karimov" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-size:13.5px;outline:none" /></div>
-                <div><label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">Mutaxassislik</label><input value="Python, Django, Backend" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-size:13.5px;outline:none" /></div>
-                <div><label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">Email</label><input value="aziz@gmail.com" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-size:13.5px;outline:none" /></div>
-                <div><label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">Telefon</label><input value="+998 90 123 45 67" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-size:13.5px;outline:none" /></div>
-                <div style="grid-column:1/-1"><label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">Bio</label><textarea rows="2" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-size:13.5px;outline:none;resize:vertical">8 yillik tajribaga ega Python va Backend dasturchi. 4000+ o'quvchiga dars bergan.</textarea></div>
-                <div><label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">Tajriba (yil)</label><input value="8" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-size:13.5px;outline:none" /></div>
-                <div><label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">Telegram</label><input value="@sardor_dev" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-size:13.5px;outline:none" /></div>
+                <div><label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">Ism-familiya</label><input value="{{ profName }}" onInput="{{ onProfName }}" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-size:13.5px;outline:none" /></div>
+                <div><label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">Telefon</label><input value="{{ profPhone }}" onInput="{{ onProfPhone }}" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-size:13.5px;outline:none" /></div>
+                <div><label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">Email</label><input value="{{ userEmail }}" disabled style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--muted);font-size:13.5px;outline:none;opacity:.85" /></div>
+                <div><label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">Telegram</label><input value="{{ profTelegram }}" onInput="{{ onProfTelegram }}" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-size:13.5px;outline:none" /></div>
+                <div style="grid-column:1/-1"><label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">Bio</label><textarea rows="3" value="{{ profBio }}" onInput="{{ onProfBio }}" placeholder="O'zingiz haqingizda qisqacha..." style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-size:13.5px;outline:none;resize:vertical"></textarea></div>
               </div>
               <div style="display:flex;gap:11px;margin-top:18px"><button onClick="{{ saveProfile }}" style="cursor:pointer;border:none;background:linear-gradient(135deg,#10b981,#22c55e);color:#fff;font-weight:700;font-size:13.5px;padding:12px 22px;border-radius:11px">Saqlash</button><button onClick="{{ changePassword }}" style="cursor:pointer;border:1px solid var(--border);background:var(--panel);color:var(--text);font-weight:600;font-size:13.5px;padding:12px 18px;border-radius:11px">Parolni o'zgartirish</button></div>
             </div>
@@ -1241,7 +1256,8 @@ class Component extends DCLogic {
     ];
     // ===== DB-backed: current student =====
     this.studentName="O'quvchi";
-    this.state={tab:"dashboard",theme:"light",search:"",modal:null,toast:null,lessonCourse:null,currentLesson:null,completed:{},catFilter:"Hammasi",payFilter:"Hammasi",qaFilter:"Hammasi",accent:"#3b82f6"};
+    this.state={tab:"dashboard",theme:"light",search:"",modal:null,toast:null,lessonCourse:null,currentLesson:null,completed:{},catFilter:"Hammasi",payFilter:"Hammasi",qaFilter:"Hammasi",accent:"#3b82f6",
+      profName:"",profPhone:"",profBio:"",profTelegram:""};
     this.sync();
     this.state.completed=Object.assign({},this.completedSet);
     if(this.enrolled[0]){ this.state.lessonCourse=this.enrolled[0].id; var fm=this.modulesByCourse[this.enrolled[0].id]; if(fm&&fm[0]&&fm[0].lessons[0]) this.state.currentLesson=fm[0].lessons[0].key; }
@@ -1250,7 +1266,72 @@ class Component extends DCLogic {
   componentDidMount(){
     const DB=window.ProSkillDB;
     const s=DB?DB.session():null;
-    if(!s||s.role!=="student"){ try{window.location.href="ProSkill IT Academy.dc.html";}catch(e){} }
+    if(!s||s.role!=="student"){ try{window.location.href="ProSkill IT Academy.dc.html";}catch(e){} return; }
+    this.syncProfileForm();
+  }
+  syncProfileForm(){
+    const me=this.me||(window.ProSkillDB&&window.ProSkillDB.currentUser());
+    if(!me) return;
+    this.setState({
+      profName:me.name||"",
+      profPhone:me.phone?String(me.phone):"",
+      profBio:me.bio?String(me.bio):"",
+      profTelegram:me.telegram?String(me.telegram):""
+    });
+  }
+  compressImage(file, cb){
+    const reader=new FileReader();
+    reader.onload=()=>{
+      const img=new Image();
+      img.onload=()=>{
+        try{
+          const canvas=document.createElement("canvas");
+          const side=Math.min(img.width,img.height);
+          const max=320; const out=Math.min(side,max);
+          canvas.width=out; canvas.height=out;
+          const ctx=canvas.getContext("2d");
+          const sx=(img.width-side)/2, sy=(img.height-side)/2;
+          ctx.drawImage(img,sx,sy,side,side,0,0,out,out);
+          cb(canvas.toDataURL("image/jpeg",0.82));
+        }catch(e){ cb(reader.result); }
+      };
+      img.onerror=()=>this.notify("Rasmni o'qib bo'lmadi");
+      img.src=reader.result;
+    };
+    reader.onerror=()=>this.notify("Fayl o'qilmadi");
+    reader.readAsDataURL(file);
+  }
+  onAvatarFile(e){
+    const file=e&&e.target&&e.target.files&&e.target.files[0];
+    if(!file) return;
+    if(file.size>6*1024*1024){ this.notify("Rasm 6MB dan kichik bo'lsin"); return; }
+    this.compressImage(file,(dataUrl)=>{
+      const DB=window.ProSkillDB;const me=DB&&DB.currentUser();
+      if(!DB||!me){ this.notify("Avval kiring"); return; }
+      const r=DB.updateProfile(me.id,{avatar:dataUrl},me.name);
+      if(r&&r.ok){ this.sync(); this.notify("Rasm saqlandi ✓ — fikrlaringizda ko'rinadi"); this.forceUpdate(); }
+      else this.notify((r&&r.error)||"Saqlanmadi");
+    });
+    try{ e.target.value=""; }catch(err){}
+  }
+  removeAvatar(){
+    const DB=window.ProSkillDB;const me=DB&&DB.currentUser();
+    if(!DB||!me) return;
+    DB.updateProfile(me.id,{avatar:""},me.name);
+    this.sync(); this.notify("Rasm olib tashlandi"); this.forceUpdate();
+  }
+  saveProfile(){
+    const DB=window.ProSkillDB;const me=DB&&DB.currentUser();
+    if(!DB||!me) return;
+    const st=this.state;
+    const r=DB.updateProfile(me.id,{
+      name:(st.profName||"").trim()||me.name,
+      phone:String(st.profPhone||"").trim(),
+      bio:String(st.profBio||"").trim(),
+      telegram:String(st.profTelegram||"").trim()
+    },me.name);
+    if(r&&r.ok){ this.sync(); this.notify("Profil yangilandi ✓"); this.forceUpdate(); }
+    else this.notify((r&&r.error)||"Saqlanmadi");
   }
 
   sync(){
@@ -1409,7 +1490,19 @@ class Component extends DCLogic {
     const m=meta[tab]||["",""];
     // Kasblar, Faollar, dashboard o'z sarlavhasini ichida ko'rsatadi
     const showPageHead=tab!=="dashboard"&&tab!=="catalog"&&tab!=="tests";
-    const userInitial=(this.studentName||"O").split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
+    const userName=this.studentName||"O'quvchi";
+    const userInitial=(userName||"O").split(" ").map(w=>w[0]).join("").slice(0,2).toUpperCase();
+    const meUser=this.me||null;
+    const userEmail=meUser?meUser.email:"—";
+    const userAvatar=(meUser&&meUser.avatar)?String(meUser.avatar):"";
+    const userHasAvatar=!!userAvatar;
+    const userNoAvatar=!userHasAvatar;
+    const userCourseCount=String((this.enrolled&&this.enrolled.length)||0);
+    const userReviewCount=String((this.myReviews&&this.myReviews.length)||0);
+    const profName=st.profName!=null&&st.profName!==""?st.profName:userName;
+    const profPhone=st.profPhone!=null?String(st.profPhone):(meUser&&meUser.phone?String(meUser.phone):"");
+    const profBio=st.profBio!=null?String(st.profBio):(meUser&&meUser.bio?String(meUser.bio):"");
+    const profTelegram=st.profTelegram!=null?String(st.profTelegram):(meUser&&meUser.telegram?String(meUser.telegram):"");
     const starPoints=Math.min(99, this.enrolled.reduce((s,e)=>s+Math.round(e.progress/10),0));
 
     // KPIs
@@ -1558,9 +1651,17 @@ class Component extends DCLogic {
     return {
       theme:st.theme, themeIcon:st.theme==="dark"?"☀":"☾", toggleTheme:()=>this.toggleTheme(),
       search:st.search, setSearch:e=>this.setSearch(e),
-      topNav, userInitial, starPoints, showPageHead,
+      topNav, userInitial, userName, userEmail, userAvatar, userHasAvatar, userNoAvatar, userCourseCount, userReviewCount,
+      profName, profPhone, profBio, profTelegram,
+      onProfName:(e)=>this.setState({profName:e.target.value}),
+      onProfPhone:(e)=>this.setState({profPhone:e.target.value}),
+      onProfBio:(e)=>this.setState({profBio:e.target.value}),
+      onProfTelegram:(e)=>this.setState({profTelegram:e.target.value}),
+      onAvatarFile:(e)=>this.onAvatarFile(e),
+      removeAvatar:()=>this.removeAvatar(),
+      starPoints, showPageHead,
       crumb:m[0], pageTitle:m[1], pageAction:m[2], onPageAction:()=>this.notify("Amal (demo)"),
-      goCatalog:()=>this.setTab("catalog"), goMyCourses:()=>this.setTab("mycourses"), goProfile:()=>this.setTab("profile"),
+      goCatalog:()=>this.setTab("catalog"), goMyCourses:()=>this.setTab("mycourses"), goProfile:()=>{this.syncProfileForm();this.setTab("profile");},
       // tab flags
       tabDashboard:tab==="dashboard",tabLessons:tab==="lessons",tabCerts:tab==="certs",tabReviews:tab==="reviews",
       tabCatalog:tab==="catalog",tabMyCourses:tab==="mycourses",tabTests:tab==="tests",tabPayments:tab==="payments",tabQa:tab==="qa",tabProfile:tab==="profile",
@@ -1603,7 +1704,7 @@ class Component extends DCLogic {
       onRevCourse:(e)=>this.setState({revCourse:e.target.value}), onRevText:(e)=>this.setState({revText:e.target.value}),
       myReviewCards:this.myReviews.map(r=>({...r,stars:"★".repeat(r.rating)+"☆".repeat(5-r.rating),onEdit:()=>this.notify("Fikrni tahrirlash (demo)")})),
       // profile
-      saveProfile:()=>this.notify("Profil yangilandi ✓"), changePassword:()=>this.notify("Parolni o'zgartirish (demo)"),
+      saveProfile:()=>this.saveProfile(), changePassword:()=>this.notify("Parolni o'zgartirish (demo)"),
       // modal
       modal:st.modal, modalTitle:st.modal?st.modal.title:"", modalMsg:st.modal?st.modal.msg:"", modalConfirm:st.modal?st.modal.confirm:"", modalIcon:st.modal?st.modal.icon:"", modalTint:st.modal&&st.modal.danger?"rgba(251,113,133,.16)":"rgba(16,185,129,.16)", modalBtn:st.modal&&st.modal.danger?"linear-gradient(135deg,#f43f5e,#fb7185)":"linear-gradient(135deg,#10b981,#22c55e)",
       closeModal:()=>this.closeModal(), confirmModal:()=>this.confirmModal(),

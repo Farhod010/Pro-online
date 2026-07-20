@@ -597,10 +597,13 @@
         <div class="grid-testimonials">
           <sc-for list="{{ testimonials }}" as="t" hint-placeholder-count="3">
             <div style="background:rgba(255,255,255,.035);border:1px solid rgba(255,255,255,.08);border-radius:20px;padding:26px">
-              <div style="color:#ffd479;font-size:15px;margin-bottom:14px">★★★★★</div>
+              <div style="color:#ffd479;font-size:15px;margin-bottom:14px">{{ t.stars }}</div>
               <p style="font-size:14.5px;line-height:1.65;color:#cfccdd;margin-bottom:20px">{{ t.text }}</p>
               <div style="display:flex;align-items:center;gap:11px">
-                <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#a855f7,#6366f1);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:15px">{{ t.initial }}</div>
+                <div style="width:40px;height:40px;border-radius:50%;background:linear-gradient(135deg,#a855f7,#6366f1);display:flex;align-items:center;justify-content:center;font-weight:700;color:#fff;font-size:15px;overflow:hidden;flex:none">
+                  <sc-if value="{{ t.hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ t.avatar }}" alt="" style="width:100%;height:100%;object-fit:cover"/></sc-if>
+                  <sc-if value="{{ t.noAvatar }}" hint-placeholder-val="{{ true }}"><span>{{ t.initial }}</span></sc-if>
+                </div>
                 <div><div style="font-weight:700;font-size:14px">{{ t.name }}</div><div style="font-size:12.5px;color:#8d8aa0">{{ t.role }}</div></div>
               </div>
             </div>
@@ -1698,17 +1701,27 @@ class Component extends DCLogic {
     let vw=1200; try{vw=window.innerWidth||1200;}catch(e){}
     const radiusBase=vw<480?200:(vw<768?260:(vw<1024?320:380));
     const radius=Math.round(radiusBase+n3d*(vw<768?14:28));
+    // DB dagi teacher avatar (profil rasmi) — barcha joyda ko'rinadi
+    const DB=window.ProSkillDB;
+    const teacherByName={};
+    if(DB){
+      DB.table("users").filter(u=>u.role==="teacher").forEach(u=>{ teacherByName[u.name]=u; });
+    }
     const teachers3d=teachers3dBase.map((t,i)=>{
       const meta=teacherMeta[t.name]||{photo:"https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&w=500&h=600&q=80",bio:"ProSkill IT Academy ustozi.",role:"Ustoz"};
+      const dbT=teacherByName[t.name];
+      const photo=(dbT&&dbT.avatar)?dbT.avatar:meta.photo;
+      const bio=(dbT&&dbT.bio)?String(dbT.bio):meta.bio;
+      const role=(dbT&&dbT.spec)?String(dbT.spec):(meta.role||"Ustoz");
       const angle=(360/n3d)*i;
       return {
         name:t.name,
-        role:meta.role||"Ustoz",
-        bio:meta.bio,
-        photo:meta.photo,
+        role:role,
+        bio:bio,
+        photo:photo,
         courseCount:t.courseCount,
         students:(t.students>=1000?(t.students/1000).toFixed(1)+"k":t.students),
-        tags:(t.cats&&t.cats.length?t.cats:meta.role.split("·").map(s=>s.trim())).slice(0,3),
+        tags:(t.cats&&t.cats.length?t.cats:String(role).split("·").map(s=>s.trim())).slice(0,3),
         transform:"rotateY("+angle+"deg) translateZ("+radius+"px)"
       };
     });
@@ -1805,7 +1818,27 @@ class Component extends DCLogic {
       heroProgress:[{title:"Python asoslari",pct:78},{title:"Frontend",pct:45},{title:"Grafik dizayn",pct:62}],
       landingCats, popularCourses, teachers, teachers3d,
       features:[{num:"01",title:"Amaliy yo'naltirilgan",desc:"Har bir kurs real loyihalar va amaliy mashqlarga asoslangan."},{num:"02",title:"Avtomatik kurs ochilishi",desc:"To'lov muvaffaqiyatli bo'lishi bilan kurs darhol ochiladi."},{num:"03",title:"Progress kuzatuvi",desc:"Har bir darsdagi progressingiz saqlanadi va ko'rsatiladi."},{num:"04",title:"Rasmiy sertifikat",desc:"Kursni tugatganingizdan so'ng sertifikat olasiz."}],
-      testimonials:[{name:"Akmal Y.",role:"Python o'quvchisi",initial:"AY",text:"Kursdan keyin junior dasturchi bo'lib ishga kirdim. Ustozlar juda kuchli, hammasi amaliy."},{name:"Gulnora S.",role:"Frontend o'quvchisi",initial:"GS",text:"Eng yaxshi tomoni — istalgan vaqt ko'rish mumkin va progress saqlanib qoladi."},{name:"Nilufar T.",role:"Dizayn o'quvchisi",initial:"NT",text:"Figma kursi ajoyib! Endi freelance orqali pul ishlayapman. Rahmat ProSkill!"}],
+      testimonials:(()=>{
+        const fallback=[{name:"Akmal Y.",role:"Python o'quvchisi",initial:"AY",text:"Kursdan keyin junior dasturchi bo'lib ishga kirdim. Ustozlar juda kuchli, hammasi amaliy.",stars:"★★★★★",hasAvatar:false,noAvatar:true,avatar:""},{name:"Gulnora S.",role:"Frontend o'quvchisi",initial:"GS",text:"Eng yaxshi tomoni — istalgan vaqt ko'rish mumkin va progress saqlanib qoladi.",stars:"★★★★★",hasAvatar:false,noAvatar:true,avatar:""},{name:"Nilufar T.",role:"Dizayn o'quvchisi",initial:"NT",text:"Figma kursi ajoyib! Endi freelance orqali pul ishlayapman. Rahmat ProSkill!",stars:"★★★★★",hasAvatar:false,noAvatar:true,avatar:""}];
+        if(!DB||!DB.raw().reviews||!DB.raw().reviews.length) return fallback;
+        const rows=DB.raw().reviews.filter(r=>r.status!=="hidden").slice().reverse().slice(0,6).map(r=>{
+          const stu=DB.byId("users",r.studentId);
+          const name=stu?stu.name:DB.userName(r.studentId);
+          const avatar=(stu&&stu.avatar)?String(stu.avatar):"";
+          const stars="★".repeat(r.rating||5)+"☆".repeat(5-(r.rating||5));
+          return{
+            name:name,
+            role:DB.courseTitle(r.courseId)+" o'quvchisi",
+            initial:(name||"O").split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase(),
+            text:r.text||"",
+            stars:stars,
+            avatar:avatar,
+            hasAvatar:!!avatar,
+            noAvatar:!avatar
+          };
+        });
+        return rows.length?rows:fallback;
+      })(),
       // courses page
       filteredCourses, catChips, levelChips, search:st.search, setSearch:(e)=>this.setSearch(e), resultCount:filteredCourses.length,
       // course detail
