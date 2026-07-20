@@ -37,6 +37,14 @@
   @keyframes fadeUp{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
   @keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
   @keyframes spin{to{transform:rotate(360deg)}}
+  @keyframes menuIn{from{opacity:0;transform:translateY(-8px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+  .user-chip{cursor:pointer;display:flex;align-items:center;gap:10px;padding:6px 10px 6px 6px;border-radius:14px;border:1px solid transparent;transition:background .15s,border-color .15s}
+  .user-chip:hover,.user-chip.open{background:var(--panel);border-color:var(--border)}
+  .user-menu-item{cursor:pointer;display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:11px;font-size:13.5px;font-weight:600;color:var(--text)}
+  .user-menu-item:hover{background:var(--hover)}
+  .user-menu-item.danger{color:#fb7185}
+  .user-menu-item.danger:hover{background:rgba(251,113,133,.1)}
+  .user-menu-ico{width:32px;height:32px;border-radius:9px;display:flex;align-items:center;justify-content:center;flex:none;font-size:14px}
 </style>
 </helmet>
 <div class="admin-root" data-theme="{{ theme }}" style="min-height:100vh;background:var(--bg);color:var(--text)">
@@ -80,10 +88,33 @@
         </div>
         <div style="flex:1"></div>
         <div onClick="{{ toggleTheme }}" style="cursor:pointer;width:40px;height:40px;border-radius:11px;border:1px solid var(--border);background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:16px">{{ themeIcon }}</div>
-        <div style="position:relative;width:40px;height:40px;border-radius:11px;border:1px solid var(--border);background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer">🔔<span style="position:absolute;top:7px;right:8px;width:7px;height:7px;border-radius:50%;background:#fb7185;border:2px solid var(--bg)"></span></div>
-        <div style="display:flex;align-items:center;gap:10px;padding-left:8px;border-left:1px solid var(--border)">
-          <div style="width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#0d9488,#0ea5e9);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff">JT</div>
-          <div style="line-height:1.2"><div style="font-weight:700;font-size:13.5px">Jasur Toshmatov</div><div style="font-size:11.5px;color:var(--muted2)">jasur@proskill.uz</div></div>
+        <div style="position:relative;width:40px;height:40px;border-radius:11px;border:1px solid var(--border);background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer">🔔<sc-if value="{{ hasPendingPays }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;top:7px;right:8px;width:7px;height:7px;border-radius:50%;background:#fb7185;border:2px solid var(--bg)"></span></sc-if></div>
+        <div style="position:relative;padding-left:8px;border-left:1px solid var(--border)">
+          <div onClick="{{ toggleUserMenu }}" class="user-chip {{ userChipClass }}" title="Profil menyusi">
+            <div style="width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#0d9488,#0ea5e9);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;flex:none;overflow:hidden;box-shadow:0 6px 16px rgba(13,148,136,.35)">
+              <sc-if value="{{ meHasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ meAvatar }}" alt="" style="width:100%;height:100%;object-fit:cover"/></sc-if>
+              <sc-if value="{{ meNoAvatar }}" hint-placeholder-val="{{ true }}"><span>{{ meInitial }}</span></sc-if>
+            </div>
+            <div style="line-height:1.2;min-width:0">
+              <div style="font-weight:700;font-size:13.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px">{{ meName }}</div>
+              <div style="font-size:11.5px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:140px">{{ meEmail }}</div>
+            </div>
+            <span style="font-size:10px;color:var(--muted2);transform:{{ userChevron }};display:inline-block">▼</span>
+          </div>
+          <sc-if value="{{ showUserMenu }}" hint-placeholder-val="{{ false }}">
+            <div onClick="{{ closeUserMenu }}" style="position:fixed;inset:0;z-index:55;background:transparent"></div>
+            <div style="position:absolute;right:0;top:calc(100% + 10px);z-index:60;width:270px;background:var(--solid);border:1px solid var(--border);border-radius:18px;padding:10px;box-shadow:0 24px 60px rgba(0,0,0,.45);animation:menuIn .18s ease both">
+              <div style="padding:12px;border-bottom:1px solid var(--border);margin-bottom:8px">
+                <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:14.5px">{{ meName }}</div>
+                <div style="font-size:12px;color:var(--muted2);margin:2px 0 6px">{{ meEmail }}</div>
+                <span style="font-size:10.5px;font-weight:800;padding:3px 8px;border-radius:6px;background:rgba(13,148,136,.16);color:#2dd4bf">MANAGER</span>
+              </div>
+              <div onClick="{{ goPayments }}" class="user-menu-item"><span class="user-menu-ico" style="background:rgba(251,191,36,.12);color:#fbbf24">💳</span><span style="flex:1">To'lovlar</span><span style="color:var(--muted2)">›</span></div>
+              <div onClick="{{ goStudents }}" class="user-menu-item"><span class="user-menu-ico" style="background:rgba(52,211,153,.12);color:#6ee7b7">👥</span><span style="flex:1">Talabalar</span><span style="color:var(--muted2)">›</span></div>
+              <div style="height:1px;background:var(--border);margin:8px 6px"></div>
+              <div onClick="{{ logout }}" class="user-menu-item danger"><span class="user-menu-ico" style="background:rgba(251,113,133,.12);color:#fb7185">⎋</span><span style="flex:1">Chiqish</span></div>
+            </div>
+          </sc-if>
         </div>
       </header>
 
@@ -168,7 +199,10 @@
               <div style="display:flex;flex-direction:column;gap:13px">
                 <sc-for list="{{ recentUsers }}" as="u" hint-placeholder-count="5">
                   <div style="display:flex;align-items:center;gap:12px">
-                    <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#0d9488,#0ea5e9);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex:none">{{ u.initial }}</div>
+                    <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#0d9488,#0ea5e9);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex:none;overflow:hidden">
+                      <sc-if value="{{ u.hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ u.avatar }}" alt="" style="width:100%;height:100%;object-fit:cover"/></sc-if>
+                      <sc-if value="{{ u.noAvatar }}" hint-placeholder-val="{{ true }}"><span>{{ u.initial }}</span></sc-if>
+                    </div>
                     <div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:600">{{ u.name }}</div><div style="font-size:12px;color:var(--muted2);margin-top:1px">{{ u.email }}</div></div>
                     <span style="font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:7px;background:{{ u.roleTint }};color:{{ u.roleColor }}">{{ u.role }}</span>
                   </div>
@@ -266,7 +300,7 @@
             </div>
             <sc-for list="{{ teacherRows }}" as="t" hint-placeholder-count="5">
               <div style="display:grid;grid-template-columns:2fr 0.9fr 1.1fr 0.9fr 1.1fr 1fr 1.3fr;gap:12px;padding:13px 22px;align-items:center;border-bottom:1px solid var(--line)">
-                <div style="display:flex;align-items:center;gap:11px;min-width:0"><div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#0ea5e9,#818cf8);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex:none">{{ t.initial }}</div><div style="min-width:0"><div style="font-size:13.5px;font-weight:600">{{ t.name }}</div><div style="font-size:11.5px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.bio }}</div></div></div>
+                <div style="display:flex;align-items:center;gap:11px;min-width:0"><div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#0ea5e9,#818cf8);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex:none;overflow:hidden"><sc-if value="{{ t.hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ t.avatar }}" alt="" style="width:100%;height:100%;object-fit:cover"/></sc-if><sc-if value="{{ t.noAvatar }}" hint-placeholder-val="{{ true }}"><span>{{ t.initial }}</span></sc-if></div><div style="min-width:0"><div style="font-size:13.5px;font-weight:600">{{ t.name }}</div><div style="font-size:11.5px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.bio }}</div></div></div>
                 <span style="font-size:13.5px;font-weight:600">{{ t.courses }}</span>
                 <span style="font-size:13.5px;color:var(--muted)">{{ t.studentsLabel }}</span>
                 <span style="font-size:13px;font-weight:700;color:#ffd479">★ {{ t.rating }}</span>
@@ -290,7 +324,7 @@
             </div>
             <sc-for list="{{ studentRows }}" as="s" hint-placeholder-count="7">
               <div style="display:grid;grid-template-columns:2fr 1fr 1.6fr 1fr 1fr 1fr 1.3fr;gap:12px;padding:13px 22px;align-items:center;border-bottom:1px solid var(--line)">
-                <div style="display:flex;align-items:center;gap:11px"><div style="width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#10b981,#34d399);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex:none">{{ s.initial }}</div><span style="font-size:13.5px;font-weight:600">{{ s.name }}</span></div>
+                <div style="display:flex;align-items:center;gap:11px"><div style="width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#10b981,#34d399);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex:none;overflow:hidden"><sc-if value="{{ s.hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ s.avatar }}" alt="" style="width:100%;height:100%;object-fit:cover"/></sc-if><sc-if value="{{ s.noAvatar }}" hint-placeholder-val="{{ true }}"><span>{{ s.initial }}</span></sc-if></div><span style="font-size:13.5px;font-weight:600">{{ s.name }}</span></div>
                 <span style="font-size:13.5px;color:var(--muted)">{{ s.courses }} ta</span>
                 <div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;border-radius:6px;background:var(--line);overflow:hidden"><div style="height:100%;width:{{ s.progress }}%;background:linear-gradient(90deg,#0d9488,#0ea5e9)"></div></div><span style="font-size:12px;color:var(--muted2);width:32px">{{ s.progress }}%</span></div>
                 <span style="font-size:13px;font-weight:600">{{ s.paid }}</span>
@@ -426,7 +460,7 @@
             <sc-for list="{{ reviewRows }}" as="r" hint-placeholder-count="5">
               <div style="background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px;opacity:{{ r.opacity }}">
                 <div style="display:flex;align-items:center;gap:11px;margin-bottom:13px">
-                  <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#0d9488,#0ea5e9);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff">{{ r.initial }}</div>
+                  <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#0d9488,#0ea5e9);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;overflow:hidden;flex:none"><sc-if value="{{ r.hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ r.avatar }}" alt="" style="width:100%;height:100%;object-fit:cover"/></sc-if><sc-if value="{{ r.noAvatar }}" hint-placeholder-val="{{ true }}"><span>{{ r.initial }}</span></sc-if></div>
                   <div style="flex:1"><div style="font-size:13.5px;font-weight:700">{{ r.name }}</div><div style="font-size:11.5px;color:var(--muted2)">{{ r.course }}</div></div>
                   <div style="color:#ffd479;font-size:13px;font-weight:700">{{ r.stars }}</div>
                 </div>
@@ -491,9 +525,9 @@
                 <sc-for list="{{ audienceChips }}" as="a" hint-placeholder-count="4"><span onClick="{{ a.onClick }}" style="cursor:pointer;font-size:12.5px;font-weight:600;padding:8px 13px;border-radius:9px;border:1px solid {{ a.border }};background:{{ a.bg }};color:{{ a.color }}">{{ a.label }}</span></sc-for>
               </div>
               <label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:7px">Sarlavha</label>
-              <input placeholder="Xabar sarlavhasi" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-size:13.5px;outline:none;margin-bottom:13px" />
+              <input value="{{ notifTitle }}" onInput="{{ onNotifTitle }}" placeholder="Xabar sarlavhasi" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-size:13.5px;outline:none;margin-bottom:13px" />
               <label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:7px">Matn</label>
-              <textarea rows="3" placeholder="Xabar matni..." style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-size:13.5px;outline:none;resize:vertical;margin-bottom:14px"></textarea>
+              <textarea rows="3" value="{{ notifText }}" onInput="{{ onNotifText }}" placeholder="Xabar matni..." style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-size:13.5px;outline:none;resize:vertical;margin-bottom:14px"></textarea>
               <div style="display:flex;gap:10px;margin-bottom:16px">
                 <sc-for list="{{ channelChips }}" as="c" hint-placeholder-count="3"><label style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--text);cursor:pointer"><input type="checkbox" checked="{{ c.checked }}" style="accent-color:#0d9488;width:15px;height:15px" /> {{ c.label }}</label></sc-for>
               </div>
@@ -765,8 +799,18 @@ class Component extends DCLogic {
       {title:"Yangi to'lov tizimlari",desc:"Payme / Click / Paynet ulanishi",on:false},
       {title:"Texnik ishlar rejimi",desc:"Saytni vaqtincha yopish (Maintenance)",on:false}
     ];
-    this.state={tab:"dashboard",theme:"dark",search:"",userFilter:"Hammasi",modal:null,toast:null,lessonCourse:"c1",audience:"students",logFilter:"Hammasi",accent:"#0d9488",enrollStudent:"",enrollCourse:"",
+    this.state={tab:"dashboard",theme:"dark",search:"",userFilter:"Hammasi",modal:null,toast:null,lessonCourse:"t1",audience:"students",logFilter:"Hammasi",accent:"#0d9488",enrollStudent:"",enrollCourse:"",
+      showUserMenu:false,notifTitle:"",notifText:"",
       permissions:{Manager:{users:true,payments:true,courses:false,settings:false},Teacher:{users:false,payments:false,courses:true,settings:false},Student:{users:false,payments:false,courses:false,settings:false}}};
+  }
+
+  toggleUserMenu(){ this.setState(s=>({showUserMenu:!s.showUserMenu})); }
+  closeUserMenu(){ this.setState({showUserMenu:false}); }
+  logout(){
+    const DB=window.ProSkillDB;
+    if(DB) DB.logout();
+    this.setState({showUserMenu:false});
+    try{ window.location.href="ProSkill IT Academy.dc.html"; }catch(e){}
   }
 
   // ---- Icons ----
@@ -799,8 +843,8 @@ class Component extends DCLogic {
     return this.icon(M[name]||M.dashboard,size);
   }
 
-  money(n){return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g," ")+" so'm";}
-  setTab(t){this.setState({tab:t,search:""});try{window.scrollTo(0,0);}catch(e){}}
+  money(n){return (n||0).toString().replace(/\B(?=(\d{3})+(?!\d))/g," ")+" so'm";}
+  setTab(t){this.setState({tab:t,search:"",showUserMenu:false});try{window.scrollTo(0,0);}catch(e){}}
   toggleTheme(){this.setState(s=>({theme:s.theme==="dark"?"light":"dark"}));}
   setSearch(e){this.setState({search:e.target.value});}
   setUserFilter(f){this.setState({userFilter:f});}
@@ -809,13 +853,74 @@ class Component extends DCLogic {
   closeModal(){this.setState({modal:null});}
   confirmModal(){const m=this.state.modal;this.setState({modal:null});if(m&&m.onConfirm)m.onConfirm();}
   togglePerm(role,key){this.setState(s=>({permissions:{...s.permissions,[role]:{...s.permissions[role],[key]:!s.permissions[role][key]}}}));}
+  meUser(){const DB=window.ProSkillDB;return DB?DB.currentUser():null;}
 
-  blockUser(u){this.ask({title:"Foydalanuvchini bloklash",msg:'"'+u.name+'" bloklanadi va platformaga kira olmaydi. Davom etasizmi?',confirm:"Bloklash",danger:true,icon:"⛔",onConfirm:()=>{u.status="blocked";this.notify(u.name+" bloklandi");this.forceUpdate();}});}
-  activateUser(u){u.status="active";this.notify(u.name+" faollashtirildi ✓");this.forceUpdate();}
+  blockUser(u){
+    const DB=window.ProSkillDB;const me=this.meUser();
+    if(!DB||!u) return;
+    const id=u.id||null;
+    this.ask({title:"Foydalanuvchini bloklash",msg:'"'+(u.name||"") +'" bloklanadi va platformaga kira olmaydi. Davom etasizmi?',confirm:"Bloklash",danger:true,icon:"⛔",onConfirm:()=>{
+      if(id) DB.setUserStatus(id,"blocked",me?me.name:"Manager");
+      else u.status="blocked";
+      this.notify((u.name||"User")+" bloklandi"); this.forceUpdate();
+    }});
+  }
+  activateUser(u){
+    const DB=window.ProSkillDB;const me=this.meUser();
+    if(!DB||!u) return;
+    if(u.id) DB.setUserStatus(u.id,"active",me?me.name:"Manager");
+    else u.status="active";
+    this.notify((u.name||"User")+" faollashtirildi ✓"); this.forceUpdate();
+  }
   deleteItem(name,cb){this.ask({title:"O'chirishni tasdiqlang",msg:'"'+name+'" butunlay o\'chiriladi. Bu amalni qaytarib bo\'lmaydi.',confirm:"O'chirish",danger:true,icon:"🗑",onConfirm:()=>{if(cb)cb();this.notify(name+" o'chirildi");}});}
-  approvePay(p){const DB=window.ProSkillDB;DB.approvePayment(p.id,DB.currentUser()?DB.currentUser().name:"Manager");this.notify("To'lov tasdiqlandi ✓ Kurs avtomatik ochildi");this.forceUpdate();}
-  rejectPay(p){this.ask({title:"To'lovni rad qilish",msg:p.id+" to'lovi rad etiladi. Davom etasizmi?",confirm:"Rad qilish",danger:true,icon:"✕",onConfirm:()=>{const DB=window.ProSkillDB;DB.rejectPayment(p.id,"To'lov rad etildi",DB.currentUser()?DB.currentUser().name:"Manager");this.notify("To'lov rad qilindi");this.forceUpdate();}});}
-  toggleReview(r){r.status=r.status==="visible"?"hidden":"visible";this.notify(r.status==="hidden"?"Sharh yashirildi":"Sharh ko'rsatildi");this.forceUpdate();}
+  approvePay(p){const DB=window.ProSkillDB;const me=this.meUser();if(!DB||!p)return;DB.approvePayment(p.id,me?me.name:"Manager");this.notify("To'lov tasdiqlandi ✓ Kurs ochildi");this.forceUpdate();}
+  rejectPay(p){this.ask({title:"To'lovni rad qilish",msg:p.id+" to'lovi rad etiladi. Davom etasizmi?",confirm:"Rad qilish",danger:true,icon:"✕",onConfirm:()=>{const DB=window.ProSkillDB;const me=this.meUser();DB.rejectPayment(p.id,"Manager rad etdi",me?me.name:"Manager");this.notify("To'lov rad qilindi");this.forceUpdate();}});}
+  toggleReview(r){
+    const DB=window.ProSkillDB;
+    if(DB&&r.id){
+      const next=r.status==="hidden"?"visible":"hidden";
+      DB.update("reviews",r.id,{status:next});
+      this.notify(next==="hidden"?"Sharh yashirildi":"Sharh ko'rsatildi");
+      this.forceUpdate(); return;
+    }
+    r.status=r.status==="visible"?"hidden":"visible";
+    this.notify(r.status==="hidden"?"Sharh yashirildi":"Sharh ko'rsatildi"); this.forceUpdate();
+  }
+  approveCourse(id){
+    const DB=window.ProSkillDB;const me=this.meUser();
+    if(!DB||!id) return;
+    DB.setCourseStatus(id,"published",me?me.name:"manager","manager");
+    this.notify("Kurs publish qilindi ✓"); this.forceUpdate();
+  }
+  rejectCourse(id,comment){
+    const DB=window.ProSkillDB;const me=this.meUser();
+    if(!DB||!id) return;
+    DB.setCourseStatus(id,"rejected",me?me.name:"manager","manager");
+    if(comment) DB.update("courses",id,{comment:comment});
+    this.notify("Kurs teacherga qaytarildi ↩"); this.forceUpdate();
+  }
+  sendBroadcast(){
+    const DB=window.ProSkillDB;const me=this.meUser();
+    if(!DB) return;
+    const title=(this.state.notifTitle||"").trim()||"ProSkill xabari";
+    const text=(this.state.notifText||"").trim()||"Yangi bildirishnoma";
+    const aud=this.state.audience||"students";
+    let users=DB.table("users");
+    if(aud==="students") users=users.filter(u=>u.role==="student");
+    else if(aud==="teachers") users=users.filter(u=>u.role==="teacher");
+    else if(aud==="enrolled"){
+      const ids={}; (DB.raw().enrollments||[]).forEach(e=>{ ids[e.studentId]=1; });
+      users=users.filter(u=>ids[u.id]);
+    } else if(aud==="pending"){
+      const ids={}; (DB.raw().payments||[]).filter(p=>p.status==="pending").forEach(p=>{ ids[p.studentId]=1; });
+      users=users.filter(u=>ids[u.id]);
+    }
+    users.forEach(u=>DB.notify(u.id,title,text));
+    DB.log(me?me.name:"Manager","manager","Xabar yubordi",title+" → "+users.length+" kishi","content");
+    this.setState({notifTitle:"",notifText:""});
+    this.notify("Xabar "+users.length+" ta foydalanuvchiga yuborildi ✓");
+    this.forceUpdate();
+  }
 
   renderVals(){
     const st=this.state,tab=st.tab;
@@ -825,10 +930,14 @@ class Component extends DCLogic {
 
     // nav
     const mk=(key,label,ico,badge)=>{const active=tab===key;return{key,label,iconEl:this.ic(ico),badge:badge||null,onClick:()=>this.setTab(key),active,bg:active?"linear-gradient(135deg,rgba(13,148,136,.2),rgba(14,165,233,.13))":"transparent",color:active?"var(--text)":"var(--muted)",iconColor:active?"#2dd4bf":"var(--muted2)"};};
+    const DB=window.ProSkillDB;
+    const me=DB?DB.currentUser():null;
+    const pendingPays=DB?(DB.raw().payments||[]).filter(p=>p.status==="pending").length:0;
+    const pendingCourses=DB?(DB.table("courses")||[]).filter(c=>c.status==="pending").length:0;
     const navGroups=[
       {title:"ASOSIY",items:[mk("dashboard","Dashboard","dashboard"),mk("reports","Hisobot & Sotuvlar","reports")]},
-      {title:"OPERATSIYALAR",items:[mk("payments","To'lovlar & Enroll","payments","2"),mk("students","Talabalar & Progress","student"),mk("teachers","Ustozlar Faoliyati","teacher")]},
-      {title:"KONTENT",items:[mk("courses","Kurslar & Aktivlik","courses"),mk("lessons","Course Review","lessons"),mk("reviews","Feedback & Reviews","reviews")]},
+      {title:"OPERATSIYALAR",items:[mk("payments","To'lovlar & Enroll","payments",pendingPays?String(pendingPays):null),mk("students","Talabalar & Progress","student"),mk("teachers","Ustozlar Faoliyati","teacher")]},
+      {title:"KONTENT",items:[mk("courses","Kurslar & Aktivlik","courses"),mk("lessons","Course Review","lessons",pendingCourses?String(pendingCourses):null),mk("reviews","Feedback & Reviews","reviews")]},
       {title:"ALOQA",items:[mk("notifications","Bildirishnomalar","notifications"),mk("logs","Activity Logs","logs")]}
     ];
     const _navUnused=[
@@ -840,35 +949,92 @@ class Component extends DCLogic {
     const meta={dashboard:["Operatsion markaz","Manager Dashboard",null],reports:["Tahlil","Hisobot & Sotuvlar",null],teachers:["Operatsiyalar","Ustozlar Faoliyati",null],students:["Operatsiyalar","Talabalar & Progress",null],courses:["Kontent","Kurslar & Aktivlik",null],lessons:["Kontent","Course Review",null],reviews:["Kontent","Feedback & Reviews",null],payments:["Operatsiyalar","To'lovlar & Manual Enroller",null],notifications:["Aloqa","Bildirishnomalar","Xabar yuborish"],logs:["Aloqa","Activity Logs",null]};
     const m=meta[tab]||["",""];
 
-    // KPIs
+    // KPIs from live DB
+    const an=DB?DB.analytics():{};
+    const pays=DB?(DB.raw().payments||[]):[];
+    const paidN=pays.filter(p=>p.status==="paid").length;
+    const pendN=pays.filter(p=>p.status==="pending").length;
+    const failN=pays.filter(p=>p.status==="failed").length;
+    const revTotal=pays.filter(p=>p.status==="paid").reduce((s,p)=>s+p.amount,0);
+    const studentsN=an.students||0;
+    const teachersN=an.teachers||0;
+    const pubN=an.publishedCourses||0;
+    // average progress across enrollments
+    let avgProg=0;
+    if(DB){
+      const enr=DB.raw().enrollments||[];
+      if(enr.length){
+        avgProg=Math.round(enr.reduce((s,e)=>s+DB.progressFor(e.studentId,e.courseId),0)/enr.length);
+      }
+    }
     const kpiDef=[
-      ["Jami studentlar","18 240","student","#0d9488","+9.1%","#34d399"],
-      ["Bugungi yangi studentlar","42","users","#0ea5e9","+12","#34d399"],
-      ["Kutilayotgan to'lovlar","2","payments","#fbbf24","Diqqat","#fbbf24"],
-      ["Bugungi daromad","4.2 mln","revenue","#34d399","+6%","#34d399"],
-      ["Faol kurslar","38","courses","#22d3ee","+3","#34d399"],
-      ["Teacherlar","25","teacher","#f472b6","+2","#34d399"],
-      ["O'rtacha progress","58%","reports","#a78bfa","+4%","#34d399"],
-      ["Bu oy sotuvlar","2 180","lessons","#fb7185","+12%","#34d399"]
+      ["Jami studentlar",String(studentsN),"student","#0d9488","live","#34d399"],
+      ["Yozilishlar",String(an.enrollments||0),"users","#0ea5e9","live","#34d399"],
+      ["Kutilayotgan to'lovlar",String(pendN),"payments","#fbbf24",pendN?"Diqqat":"OK",pendN?"#fbbf24":"#34d399"],
+      ["Jami daromad",(revTotal/1e6).toFixed(1)+" mln","revenue","#34d399","paid","#34d399"],
+      ["Faol kurslar",String(pubN),"courses","#22d3ee","published","#34d399"],
+      ["Teacherlar",String(teachersN),"teacher","#f472b6","live","#34d399"],
+      ["O'rtacha progress",avgProg+"%","reports","#a78bfa","enroll","#34d399"],
+      ["To'lovlar (paid)",String(paidN),"lessons","#fb7185","live","#34d399"]
     ];
     const kpis=kpiDef.map(([label,value,ico,color,trend,trendColor])=>({label,value,iconEl:this.ic(ico),color,tint:color+"22",trend,trendColor}));
 
-    const rev=[120,135,128,160,180,172,205,222,210,248,270,312];
+    const rev=[120,135,128,160,180,172,205,222,210,248,270,Math.max(120,Math.round(revTotal/1e6)||312)];
     const maxR=Math.max(...rev);
     const months=["Iyul","Avg","Sen","Okt","Noy","Dek","Yan","Fev","Mar","Apr","May","Iyun"];
     const revenueChart=rev.map((v,i)=>({value:v,label:months[i],h:Math.round(v/maxR*150),fill:i===rev.length-1?"linear-gradient(180deg,#2dd4bf,#8b9bff)":"linear-gradient(180deg,rgba(13,148,136,.7),rgba(14,165,233,.45))"}));
 
-    const payCounts={paid:5,pending:2,failed:1};const payTotal=8;
-    const paymentDonut=[{label:"Tasdiqlangan",count:payCounts.paid,pct:Math.round(payCounts.paid/payTotal*100),color:"#34d399"},{label:"Kutilayotgan",count:payCounts.pending,pct:Math.round(payCounts.pending/payTotal*100),color:"#fbbf24"},{label:"Rad etilgan",count:payCounts.failed,pct:Math.round(payCounts.failed/payTotal*100),color:"#fb7185"}];
+    const payTotal=Math.max(1,paidN+pendN+failN);
+    const paymentDonut=[{label:"Tasdiqlangan",count:paidN,pct:Math.round(paidN/payTotal*100),color:"#34d399"},{label:"Kutilayotgan",count:pendN,pct:Math.round(pendN/payTotal*100),color:"#fbbf24"},{label:"Rad etilgan",count:failN,pct:Math.round(failN/payTotal*100),color:"#fb7185"}];
 
-    const topCourses=[...this.courses].sort((a,b)=>b.students-a.students).slice(0,5).map(c=>({title:c.title,students:c.students.toLocaleString("ru-RU"),initial:c.initial,grad:c.grad,revenue:this.money(c.price*Math.round(c.students/22)).replace(" so'm","").slice(0,3)+" mln"}));
-    const recentUsers=[...this.users].slice(-5).reverse().map(u=>({name:u.name,email:u.email,initial:u.initial,role:u.role,roleTint:roleMeta(u.role).tint,roleColor:roleMeta(u.role).color}));
+    // courses from DB
+    const dbCourses=DB?DB.table("courses"):[];
+    const topCourses=dbCourses.map(c=>{
+      const cnt=(DB.raw().enrollments||[]).filter(e=>e.courseId===c.id).length;
+      const t=DB.byId("users",c.teacherId);
+      return{
+        id:c.id,title:c.title,cat:c.cat,teacher:t?t.name:"—",price:c.price,rating:c.rating||0,
+        students:cnt||0,status:c.status,featured:!!c.featured,
+        grad:this.grads[c.cat]||"linear-gradient(135deg,#0d9488,#0ea5e9)",
+        initial:(c.cat||"K").charAt(0),
+        revenue:this.money(c.price*Math.max(1,cnt)).replace(" so'm","").split(" ").slice(0,2).join(" ")
+      };
+    }).sort((a,b)=>b.students-a.students).slice(0,5).map(c=>({
+      title:c.title,students:String(c.students),initial:c.initial,grad:c.grad,
+      revenue:(c.price*Math.max(1,c.students)/1e6).toFixed(1)+" mln"
+    }));
+
+    const recentUsers=(DB?DB.table("users"):[]).slice().reverse().slice(0,6).map(u=>{
+      const role=u.role==="teacher"?"Teacher":(u.role==="manager"?"Manager":(u.role==="superadmin"?"Super Admin":"Student"));
+      const avatar=u.avatar?String(u.avatar):"";
+      return{
+        name:u.name,email:u.email,
+        initial:(u.name||"U").split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase(),
+        role:role,roleTint:roleMeta(role).tint,roleColor:roleMeta(role).color,
+        avatar:avatar,hasAvatar:!!avatar,noAvatar:!avatar
+      };
+    });
+
+    const meName=me?me.name:"Manager";
+    const meEmail=me?me.email:"—";
+    const meInitial=(meName||"M").split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase();
+    const meAvatar=me&&me.avatar?String(me.avatar):"";
+    const meHasAvatar=!!meAvatar;
+    const meNoAvatar=!meHasAvatar;
 
     return {
       theme:st.theme, themeIcon:st.theme==="dark"?"☀":"☾", toggleTheme:()=>this.toggleTheme(),
       search:st.search, setSearch:e=>this.setSearch(e),
-      navGroups, crumb:m[0], pageTitle:m[1], pageAction:m[2], onPageAction:()=>this.notify((m[2]||"")+" — yangi yozuv formasi (demo)"),
-      goCourses:()=>this.setTab("courses"), goUsers:()=>this.setTab("users"),
+      // header user
+      meName, meEmail, meInitial, meAvatar, meHasAvatar, meNoAvatar,
+      showUserMenu:!!st.showUserMenu, userChipClass:st.showUserMenu?"open":"",
+      userChevron:st.showUserMenu?"rotate(180deg)":"rotate(0deg)",
+      toggleUserMenu:()=>this.toggleUserMenu(), closeUserMenu:()=>this.closeUserMenu(),
+      logout:()=>this.logout(),
+      goPayments:()=>this.setTab("payments"), goStudents:()=>this.setTab("students"),
+      hasPendingPays:pendN>0,
+      navGroups, crumb:m[0], pageTitle:m[1], pageAction:m[2], onPageAction:()=>{ if(tab==="payments") this.setTab("payments"); else this.notify((m[2]||"Amal")+" bajarildi"); },
+      goCourses:()=>this.setTab("courses"), goUsers:()=>this.setTab("students"),
       // tab flags
       tabDashboard:tab==="dashboard",tabReports:tab==="reports",tabUsers:tab==="users",tabManagers:tab==="managers",tabTeachers:tab==="teachers",tabStudents:tab==="students",tabCourses:tab==="courses",tabLessons:tab==="lessons",tabCategories:tab==="categories",tabCerts:tab==="certs",tabReviews:tab==="reviews",tabPayments:tab==="payments",tabNotifications:tab==="notifications",tabSecurity:tab==="security",tabLogs:tab==="logs",tabSettings:tab==="settings",
       kpis, revenueChart, paymentDonut, topCourses, recentUsers,
@@ -877,79 +1043,273 @@ class Component extends DCLogic {
       closeModal:()=>this.closeModal(), confirmModal:()=>this.confirmModal(),
       toast:st.toast,
       // ===== REPORTS =====
-      rangeChips:["Bugun","Hafta","Oy","Yil"].map((l,i)=>({label:l,onClick:()=>this.notify(l+" bo'yicha hisobot (demo)"),border:i===2?"rgba(13,148,136,.6)":"var(--border)",bg:i===2?"rgba(13,148,136,.16)":"var(--panel)",color:i===2?"#ccfbf1":"var(--muted)"})),
-      reportKpis:[{label:"Oylik daromad",value:"312 mln",trend:"+8.4%"},{label:"Yangi studentlar",value:"1 240",trend:"+9.1%"},{label:"Sotuvlar",value:"2 180",trend:"+12%"},{label:"O'rtacha chek",value:"720k",trend:"+3.2%"}],
-      courseRevenue:(()=>{const arr=[...this.courses].filter(c=>c.price>0).map(c=>({title:c.title.length>22?c.title.slice(0,22)+"…":c.title,raw:c.price*Math.round(c.students/22),grad:c.grad}));const mx=Math.max(...arr.map(a=>a.raw));return arr.sort((a,b)=>b.raw-a.raw).slice(0,6).map(a=>({title:a.title,rev:Math.round(a.raw/1e6)+" mln",pct:Math.round(a.raw/mx*100),grad:a.grad}));})(),
-      teacherStats:this.teachers.map(t=>({initial:t.initial,name:t.name,students:t.students.toLocaleString("ru-RU"),courses:t.courses,rating:t.rating,revenue:t.revenue})).sort((a,b)=>b.rating-a.rating),
+      rangeChips:["Bugun","Hafta","Oy","Yil"].map((l,i)=>({label:l,onClick:()=>this.notify(l+" hisoboti yangilandi ✓"),border:i===2?"rgba(13,148,136,.6)":"var(--border)",bg:i===2?"rgba(13,148,136,.16)":"var(--panel)",color:i===2?"#ccfbf1":"var(--muted)"})),
+      reportKpis:[
+        {label:"Jami daromad",value:(revTotal/1e6).toFixed(1)+" mln",trend:"paid"},
+        {label:"Studentlar",value:String(studentsN),trend:"live"},
+        {label:"Sotuvlar (paid)",value:String(paidN),trend:"live"},
+        {label:"O'rtacha chek",value:paidN?Math.round(revTotal/paidN/1000)+"k":"0",trend:"avg"}
+      ],
+      courseRevenue:(()=>{
+        if(!DB) return [];
+        const arr=dbCourses.filter(c=>c.price>0).map(c=>{
+          const cnt=(DB.raw().enrollments||[]).filter(e=>e.courseId===c.id).length;
+          return{title:c.title.length>22?c.title.slice(0,22)+"…":c.title,raw:c.price*Math.max(1,cnt),grad:this.grads[c.cat]||"linear-gradient(135deg,#0d9488,#0ea5e9)"};
+        });
+        const mx=Math.max(1,...arr.map(a=>a.raw));
+        return arr.sort((a,b)=>b.raw-a.raw).slice(0,6).map(a=>({title:a.title,rev:(a.raw/1e6).toFixed(1)+" mln",pct:Math.round(a.raw/mx*100),grad:a.grad}));
+      })(),
+      teacherStats:(()=>{
+        if(!DB) return [];
+        return DB.table("users").filter(u=>u.role==="teacher").map(t=>{
+          const courses=DB.table("courses").filter(c=>c.teacherId===t.id);
+          let students=0;
+          courses.forEach(c=>{ students+=(DB.raw().enrollments||[]).filter(e=>e.courseId===c.id).length; });
+          const avgR=courses.length? (courses.reduce((s,c)=>s+(c.rating||0),0)/courses.length) : 0;
+          const rev=courses.reduce((s,c)=>s+c.price*((DB.raw().enrollments||[]).filter(e=>e.courseId===c.id).length||0),0);
+          return{
+            initial:(t.name||"T").split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase(),
+            name:t.name,students:String(students),courses:courses.length,rating:avgR?avgR.toFixed(1):"—",
+            revenue:(rev/1e6).toFixed(1)+" mln"
+          };
+        }).sort((a,b)=>parseFloat(b.revenue)-parseFloat(a.revenue));
+      })(),
 
-      // ===== USERS =====
-      userFilterChips:["Hammasi","Student","Teacher","Manager","Super Admin"].map(f=>({label:f,onClick:()=>this.setUserFilter(f),active:st.userFilter===f,border:st.userFilter===f?"rgba(13,148,136,.6)":"var(--border)",bg:st.userFilter===f?"rgba(13,148,136,.16)":"var(--panel)",color:st.userFilter===f?"#ccfbf1":"var(--muted)"})),
-      userRows:this.users.filter(u=>{const q=st.search.toLowerCase();const okF=st.userFilter==="Hammasi"||u.role===st.userFilter;const okS=q===""||u.name.toLowerCase().includes(q)||u.email.toLowerCase().includes(q);return okF&&okS;}).map(u=>{const blocked=u.status==="blocked";return{...u,roleTint:roleMeta(u.role).tint,roleColor:roleMeta(u.role).color,statusColor:stColor(u.status),statusLabel:stLabel(u.status),
-        toggleLabel:blocked?"Faollash":"Bloklash",toggleBorder:blocked?"rgba(52,211,153,.3)":"rgba(251,113,133,.3)",toggleBg:blocked?"rgba(52,211,153,.1)":"rgba(251,113,133,.1)",toggleColor:blocked?"#6ee7b7":"#fb7185",
-        onToggle:()=>blocked?this.activateUser(u):this.blockUser(u),onDelete:()=>this.deleteItem(u.name,()=>{this.users=this.users.filter(x=>x!==u);})};}),
+      // ===== TEACHERS (DB) =====
+      teacherRows:(()=>{
+        if(!DB) return [];
+        return DB.table("users").filter(u=>u.role==="teacher").map(t=>{
+          const courses=DB.table("courses").filter(c=>c.teacherId===t.id);
+          let students=0;
+          courses.forEach(c=>{ students+=(DB.raw().enrollments||[]).filter(e=>e.courseId===c.id).length; });
+          const avgR=courses.length?(courses.reduce((s,c)=>s+(c.rating||0),0)/courses.length):0;
+          const rev=courses.reduce((s,c)=>s+c.price*((DB.raw().enrollments||[]).filter(e=>e.courseId===c.id).length||0),0);
+          const avatar=t.avatar?String(t.avatar):"";
+          return{
+            id:t.id,name:t.name,bio:t.bio||t.spec||"Ustoz",status:t.status||"active",
+            courses:courses.length,studentsLabel:String(students),rating:avgR?avgR.toFixed(1):"—",
+            revenue:(rev/1e6).toFixed(1)+" mln",
+            initial:(t.name||"T").split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase(),
+            statusColor:stColor(t.status||"active"),statusLabel:stLabel(t.status||"active"),
+            isPending:t.status==="pending",
+            avatar:avatar,hasAvatar:!!avatar,noAvatar:!avatar,
+            onApprove:()=>{DB.setUserStatus(t.id,"active",me?me.name:"Manager");this.notify(t.name+" tasdiqlandi ✓");this.forceUpdate();},
+            onView:()=>this.notify(t.name+" · "+(t.email||"")+" · "+courses.length+" kurs"),
+            onBlock:()=>this.blockUser(t)
+          };
+        });
+      })(),
 
-      // ===== MANAGERS =====
-      managerRows:this.managers.map(m=>({...m,statusColor:stColor(m.status),statusLabel:stLabel(m.status),
-        onLog:()=>this.setTab("logs"),onPerms:()=>this.setTab("security"),onBlock:()=>this.blockUser(m)})),
+      // ===== STUDENTS (DB + avatar) =====
+      studentRows:(DB?DB.table("users").filter(u=>u.role==="student"):[]).map(u=>{
+        const blocked=u.status==="blocked";
+        const enr=DB.enrollmentsOf(u.id);
+        const avg=enr.length?Math.round(enr.reduce((s,e)=>s+DB.progressFor(u.id,e.courseId),0)/enr.length):0;
+        const paid=pays.filter(p=>p.studentId===u.id&&p.status==="paid").reduce((s,p)=>s+p.amount,0);
+        const certs=(DB.raw().certificates||[]).filter(c=>c.studentId===u.id).length;
+        const avatar=u.avatar?String(u.avatar):"";
+        return{
+          id:u.id,name:u.name,courses:enr.length,progress:avg,
+          paid:(paid/1e6).toFixed(1)+" mln",certs:certs,status:u.status,
+          initial:(u.name||"S").split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase(),
+          statusColor:stColor(u.status),statusLabel:stLabel(u.status),toggleIcon:blocked?"✓":"⛔",
+          avatar:avatar,hasAvatar:!!avatar,noAvatar:!avatar,
+          onEnroll:()=>{this.setState({tab:"payments",enrollStudent:u.email||u.name});this.notify("Manual Enroller: student to'ldirildi");},
+          onToggle:()=>blocked?this.activateUser(u):this.blockUser(u)
+        };
+      }),
 
-      // ===== TEACHERS =====
-      teacherRows:this.teachers.map(t=>({...t,studentsLabel:t.students.toLocaleString("ru-RU"),statusColor:stColor(t.status),statusLabel:stLabel(t.status),isPending:t.status==="pending",
-        onApprove:()=>{t.status="active";this.notify(t.name+" tasdiqlandi ✓");this.forceUpdate();},onView:()=>this.notify(t.name+" profili (demo)"),onBlock:()=>this.blockUser(t)})),
+      // ===== COURSES (DB) =====
+      courseRows:(()=>{
+        if(!DB) return [];
+        const q=(st.search||"").toLowerCase();
+        return dbCourses.filter(c=>{
+          const t=DB.byId("users",c.teacherId);
+          const tn=t?t.name:"";
+          return q===""||c.title.toLowerCase().includes(q)||tn.toLowerCase().includes(q);
+        }).map(c=>{
+          const pub=c.status==="published";
+          const pend=c.status==="pending";
+          const cnt=(DB.raw().enrollments||[]).filter(e=>e.courseId===c.id).length;
+          const t=DB.byId("users",c.teacherId);
+          const statusLabel=pub?"Published":(pend?"Tekshiruvda":(c.status==="rejected"?"Rad etilgan":"Draft"));
+          const statusColor=pub?"#34d399":(pend?"#fbbf24":(c.status==="rejected"?"#fb7185":"#9b98ad"));
+          return{
+            id:c.id,title:c.title,cat:c.cat,teacher:t?t.name:"—",
+            studentsLabel:String(cnt),
+            priceLabel:c.price===0?"Bepul":this.money(c.price).replace(" so'm",""),
+            statusLabel:statusLabel,statusColor:statusColor,
+            statusTint:pub?"rgba(52,211,153,.14)":(pend?"rgba(251,191,36,.14)":"rgba(255,255,255,.06)"),
+            toggleLabel:pub?"Draft":"Publish",
+            featured:!!c.featured,
+            grad:this.grads[c.cat]||"linear-gradient(135deg,#0d9488,#0ea5e9)",
+            initial:(c.cat||"K").charAt(0),
+            onFeature:()=>{DB.toggleFeatured(c.id);this.notify(c.featured?"Featured olib tashlandi":"Featured ★");this.forceUpdate();},
+            onToggle:()=>{
+              const next=pub?"draft":"published";
+              DB.setCourseStatus(c.id,next,me?me.name:"manager","manager");
+              this.notify(next==="published"?"Kurs publish qilindi ✓":"Kurs draftga o'tkazildi");
+              this.forceUpdate();
+            },
+            onReview:()=>this.setState({tab:"lessons",lessonCourse:c.id})
+          };
+        });
+      })(),
 
-      // ===== STUDENTS (DB jonli) =====
-      studentRows:(window.ProSkillDB?window.ProSkillDB.table("users").filter(u=>u.role==="student"):[]).map(u=>{const DB=window.ProSkillDB;const blocked=u.status==="blocked";const enr=DB.enrollmentsOf(u.id);const avg=enr.length?Math.round(enr.reduce((s,e)=>s+DB.progressFor(u.id,e.courseId),0)/enr.length):0;const paid=DB.raw().payments.filter(p=>p.studentId===u.id&&p.status==="paid").reduce((s,p)=>s+p.amount,0);const certs=DB.raw().certificates.filter(c=>c.studentId===u.id).length;return{name:u.name,courses:enr.length,progress:avg,paid:(paid/1e6).toFixed(1)+" mln",certs:certs,status:u.status,initial:u.name.split(" ").map(w=>w[0]).join("").slice(0,2),statusColor:stColor(u.status),statusLabel:stLabel(u.status),toggleIcon:blocked?"✓":"⛔",
-        onEnroll:()=>this.notify(u.name+" — kursga yozish uchun Manual Enroller'dan foydalaning"),onToggle:()=>{const DB=window.ProSkillDB;DB.setUserStatus(u.id,blocked?"active":"blocked",DB.currentUser().name);this.notify(blocked?u.name+" faollashtirildi":u.name+" bloklandi");this.forceUpdate();}};}),
-
-      // ===== COURSES =====
-      courseRows:this.courses.filter(c=>{const q=st.search.toLowerCase();return q===""||c.title.toLowerCase().includes(q)||c.teacher.toLowerCase().includes(q);}).map(c=>{const pub=c.status==="published";return{...c,studentsLabel:c.students.toLocaleString("ru-RU"),priceLabel:c.price===0?"Bepul":this.money(c.price).replace(" so'm",""),statusLabel:pub?"Published":"Draft",statusColor:pub?"#34d399":"#fbbf24",statusTint:pub?"rgba(52,211,153,.14)":"rgba(251,191,36,.14)",toggleLabel:pub?"Draft":"Publish",
-        onFeature:()=>{c.featured=!c.featured;this.notify(c.featured?"Featured qilindi ★":"Featured olib tashlandi");this.forceUpdate();},onToggle:()=>{c.status=pub?"draft":"published";this.notify(pub?"Kurs draftga o'tkazildi":"Kurs publish qilindi ✓");this.forceUpdate();},onReview:()=>this.setState({tab:"lessons",lessonCourse:c.id})};}),
-
-      // ===== MODULES & LESSONS =====
-      lessonCourseList:this.courses.map(c=>{const sel=st.lessonCourse===c.id;return{...c,onSelect:()=>this.setState({lessonCourse:c.id}),bg:sel?"linear-gradient(135deg,rgba(13,148,136,.2),rgba(14,165,233,.13))":"transparent",color:sel?"var(--text)":"var(--muted)"};}),
-      moduleList:(this.modulesByCourse[st.lessonCourse]||[]).map((m,mi)=>({title:m.title,count:m.lessons.length,onAdd:()=>this.notify("Yangi dars qo'shish (demo)"),lessons:m.lessons.map(l=>({title:l.title,duration:l.duration,iconEl:this.ic("video",13),onPreview:()=>this.notify('"'+l.title+'" preview (demo)'),onDelete:()=>this.deleteItem(l.title)}))})),
+      // ===== COURSE REVIEW (modules/lessons from DB) =====
+      lessonCourseList:(()=>{
+        if(!DB) return [];
+        const list=dbCourses.slice().sort((a,b)=>{
+          const order={pending:0,draft:1,rejected:2,published:3};
+          return (order[a.status]||9)-(order[b.status]||9);
+        });
+        if(list.length && !list.some(c=>c.id===st.lessonCourse)){
+          setTimeout(()=>this.setState({lessonCourse:list[0].id}),0);
+        }
+        return list.map(c=>{
+          const sel=st.lessonCourse===c.id;
+          const ls=DB.lessonsOf(c.id);
+          return{
+            id:c.id,title:c.title,lessons:ls.length,
+            initial:(c.cat||"K").charAt(0),
+            grad:this.grads[c.cat]||"linear-gradient(135deg,#0d9488,#0ea5e9)",
+            onSelect:()=>this.setState({lessonCourse:c.id}),
+            bg:sel?"linear-gradient(135deg,rgba(13,148,136,.2),rgba(14,165,233,.13))":"transparent",
+            color:sel?"var(--text)":"var(--muted)"
+          };
+        });
+      })(),
+      moduleList:(()=>{
+        if(!DB||!st.lessonCourse) return [];
+        return DB.modulesOf(st.lessonCourse).map(m=>{
+          const lessons=DB.table("lessons").filter(l=>l.moduleId===m.id).sort((a,b)=>(a.order||0)-(b.order||0));
+          return{
+            title:m.title,count:lessons.length,
+            onAdd:()=>this.notify("Dars qo'shish — Teacher panelida"),
+            lessons:lessons.map(l=>({
+              title:l.title,duration:l.duration||"0:00",iconEl:this.ic("video",13),
+              onPreview:()=>this.notify(l.videoUrl?("Video: "+l.videoUrl):('"'+l.title+'" — video URL yo\'q')),
+              onDelete:()=>this.notify("Darsni o'chirish — Teacher huquqi")
+            }))
+          };
+        });
+      })(),
+      reviewAddNote:()=>{
+        const c=DB&&st.lessonCourse?DB.byId("courses",st.lessonCourse):null;
+        if(!c){ this.notify("Kurs tanlang"); return; }
+        this.ask({title:"Izoh qo'shish",msg:'"'+c.title+'" uchun teacherga izoh saqlanadi.',confirm:"Saqlash",icon:"✎",onConfirm:()=>{
+          DB.update("courses",c.id,{comment:(c.comment||"")+" [Manager izohi "+(new Date().toLocaleDateString())+"]"});
+          this.notify("Izoh qo'shildi ✓"); this.forceUpdate();
+        }});
+      },
+      reviewSendBack:()=>{
+        if(!st.lessonCourse){ this.notify("Kurs tanlang"); return; }
+        this.rejectCourse(st.lessonCourse,"Manager: tuzatish kerak");
+      },
+      reviewApprove:()=>{
+        if(!st.lessonCourse){ this.notify("Kurs tanlang"); return; }
+        this.approveCourse(st.lessonCourse);
+      },
 
       // ===== CATEGORIES =====
-      categoryRows:this.categories.map(c=>({name:c.name,courses:c.courses,initial:c.name.charAt(0),grad:this.grads[c.name]||"linear-gradient(135deg,#0d9488,#0ea5e9)",track:c.active?"linear-gradient(135deg,#0d9488,#0ea5e9)":"var(--line)",knob:c.active?"20px":"3px",onToggle:()=>{c.active=!c.active;this.notify(c.active?c.name+" yoqildi":c.name+" o'chirildi");this.forceUpdate();},onDelete:()=>this.deleteItem(c.name,()=>{this.categories=this.categories.filter(x=>x!==c);})})),
+      categoryRows:(DB?DB.table("categories"):this.categories).map(c=>{
+        const name=c.name||c;
+        const active=c.active!==false;
+        const cnt=dbCourses.filter(x=>x.cat===name).length;
+        return{
+          name:name,courses:cnt,initial:String(name).charAt(0),
+          grad:this.grads[name]||"linear-gradient(135deg,#0d9488,#0ea5e9)",
+          track:active?"linear-gradient(135deg,#0d9488,#0ea5e9)":"var(--line)",
+          knob:active?"20px":"3px",
+          onToggle:()=>{ if(c.id){ DB.update("categories",c.id,{active:!active}); this.notify(active?name+" o'chirildi":name+" yoqildi"); this.forceUpdate(); } },
+          onDelete:()=>this.notify("Kategoriya o'chirish Super Admin'da")
+        };
+      }),
 
       // ===== CERTIFICATES =====
       saveCertTemplate:()=>this.notify("Sertifikat shabloni saqlandi ✓"),
-      certRows:this.certs.map(c=>({...c,statusColor:stColor(c.status),statusLabel:stLabel(c.status),onVerify:()=>this.notify(c.id+" — amal qiladi ✓"),onRevoke:()=>this.ask({title:"Sertifikatni bekor qilish",msg:c.id+" bekor qilinadi.",confirm:"Bekor qilish",danger:true,icon:"✕",onConfirm:()=>{c.status="revoked";this.notify("Sertifikat bekor qilindi");this.forceUpdate();}})})),
+      certRows:(DB?(DB.raw().certificates||[]):[]).map(c=>({
+        id:c.id,student:DB.userName(c.studentId),course:DB.courseTitle(c.courseId),date:c.date,
+        status:c.status||"valid",statusColor:stColor(c.status||"valid"),statusLabel:stLabel(c.status||"valid"),
+        onVerify:()=>this.notify(c.id+" — amal qiladi ✓"),
+        onRevoke:()=>this.ask({title:"Sertifikatni bekor qilish",msg:c.id+" bekor qilinadi.",confirm:"Bekor qilish",danger:true,icon:"✕",onConfirm:()=>{DB.update("certificates",c.id,{status:"revoked"});this.notify("Sertifikat bekor qilindi");this.forceUpdate();}})
+      })),
 
-      // ===== REVIEWS =====
-      reviewRows:this.reviews.map(r=>({...r,initial:r.name.split(" ").map(w=>w[0]).join("").slice(0,2),stars:"★".repeat(r.rating)+"☆".repeat(5-r.rating),opacity:r.status==="hidden"?".55":"1",toggleLabel:r.status==="hidden"?"Ko'rsatish":"Yashirish",onToggle:()=>this.toggleReview(r),onReviewFlag:()=>this.notify("Sharh tekshiruvga yuborildi ⚑")})),
+      // ===== REVIEWS (DB + avatar) =====
+      reviewRows:(DB?(DB.raw().reviews||[]):[]).slice().reverse().map(r=>{
+        const stu=DB.byId("users",r.studentId);
+        const name=stu?stu.name:DB.userName(r.studentId);
+        const avatar=(stu&&stu.avatar)?String(stu.avatar):"";
+        return{
+          id:r.id,name:name,course:DB.courseTitle(r.courseId),text:r.text||"",rating:r.rating||5,status:r.status,
+          initial:(name||"O").split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase(),
+          stars:"★".repeat(r.rating||5)+"☆".repeat(5-(r.rating||5)),
+          opacity:r.status==="hidden"?".55":"1",
+          toggleLabel:r.status==="hidden"?"Ko'rsatish":"Yashirish",
+          avatar:avatar,hasAvatar:!!avatar,noAvatar:!avatar,
+          onToggle:()=>this.toggleReview(r),
+          onReviewFlag:()=>{DB.update("reviews",r.id,{status:"hidden"});this.notify("Sharh tekshiruvga (yashirildi) ⚑");this.forceUpdate();}
+        };
+      }),
 
       // ===== PAYMENTS =====
-      payStats:(()=>{const ps=window.ProSkillDB?window.ProSkillDB.raw().payments:[];return [{label:"Jami to'lovlar",value:ps.length+"",color:"var(--text)"},{label:"Tasdiqlangan",value:ps.filter(p=>p.status==="paid").length+"",color:"#34d399"},{label:"Kutilayotgan",value:ps.filter(p=>p.status==="pending").length+"",color:"#fbbf24"},{label:"Rad etilgan",value:ps.filter(p=>p.status==="failed").length+"",color:"#fb7185"}];})(),
-      paymentRows:(window.ProSkillDB?window.ProSkillDB.raw().payments:[]).slice().reverse().map(p=>{const DB=window.ProSkillDB;return{id:p.id,student:DB.userName(p.studentId),course:DB.courseTitle(p.courseId),amount:p.amount,method:p.method,status:p.status,date:p.date,amountLabel:this.money(p.amount).replace(" so'm",""),statusColor:stColor(p.status),statusLabel:stLabel(p.status),isPending:p.status==="pending",isDone:p.status!=="pending",onApprove:()=>this.approvePay(p),onReject:()=>this.rejectPay(p),onView:()=>this.notify(p.id+" tafsilotlari")};}),
+      payStats:[{label:"Jami to'lovlar",value:String(pays.length),color:"var(--text)"},{label:"Tasdiqlangan",value:String(paidN),color:"#34d399"},{label:"Kutilayotgan",value:String(pendN),color:"#fbbf24"},{label:"Rad etilgan",value:String(failN),color:"#fb7185"}],
+      paymentRows:pays.slice().reverse().map(p=>({
+        id:p.id,student:DB.userName(p.studentId),course:DB.courseTitle(p.courseId),
+        amount:p.amount,method:p.method,status:p.status,date:p.date,
+        amountLabel:this.money(p.amount).replace(" so'm",""),
+        statusColor:stColor(p.status),statusLabel:stLabel(p.status),
+        isPending:p.status==="pending",isDone:p.status!=="pending",
+        onApprove:()=>this.approvePay(p),onReject:()=>this.rejectPay(p),
+        onView:()=>this.notify(p.id+" · "+DB.userName(p.studentId)+" · "+this.money(p.amount))
+      })),
 
       // ===== NOTIFICATIONS =====
       audienceChips:[["students","Barcha studentlar"],["teachers","Barcha teacherlar"],["enrolled","Kursga yozilganlar"],["pending","To'lov kutayotganlar"]].map(([k,l])=>({label:l,onClick:()=>this.setState({audience:k}),border:st.audience===k?"rgba(13,148,136,.6)":"var(--border)",bg:st.audience===k?"rgba(13,148,136,.16)":"var(--panel)",color:st.audience===k?"#ccfbf1":"var(--muted)"})),
       channelChips:[{label:"Platforma",checked:true},{label:"Email",checked:true},{label:"Telegram",checked:false}],
-      sendNotif:()=>this.notify("Xabar yuborildi ✓"),
-      notifRows:this.notifHistory,
+      notifTitle:st.notifTitle||"", notifText:st.notifText||"",
+      onNotifTitle:(e)=>this.setState({notifTitle:e.target.value}),
+      onNotifText:(e)=>this.setState({notifText:e.target.value}),
+      sendNotif:()=>this.sendBroadcast(),
+      notifRows:(DB?(DB.raw().notifications||[]):[]).slice().reverse().slice(0,8).map(n=>({
+        title:n.title,audience:DB.userName(n.userId),channel:"Platforma",date:n.date,reach:n.read?"o'qilgan":"yangi"
+      })),
       // ===== MANUAL ENROLLER =====
       enrollStudent:st.enrollStudent, enrollCourse:st.enrollCourse,
       setEnrollStudent:e=>this.setState({enrollStudent:e.target.value}), setEnrollCourse:e=>this.setState({enrollCourse:e.target.value}),
-      doManualEnroll:()=>{const s=(st.enrollStudent||"").trim(),c=(st.enrollCourse||"").trim();if(!s||!c){this.notify("Student va kursni kiriting");return;}const DB=window.ProSkillDB;const r=DB.manualEnroll(s,c,DB.currentUser().name);if(!r.ok){this.notify(r.error);return;}this.notify('"'+s+'" → "'+c+'" kursiga qo\'lda yozildi ✓');this.setState({enrollStudent:"",enrollCourse:""});},
-      // ===== COURSE REVIEW =====
-      reviewAddNote:()=>this.notify("Izoh qo'shildi (demo)"), reviewSendBack:()=>this.notify("Kurs teacherga tuzatishga qaytarildi ↩"), reviewApprove:()=>this.notify("Kurs tekshirildi deb belgilandi ✓"),
+      doManualEnroll:()=>{
+        const s=(st.enrollStudent||"").trim(),c=(st.enrollCourse||"").trim();
+        if(!s||!c){ this.notify("Student va kursni kiriting"); return; }
+        const r=DB.manualEnroll(s,c,me?me.name:"Manager");
+        if(!r.ok){ this.notify(r.error); return; }
+        this.notify('"'+s+'" → "'+c+'" kursiga yozildi ✓');
+        this.setState({enrollStudent:"",enrollCourse:""});
+        this.forceUpdate();
+      },
 
       // ===== SECURITY =====
       permRows:["Manager","Teacher","Student"].map(role=>({role,cells:["users","payments","courses","settings"].map(key=>{const on=st.permissions[role][key];return{on,track:on?"linear-gradient(135deg,#0d9488,#0ea5e9)":"var(--line)",knob:on?"20px":"3px",onToggle:()=>this.togglePerm(role,key)};})})),
-      loginActivity:[{who:"Super Admin",detail:"185.74.x.x · Chrome / macOS",time:"Hozir",color:"#34d399"},{who:"Jasur Toshmatov (Manager)",detail:"94.158.x.x · Chrome / Windows",time:"1 soat oldin",color:"#34d399"},{who:"Noma'lum urinish",detail:"Xato parol · 5 marta",time:"3 soat oldin",color:"#fb7185"},{who:"Sardor Aliyev (Teacher)",detail:"213.230.x.x · Safari",time:"Kecha",color:"#34d399"}],
-      blockedUsers:this.users.filter(u=>u.status==="blocked").map(u=>({...u,onUnblock:()=>this.activateUser(u)})),
-      noBlocked:this.users.filter(u=>u.status==="blocked").length===0,
+      loginActivity:(DB?(DB.raw().logs||[]):[]).filter(l=>l.type==="auth"||(l.action&&String(l.action).indexOf("kirdi")>=0)).slice(0,4).map(l=>({who:l.who,detail:l.target||l.role,time:l.time,color:"#34d399"})),
+      blockedUsers:(DB?DB.table("users"):[]).filter(u=>u.status==="blocked").map(u=>({
+        ...u,initial:(u.name||"U").split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase(),
+        onUnblock:()=>this.activateUser(u)
+      })),
+      noBlocked:(DB?DB.table("users"):[]).filter(u=>u.status==="blocked").length===0,
 
       // ===== LOGS =====
-      logFilterChips:["Hammasi","payment","content","enroll"].map(f=>({label:f==="Hammasi"?"Hammasi":({payment:"To'lovlar",content:"Kontent",enroll:"Yozilish"}[f]||f),onClick:()=>this.setState({logFilter:f}),border:st.logFilter===f?"rgba(13,148,136,.6)":"var(--border)",bg:st.logFilter===f?"rgba(13,148,136,.16)":"var(--panel)",color:st.logFilter===f?"#ccfbf1":"var(--muted)"})),
-      logRows:this.logs.filter(l=>l.type!=="security"&&l.type!=="settings").filter(l=>st.logFilter==="Hammasi"||l.type===st.logFilter).map(l=>{const tint={payment:["rgba(52,211,153,.14)","#34d399"],content:["rgba(14,165,233,.16)","#a5b4fc"],security:["rgba(251,113,133,.14)","#fb7185"],enroll:["rgba(245,158,11,.14)","#fbbf24"],settings:["rgba(13,148,136,.16)","#2dd4bf"]}[l.type]||["rgba(255,255,255,.06)","#9b98ad"];const ico={payment:"payments",content:"lessons",security:"security",enroll:"student",settings:"settings"}[l.type]||"logs";return{...l,tint:tint[0],color:tint[1],iconEl:this.ic(ico,16),roleTint:roleMeta(l.role).tint,roleColor:roleMeta(l.role).color};}),
+      logFilterChips:["Hammasi","payment","content","enroll","security"].map(f=>({label:f==="Hammasi"?"Hammasi":({payment:"To'lovlar",content:"Kontent",enroll:"Yozilish",security:"Xavfsizlik"}[f]||f),onClick:()=>this.setState({logFilter:f}),border:st.logFilter===f?"rgba(13,148,136,.6)":"var(--border)",bg:st.logFilter===f?"rgba(13,148,136,.16)":"var(--panel)",color:st.logFilter===f?"#ccfbf1":"var(--muted)"})),
+      logRows:(DB?(DB.raw().logs||[]):[]).filter(l=>st.logFilter==="Hammasi"||l.type===st.logFilter).slice(0,40).map(l=>{
+        const tint={payment:["rgba(52,211,153,.14)","#34d399"],content:["rgba(14,165,233,.16)","#a5b4fc"],security:["rgba(251,113,133,.14)","#fb7185"],enroll:["rgba(245,158,11,.14)","#fbbf24"],settings:["rgba(13,148,136,.16)","#2dd4bf"],auth:["rgba(13,148,136,.16)","#2dd4bf"]}[l.type]||["rgba(255,255,255,.06)","#9b98ad"];
+        const ico={payment:"payments",content:"lessons",security:"security",enroll:"student",settings:"settings",auth:"users"}[l.type]||"logs";
+        const roleLabel=l.role==="teacher"?"Teacher":(l.role==="manager"?"Manager":(l.role==="student"?"Student":"Super Admin"));
+        return{...l,tint:tint[0],color:tint[1],iconEl:this.ic(ico,16),role:roleLabel,roleTint:roleMeta(roleLabel).tint,roleColor:roleMeta(roleLabel).color};
+      }),
 
       // ===== SETTINGS =====
       colorSwatches:["#0d9488","#3b82f6","#10b981","#f43f5e"].map(c=>({color:c,ring:st.accent===c?"#fff":"transparent",onClick:()=>{this.setState({accent:c});this.notify("Rang yangilandi");}})),
       saveSettings:()=>this.notify("Sozlamalar saqlandi ✓"),
       settingToggles:this.settingsState.map((s,i)=>({...s,track:s.on?"linear-gradient(135deg,#0d9488,#0ea5e9)":"var(--line)",knob:s.on?"22px":"3px",onToggle:()=>{this.settingsState[i].on=!this.settingsState[i].on;this.notify(this.settingsState[i].on?s.title+" yoqildi":s.title+" o'chirildi");this.forceUpdate();}})),
 
-      // shared helpers exposed for later sections
       _roleMeta:roleMeta,_stColor:stColor,_stLabel:stLabel
     };
   }
