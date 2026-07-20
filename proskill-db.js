@@ -399,6 +399,45 @@
     log(byUser || "Teacher", role || "teacher", "Yangi kurs yaratdi", c.title + " (draft)", "content");
     return { ok: true, course: c };
   }
+  function addLesson(moduleId, courseId, row, byUser, role) {
+    if (!moduleId || !courseId) return { ok: false, error: "Modul yoki kurs tanlanmagan" };
+    var title = (row && row.title) ? String(row.title).trim() : "";
+    if (!title) return { ok: false, error: "Dars nomi majburiy" };
+    var existing = data.lessons.filter(function (l) { return l.moduleId === moduleId; });
+    var l = insert("lessons", {
+      moduleId: moduleId,
+      courseId: courseId,
+      title: title,
+      duration: (row && row.duration) || "10:00",
+      free: !!(row && row.free),
+      videoUrl: (row && row.videoUrl) || "",
+      order: existing.length
+    });
+    log(byUser || "Teacher", role || "teacher", "Yangi dars qo'shdi", courseTitle(courseId) + " → " + l.title, "content");
+    return { ok: true, lesson: l };
+  }
+  function updateLesson(id, patch, byUser, role) {
+    var l = byId("lessons", id);
+    if (!l) return { ok: false, error: "Dars topilmadi" };
+    update("lessons", id, patch || {});
+    log(byUser || "Teacher", role || "teacher", "Darsni tahrirladi", (patch && patch.title) || l.title, "content");
+    return { ok: true, lesson: byId("lessons", id) };
+  }
+  function deleteLesson(id, byUser, role) {
+    var l = byId("lessons", id);
+    if (!l) return { ok: false, error: "Dars topilmadi" };
+    var title = l.title;
+    data.progress = (data.progress || []).filter(function (p) { return p.lessonId !== id; });
+    remove("lessons", id);
+    // re-order within module
+    data.lessons.filter(function (x) { return x.moduleId === l.moduleId; })
+      .sort(function (a, b) { return (a.order || 0) - (b.order || 0); })
+      .forEach(function (x, i) { x.order = i; });
+    save();
+    log(byUser || "Teacher", role || "teacher", "Darsni o'chirdi", title, "content");
+    return { ok: true };
+  }
+
   function addModule(courseId, title, byUser, role) {
     if (!courseId) return { ok: false, error: "Kurs tanlanmagan" };
     if (!title || !String(title).trim()) return { ok: false, error: "Modul nomi majburiy" };
@@ -512,6 +551,7 @@
     setUserStatus: setUserStatus, setUserRole: setUserRole, deleteUser: deleteUser,
     setCourseStatus: setCourseStatus, toggleFeatured: toggleFeatured, addCourse: addCourse, deleteCourse: deleteCourse,
     addModule: addModule, updateModule: updateModule, deleteModule: deleteModule,
+    addLesson: addLesson, updateLesson: updateLesson, deleteLesson: deleteLesson,
     analytics: analytics, topCourses: topCourses, money: money
   };
 })();
