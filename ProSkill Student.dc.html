@@ -544,23 +544,93 @@
         <sc-if value="{{ tabLessons }}" hint-placeholder-val="{{ false }}">
           <div style="display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start">
             <div>
-              <div style="position:relative;border-radius:18px;overflow:hidden;background:#000;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center">
-                <div style="position:absolute;inset:0;background:{{ playerGrad }};opacity:.32"></div>
-                <div style="position:relative;text-align:center">
-                  <div style="width:78px;height:78px;border-radius:50%;background:rgba(255,255,255,.92);display:flex;align-items:center;justify-content:center;color:#0d2a1e;font-size:28px;margin:0 auto 14px;box-shadow:0 14px 40px rgba(0,0,0,.45);cursor:pointer">▶</div>
-                  <div style="font-size:13px;color:rgba(255,255,255,.75);font-weight:600">HD · {{ currentLessonDuration }}</div>
-                </div>
-                <div style="position:absolute;bottom:0;left:0;right:0;height:5px;background:rgba(255,255,255,.15)"><div style="height:100%;width:38%;background:linear-gradient(90deg,#10b981,#22c55e)"></div></div>
+              <!-- VIDEO PLAYER -->
+              <div style="position:relative;border-radius:18px;overflow:hidden;background:#0b1220;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center">
+                <sc-if value="{{ showVideoEmbed }}" hint-placeholder-val="{{ false }}">
+                  <iframe src="{{ videoEmbedUrl }}" title="Dars videosi" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>
+                </sc-if>
+                <sc-if value="{{ showVideoFile }}" hint-placeholder-val="{{ false }}">
+                  <video src="{{ videoFileUrl }}" controls autoplay style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000"></video>
+                </sc-if>
+                <sc-if value="{{ showPlayOverlay }}" hint-placeholder-val="{{ true }}">
+                  <div style="position:absolute;inset:0;background:{{ playerGrad }};opacity:.38"></div>
+                  <div onClick="{{ startLesson }}" style="position:relative;text-align:center;cursor:pointer;z-index:2">
+                    <div style="width:86px;height:86px;border-radius:50%;background:rgba(255,255,255,.95);display:flex;align-items:center;justify-content:center;color:#0d2a1e;font-size:30px;margin:0 auto 12px;box-shadow:0 16px 44px rgba(0,0,0,.45);transition:transform .15s" style-hover="transform:scale(1.06)">▶</div>
+                    <div style="font-size:15px;color:#fff;font-weight:800;margin-bottom:4px">Darsni boshlash</div>
+                    <div style="font-size:13px;color:rgba(255,255,255,.78);font-weight:600">HD · {{ currentLessonDuration }}</div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ showPlayingDemo }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;inset:0;background:linear-gradient(145deg,#0f2744,#0b3d2e 55%,#10241c)"></div>
+                  <div style="position:relative;z-index:2;text-align:center;padding:20px">
+                    <div style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.12);border:2px solid rgba(110,231,183,.5);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:26px">⏸</div>
+                    <div style="font-size:16px;font-weight:800;color:#fff;margin-bottom:6px">Dars o'ynatilmoqda</div>
+                    <div style="font-size:13px;color:rgba(255,255,255,.75);margin-bottom:16px">{{ currentLessonTitle }} · {{ currentLessonDuration }}</div>
+                    <div style="height:6px;border-radius:6px;background:rgba(255,255,255,.15);overflow:hidden;max-width:280px;margin:0 auto 14px"><div style="height:100%;width:{{ playProgress }}%;background:linear-gradient(90deg,#10b981,#22c55e)"></div></div>
+                    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+                      <button onClick="{{ stopLesson }}" style="cursor:pointer;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font-weight:700;font-size:13px;padding:10px 16px;border-radius:10px">To'xtatish</button>
+                      <sc-if value="{{ canMarkComplete }}" hint-placeholder-val="{{ true }}"><button onClick="{{ markCurrentComplete }}" style="cursor:pointer;border:none;background:linear-gradient(135deg,#10b981,#22c55e);color:#fff;font-weight:700;font-size:13px;padding:10px 16px;border-radius:10px">✓ Darsni tugatdim</button></sc-if>
+                    </div>
+                  </div>
+                </sc-if>
+                <sc-if value="{{ lessonPlaying }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;top:12px;left:12px;z-index:3;font-size:11px;font-weight:800;padding:5px 10px;border-radius:8px;background:rgba(16,185,129,.9);color:#fff">● LIVE</div>
+                </sc-if>
               </div>
+
               <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin:20px 0 6px;flex-wrap:wrap">
                 <div><div style="font-size:12.5px;color:#6ee7b7;font-weight:700;margin-bottom:6px">{{ playerCourseTitle }}</div><h2 style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:22px;letter-spacing:-.5px">{{ currentLessonTitle }}</h2></div>
-                <sc-if value="{{ canMarkComplete }}" hint-placeholder-val="{{ true }}"><button onClick="{{ markCurrentComplete }}" style="cursor:pointer;flex:none;border:1px solid rgba(52,211,153,.4);background:rgba(52,211,153,.12);color:#6ee7b7;font-weight:700;font-size:13.5px;padding:11px 18px;border-radius:11px">✓ Darsni tugatdim</button></sc-if>
-                <sc-if value="{{ currentDone }}" hint-placeholder-val="{{ false }}"><div style="flex:none;border:1px solid rgba(52,211,153,.4);background:rgba(52,211,153,.12);color:#6ee7b7;font-weight:700;font-size:13.5px;padding:11px 18px;border-radius:11px">✓ Tugatilgan</div></sc-if>
+                <div style="display:flex;gap:8px;flex-wrap:wrap">
+                  <sc-if value="{{ showStartBtn }}" hint-placeholder-val="{{ true }}"><button onClick="{{ startLesson }}" style="cursor:pointer;flex:none;border:none;background:linear-gradient(135deg,#10b981,#22c55e);color:#fff;font-weight:700;font-size:13.5px;padding:11px 18px;border-radius:11px">▶ Darsni boshlash</button></sc-if>
+                  <sc-if value="{{ canMarkComplete }}" hint-placeholder-val="{{ true }}"><button onClick="{{ markCurrentComplete }}" style="cursor:pointer;flex:none;border:1px solid rgba(52,211,153,.4);background:rgba(52,211,153,.12);color:#6ee7b7;font-weight:700;font-size:13.5px;padding:11px 18px;border-radius:11px">✓ Darsni tugatdim</button></sc-if>
+                  <sc-if value="{{ currentDone }}" hint-placeholder-val="{{ false }}"><div style="flex:none;border:1px solid rgba(52,211,153,.4);background:rgba(52,211,153,.12);color:#6ee7b7;font-weight:700;font-size:13.5px;padding:11px 18px;border-radius:11px">✓ Tugatilgan</div></sc-if>
+                </div>
               </div>
-              <p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:18px">Bu darsda mavzu bo'yicha amaliy misollar va tushuntirishlar berilgan. Videoni ko'rib bo'lgach "Darsni tugatdim" tugmasini bosing — progressingiz saqlanadi.</p>
-              <div style="display:flex;gap:10px;flex-wrap:wrap">
+              <p style="font-size:14px;color:var(--muted);line-height:1.6;margin-bottom:14px">{{ lessonDesc }}</p>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:22px">
                 <button onClick="{{ downloadMaterial }}" style="cursor:pointer;border:1px solid var(--border);background:var(--panel);color:var(--text);font-weight:600;font-size:13.5px;padding:11px 18px;border-radius:11px">⬇ Materiallar (PDF)</button>
                 <sc-if value="{{ hasNextLesson }}" hint-placeholder-val="{{ true }}"><button onClick="{{ nextLesson }}" style="cursor:pointer;border:none;background:linear-gradient(135deg,#10b981,#22c55e);color:#fff;font-weight:700;font-size:13.5px;padding:11px 20px;border-radius:11px">Keyingi dars →</button></sc-if>
+              </div>
+
+              <!-- DARS IZOHI / FIKR -->
+              <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:20px 22px">
+                <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:17px;margin-bottom:6px">Fikr bildirish</div>
+                <p style="font-size:13px;color:var(--muted);margin-bottom:14px">Shu dars haqida izoh yozing — o'qituvchi va boshqa o'quvchilar ko'radi.</p>
+                <label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:7px">Reyting</label>
+                <div style="display:flex;gap:6px;margin-bottom:14px">
+                  <sc-for list="{{ lessonRatingStars }}" as="s" hint-placeholder-count="5">
+                    <span onClick="{{ s.onClick }}" style="cursor:pointer;font-size:26px;color:{{ s.color }};line-height:1">★</span>
+                  </sc-for>
+                </div>
+                <label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:7px">Izohingiz</label>
+                <textarea rows="3" value="{{ lessonComment }}" onInput="{{ onLessonComment }}" placeholder="Dars haqida nima deb o'ylaysiz? Savol yoki taklif..." style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-size:14px;outline:none;resize:vertical;margin-bottom:12px"></textarea>
+                <sc-if value="{{ lessonCommentError }}" hint-placeholder-val="{{ false }}">
+                  <div style="background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.3);border-radius:10px;padding:10px 12px;font-size:13px;color:#fb7185;margin-bottom:12px">{{ lessonCommentError }}</div>
+                </sc-if>
+                <button onClick="{{ submitLessonComment }}" style="cursor:pointer;border:none;background:linear-gradient(135deg,#10b981,#22c55e);color:#fff;font-weight:800;font-size:14px;padding:12px 20px;border-radius:11px;box-shadow:0 10px 22px rgba(16,185,129,.28)">Fikr yuborish</button>
+
+                <div style="margin-top:22px;padding-top:18px;border-top:1px solid var(--border)">
+                  <div style="font-size:13.5px;font-weight:800;margin-bottom:12px">Izohlar <span style="color:var(--muted2);font-weight:600">({{ lessonCommentCount }})</span></div>
+                  <sc-for list="{{ lessonComments }}" as="c" hint-placeholder-count="2">
+                    <div style="display:flex;gap:12px;padding:12px 0;border-bottom:1px solid var(--line)">
+                      <div style="width:38px;height:38px;border-radius:50%;background:linear-gradient(135deg,#3b82f6,#6366f1);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex:none;overflow:hidden">
+                        <sc-if value="{{ c.hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ c.avatar }}" alt="" style="width:100%;height:100%;object-fit:cover"/></sc-if>
+                        <sc-if value="{{ c.noAvatar }}" hint-placeholder-val="{{ true }}"><span>{{ c.initial }}</span></sc-if>
+                      </div>
+                      <div style="flex:1;min-width:0">
+                        <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:4px">
+                          <span style="font-size:13.5px;font-weight:700">{{ c.name }}</span>
+                          <span style="color:#ffd479;font-size:12px;font-weight:700">{{ c.stars }}</span>
+                          <span style="font-size:11.5px;color:var(--muted2);margin-left:auto">{{ c.date }}</span>
+                        </div>
+                        <p style="font-size:13.5px;color:var(--muted);line-height:1.55">{{ c.text }}</p>
+                      </div>
+                    </div>
+                  </sc-for>
+                  <sc-if value="{{ noLessonComments }}" hint-placeholder-val="{{ false }}">
+                    <div style="padding:18px;text-align:center;color:var(--muted2);font-size:13.5px;background:var(--panel2);border-radius:12px">Hali izoh yo'q — birinchi bo'lib yozing ✨</div>
+                  </sc-if>
+                </div>
               </div>
             </div>
             <aside style="background:var(--panel);border:1px solid var(--border);border-radius:18px;overflow:hidden;position:sticky;top:20px">
@@ -571,7 +641,7 @@
                 <div style="font-size:11.5px;color:var(--muted2);margin-top:9px">{{ playerProgress }}% tugatildi · {{ playerDone }}/{{ playerTotal }} dars</div>
                 <div style="height:6px;border-radius:6px;background:var(--line);overflow:hidden;margin-top:7px"><div style="height:100%;width:{{ playerProgress }}%;background:linear-gradient(90deg,#10b981,#22c55e);border-radius:6px"></div></div>
               </div>
-              <div style="max-height:440px;overflow-y:auto">
+              <div style="max-height:520px;overflow-y:auto">
                 <sc-for list="{{ playerGroups }}" as="m" hint-placeholder-count="3">
                   <div style="padding:12px 16px 5px;font-size:11px;font-weight:800;color:var(--muted2);text-transform:uppercase;letter-spacing:.4px">{{ m.title }}</div>
                   <sc-for list="{{ m.lessons }}" as="l" hint-placeholder-count="3">
@@ -1257,6 +1327,7 @@ class Component extends DCLogic {
     // ===== DB-backed: current student =====
     this.studentName="O'quvchi";
     this.state={tab:"dashboard",theme:"light",search:"",modal:null,toast:null,lessonCourse:null,currentLesson:null,completed:{},catFilter:"Hammasi",payFilter:"Hammasi",qaFilter:"Hammasi",accent:"#3b82f6",
+      lessonPlaying:false,playProgress:12,lessonComment:"",lessonRating:5,lessonCommentError:null,
       profName:"",profPhone:"",profBio:"",profTelegram:""};
     this.sync();
     this.state.completed=Object.assign({},this.completedSet);
@@ -1357,7 +1428,7 @@ class Component extends DCLogic {
     // modulesByCourse using DB lesson ids as keys
     this.modulesByCourse={};
     DB.table("courses").forEach(c=>{
-      this.modulesByCourse[c.id]=DB.modulesOf(c.id).map(m=>({title:m.title,lessons:DB.table("lessons").filter(l=>l.moduleId===m.id).sort((a,b)=>a.order-b.order).map(l=>({key:l.id,title:l.title,duration:l.duration,free:l.free}))}));
+      this.modulesByCourse[c.id]=DB.modulesOf(c.id).map(m=>({title:m.title,lessons:DB.table("lessons").filter(l=>l.moduleId===m.id).sort((a,b)=>a.order-b.order).map(l=>({key:l.id,title:l.title,duration:l.duration,free:!!l.free,videoUrl:l.videoUrl||""}))}));
     });
     // enrolled + progress (from DB)
     this.completedSet={};
@@ -1452,10 +1523,85 @@ class Component extends DCLogic {
   enrollFree(c){const DB=this.DB();const r=DB.enrollFree(this.me.id,c.id);if(!r.ok){this.notify(r.error);return;}this.refresh();this.notify('"'+c.title+'" ochildi — darsni boshlang!');this.setState({tab:"mycourses"});}
   buyCourse(c){if(this.isEnrolled(c.id)){this.notify("Siz allaqachon bu kursga yozilgansiz");return;}this.ask({title:"Kursni sotib olish",msg:'"'+c.title+'" — '+this.money(c.price)+". To'lov yuborilgandan keyin status 'pending' bo'ladi. Manager tasdiqlagach kurs ochiladi.",confirm:"To'lov yuborish",icon:"💳",onConfirm:()=>{const DB=this.DB();DB.requestPayment(this.me.id,c.id,"Payme");this.refresh();this.notify("To'lov yuborildi ⏳ Manager tasdig'ini kuting");this.setState({tab:"payments"});}});}
   retryPayment(p){const DB=this.DB();const co=DB.table("courses").filter(x=>DB.courseTitle(x.id)===p.course)[0];if(co){DB.requestPayment(this.me.id,co.id,p.method);this.refresh();this.notify("To'lov qayta yuborildi ⏳");}}
-  openCourse(id){this.setState({tab:"lessons",lessonCourse:id});try{window.scrollTo(0,0);}catch(e){}}
-  continueCourse(e){this.setState({tab:"lessons",lessonCourse:e.id,currentLesson:e.lastKey});try{window.scrollTo(0,0);}catch(err){}}
-  openLesson(courseId,key,locked){if(locked){this.notify("🔒 Bu dars bloklangan. Avval kursni oching.");return;}this.setState({tab:"lessons",lessonCourse:courseId,currentLesson:key});}
-  markComplete(key){const DB=this.DB();DB.completeLesson(this.me.id,key);this.refresh();this.notify("Dars tugatildi ✓ Progress saqlandi");}
+  openCourse(id){
+    const mods=this.modulesByCourse[id]||[];
+    const first=mods[0]&&mods[0].lessons[0]?mods[0].lessons[0].key:null;
+    this.setState({tab:"lessons",lessonCourse:id,currentLesson:first,lessonPlaying:false,playProgress:12,lessonComment:"",lessonCommentError:null});
+    try{window.scrollTo(0,0);}catch(e){}
+  }
+  continueCourse(e){this.setState({tab:"lessons",lessonCourse:e.id,currentLesson:e.lastKey,lessonPlaying:false,playProgress:12,lessonComment:"",lessonCommentError:null});try{window.scrollTo(0,0);}catch(err){}}
+  openLesson(courseId,key,locked){
+    if(locked){ this.notify("🔒 Bu dars bloklangan. Avval kursni oching."); return; }
+    this.setState({tab:"lessons",lessonCourse:courseId,currentLesson:key,lessonPlaying:false,playProgress:12,lessonComment:"",lessonCommentError:null});
+  }
+  startLesson(){
+    const key=this.state.currentLesson;
+    if(!key){ this.notify("Dars tanlanmagan"); return; }
+    const owned=this.isEnrolled(this.state.lessonCourse);
+    const mods=this.modulesByCourse[this.state.lessonCourse]||[];
+    let les=null; mods.forEach(m=>m.lessons.forEach(l=>{ if(l.key===key) les=l; }));
+    if(les&&!owned&&!les.free){ this.notify("🔒 Bu dars bloklangan"); return; }
+    this.setState({lessonPlaying:true,playProgress:18});
+    clearInterval(this._playTimer);
+    this._playTimer=setInterval(()=>{
+      this.setState(s=>{
+        const next=Math.min(96,(s.playProgress||10)+Math.floor(Math.random()*7)+2);
+        return {playProgress:next};
+      });
+    },1400);
+    this.notify("Dars boshlandi ▶");
+  }
+  stopLesson(){
+    clearInterval(this._playTimer);
+    this.setState({lessonPlaying:false,playProgress:12});
+  }
+  markComplete(key){
+    const DB=this.DB();
+    if(!this.me||!key) return;
+    DB.completeLesson(this.me.id,key);
+    clearInterval(this._playTimer);
+    this.setState({playProgress:100,lessonPlaying:false});
+    this.refresh();
+    this.notify("Dars tugatildi ✓ Progress saqlandi");
+  }
+  youtubeEmbed(url){
+    if(!url) return null;
+    const s=String(url).trim();
+    let id=null;
+    const m1=s.match(/[?&]v=([A-Za-z0-9_-]{6,})/);
+    const m2=s.match(/youtu\.be\/([A-Za-z0-9_-]{6,})/);
+    const m3=s.match(/youtube\.com\/embed\/([A-Za-z0-9_-]{6,})/);
+    if(m1) id=m1[1]; else if(m2) id=m2[1]; else if(m3) id=m3[1];
+    return id?("https://www.youtube.com/embed/"+id+"?rel=0&modestbranding=1&autoplay=1"):null;
+  }
+  isDirectVideo(url){
+    return !!url && /\.(mp4|webm|ogg)(\?|$)/i.test(String(url));
+  }
+  submitLessonComment(){
+    const DB=this.DB();
+    if(!DB||!this.me){ this.notify("Avval kiring"); return; }
+    const text=(this.state.lessonComment||"").trim();
+    if(!text){ this.setState({lessonCommentError:"Izoh yozing"}); return; }
+    const lessonId=this.state.currentLesson;
+    const courseId=this.state.lessonCourse;
+    if(!lessonId){ this.setState({lessonCommentError:"Dars tanlanmagan"}); return; }
+    const r=DB.addLessonComment(this.me.id,courseId,lessonId,text,this.state.lessonRating||5);
+    if(!r||!r.ok){ this.setState({lessonCommentError:(r&&r.error)||"Yuborilmadi"}); return; }
+    // kurs reytingiga ham qo'shimcha sifatida saqlash (ixtiyoriy, bir marta)
+    try{
+      const mine=DB.raw().reviews.filter(x=>x.studentId===this.me.id&&x.courseId===courseId);
+      if(!mine.length) DB.addReview(this.me.id,courseId,this.state.lessonRating||5,text);
+    }catch(e){}
+    this.setState({lessonComment:"",lessonCommentError:null,lessonRating:5});
+    this.refresh();
+    this.notify("Fikringiz yuborildi ✓ Rahmat!");
+  }
+  selectPlayerCourse(courseId){
+    const mods=this.modulesByCourse[courseId]||[];
+    const first=mods[0]&&mods[0].lessons[0]?mods[0].lessons[0].key:null;
+    clearInterval(this._playTimer);
+    this.setState({lessonCourse:courseId,currentLesson:first,lessonPlaying:false,playProgress:12,lessonComment:"",lessonCommentError:null});
+  }
   takeTest(t){if(t.taken){this.notify(t.title+" — natija: "+t.score+"% ("+(t.passed?"O'tdingiz ✓":"Yiqildingiz")+")");return;}this.ask({title:"Testni boshlash",msg:t.title+" · "+t.questions+" savol. Tayyormisiz?",confirm:"Boshlash",icon:"📝",onConfirm:()=>{const DB=this.DB();const tt=DB.byId("tests",t.testId);const answers=(tt?tt.questions:[]).map(q=>Math.random()<0.82?q.correct:(q.correct+1)%4);const r=DB.submitTest(this.me.id,t.testId,answers);this.refresh();this.notify("Test yakunlandi — "+r.result.percentage+"% "+(r.result.passed?"✓ O'tdingiz!":"— Yana urinib ko'ring"));}});}
   issueCert(courseId){const DB=this.DB();const r=DB.issueCertificate(this.me.id,courseId);if(!r.ok){this.notify(r.error);return;}this.refresh();this.notify("Sertifikat berildi 🎓");this.setState({tab:"certs"});}
   doAddReview(courseTitle,rating,text){const DB=this.DB();const co=DB.table("courses").filter(x=>x.title===courseTitle)[0];if(!co){this.notify("Kurs tanlang");return;}DB.addReview(this.me.id,co.id,rating||5,text||"Yaxshi kurs");this.refresh();this.notify("Fikringiz yuborildi ✓ Rahmat!");}
@@ -1647,6 +1793,37 @@ class Component extends DCLogic {
     const nextL=flat[curIdx+1];
     const playerGroups=pmods.map(m=>({title:m.title,lessons:m.lessons.map(l=>{const locked=!owned&&!l.free;const done=!!st.completed[l.key];const cur=l.key===st.currentLesson;return{...l,onPlay:()=>this.openLesson(st.lessonCourse,l.key,locked),rowBg:cur?"rgba(16,185,129,.14)":"transparent",titleColor:cur?"var(--text)":(locked?"var(--muted2)":"var(--text)"),icon:done?"✓":(locked?"🔒":"▶"),iconBg:done?"rgba(52,211,153,.16)":(cur?"rgba(16,185,129,.25)":"var(--panel2)"),iconColor:done?"#6ee7b7":(cur?"#6ee7b7":"var(--muted)")};})}));
     const playerCourseOptions=this.enrolled.map(e=>{const c=catObj(e.id);return{id:e.id,title:c.title,selected:e.id===st.lessonCourse};});
+    // video resolve
+    const rawVideo=(curObj&&curObj.videoUrl)?String(curObj.videoUrl).trim():"";
+    const ytEmbed=this.youtubeEmbed(rawVideo);
+    const isFile=this.isDirectVideo(rawVideo);
+    const lessonPlaying=!!st.lessonPlaying;
+    const showVideoEmbed=lessonPlaying&&!!ytEmbed;
+    const showVideoFile=lessonPlaying&&!ytEmbed&&(isFile||!rawVideo); // no url -> demo mp4
+    const demoMp4="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
+    const videoFileUrl=isFile?rawVideo:demoMp4;
+    const showPlayOverlay=!lessonPlaying;
+    const showPlayingDemo=lessonPlaying&&!ytEmbed&&!isFile&&!!rawVideo; // external non-youtube link
+    // if playing external link that's not yt/mp4 - open overlay demo + link
+    const showStartBtn=!lessonPlaying;
+    const lessonDesc=curObj
+      ?('Bu darsda «'+curObj.title+'» mavzusi bo\'yicha amaliy misollar va tushuntirishlar berilgan. "Darsni boshlash" tugmasini bosing, ko\'rib bo\'lgach "Darsni tugatdim" — progressingiz saqlanadi.')
+      :"Dars tanlang.";
+    // comments for current lesson
+    const DB=this.DB();
+    const lessonComments=(DB&&curObj?DB.commentsOfLesson(curObj.key):[]).map(c=>{
+      const u=DB.byId("users",c.studentId);
+      const name=u?u.name:DB.userName(c.studentId);
+      const avatar=(u&&u.avatar)?String(u.avatar):"";
+      return{
+        name:name,
+        text:c.text,
+        date:c.date||c.time||"",
+        stars:"★".repeat(c.rating||5)+"☆".repeat(5-(c.rating||5)),
+        initial:(name||"O").split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase(),
+        avatar:avatar,hasAvatar:!!avatar,noAvatar:!avatar
+      };
+    });
 
     return {
       theme:st.theme, themeIcon:st.theme==="dark"?"☀":"☾", toggleTheme:()=>this.toggleTheme(),
@@ -1679,10 +1856,24 @@ class Component extends DCLogic {
       playerGrad:pc.grad, playerCourseTitle:pc.title, currentLessonTitle:curObj?curObj.title:"", currentLessonDuration:curObj?curObj.duration:"",
       currentDone:curObj?!!st.completed[curObj.key]:false, canMarkComplete:curObj?(!st.completed[curObj.key]&&(owned||curObj.free)):false,
       markCurrentComplete:curObj?()=>this.markComplete(curObj.key):null,
-      hasNextLesson:!!nextL, nextLesson:nextL?()=>this.openLesson(st.lessonCourse,nextL.key,!owned&&!nextL.free):null,
+      hasNextLesson:!!nextL, nextLesson:nextL?()=>{this.stopLesson();this.openLesson(st.lessonCourse,nextL.key,!owned&&!nextL.free);}:null,
       downloadMaterial:()=>this.notify("Material yuklab olinmoqda (demo)"),
-      playerGroups, playerCourseOptions, onSelectPlayerCourse:e=>this.setState({lessonCourse:e.target.value,currentLesson:e.target.value+"-0-0"}),
+      playerGroups, playerCourseOptions,
+      onSelectPlayerCourse:e=>this.selectPlayerCourse(e.target.value),
       playerProgress:this.progressFor(st.lessonCourse), playerDone:pe?pe.done:0, playerTotal:pe?pe.total:flat.length,
+      // start / play
+      lessonPlaying, showPlayOverlay, showVideoEmbed, showVideoFile, showPlayingDemo, showStartBtn,
+      videoEmbedUrl:ytEmbed||"", videoFileUrl:videoFileUrl,
+      playProgress:Math.min(100,st.playProgress||12),
+      startLesson:()=>this.startLesson(), stopLesson:()=>this.stopLesson(),
+      lessonDesc,
+      // lesson comments
+      lessonComment:st.lessonComment||"",
+      lessonCommentError:st.lessonCommentError||null,
+      onLessonComment:(e)=>this.setState({lessonComment:e.target.value,lessonCommentError:null}),
+      lessonRatingStars:[1,2,3,4,5].map(n=>({onClick:()=>this.setState({lessonRating:n}),color:n<=(st.lessonRating||5)?"#ffd479":"var(--muted2)"})),
+      submitLessonComment:()=>this.submitLessonComment(),
+      lessonComments, lessonCommentCount:String(lessonComments.length), noLessonComments:lessonComments.length===0,
       // tests
       studentTestRows:this.myTests.map(t=>({...t,icon:t.taken?(t.passed?"✓":"✗"):"📝",iconBg:t.taken?(t.passed?"rgba(52,211,153,.14)":"rgba(251,113,133,.14)"):"rgba(16,185,129,.14)",scoreColor:t.passed?"#34d399":"#fb7185",resultLabel:t.passed?"O'tdi":"Yiqildi",btnLabel:t.taken?"Qayta ishlash":"Boshlash",btnBorder:t.taken?"1px solid var(--border)":"none",btnBg:t.taken?"var(--panel)":"linear-gradient(135deg,#10b981,#22c55e)",btnColor:t.taken?"var(--text)":"#fff",onTake:()=>this.takeTest(t)})),
       // certs

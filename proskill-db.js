@@ -194,20 +194,28 @@
     return {
       users: users, categories: categories, courses: courses, modules: modules, lessons: lessons,
       enrollments: enrollments, progress: progress, payments: payments, tests: tests, testResults: testResults,
-      certificates: certificates, reviews: reviews, questions: questions, notifications: notifications,
-      logs: logs, settings: settings
+      certificates: certificates, reviews: reviews, questions: questions, comments: [],
+      notifications: notifications, logs: logs, settings: settings
     };
   }
 
   // ---------- LOAD / SAVE ----------
   var data;
   function load() {
-    try { var r = localStorage.getItem(DB_KEY); if (r) return JSON.parse(r); } catch (e) {}
+    try {
+      var r = localStorage.getItem(DB_KEY);
+      if (r) {
+        var d = JSON.parse(r);
+        if (!d.comments) d.comments = [];
+        return d;
+      }
+    } catch (e) {}
     var s = seed();
     try { localStorage.setItem(DB_KEY, JSON.stringify(s)); } catch (e) {}
     return s;
   }
   data = load();
+  if (!data.comments) data.comments = [];
   function save() { try { localStorage.setItem(DB_KEY, JSON.stringify(data)); } catch (e) {} }
   function reset() { data = seed(); save(); try { localStorage.removeItem(SESSION_KEY); } catch (e) {} }
 
@@ -365,6 +373,27 @@
     insert("reviews", { studentId: studentId, courseId: courseId, rating: rating, text: text, status: "visible", date: todayLabel(), reply: "" });
     log(userName(studentId), "student", "Fikr qoldirdi", courseTitle(courseId), "content");
     return { ok: true };
+  }
+  function addLessonComment(studentId, courseId, lessonId, text, rating) {
+    var body = text ? String(text).trim() : "";
+    if (!body) return { ok: false, error: "Izoh yozing" };
+    if (!lessonId) return { ok: false, error: "Dars tanlanmagan" };
+    if (!data.comments) data.comments = [];
+    var row = insert("comments", {
+      studentId: studentId,
+      courseId: courseId || null,
+      lessonId: lessonId,
+      text: body,
+      rating: rating ? Math.max(1, Math.min(5, parseInt(rating, 10) || 5)) : 5,
+      date: todayLabel(),
+      time: timeLabel()
+    });
+    log(userName(studentId), "student", "Darsga izoh yozdi", courseTitle(courseId) || lessonId, "content");
+    return { ok: true, comment: row };
+  }
+  function commentsOfLesson(lessonId) {
+    if (!data.comments) return [];
+    return data.comments.filter(function (c) { return c.lessonId === lessonId; }).slice().reverse();
   }
   function askQuestion(studentId, courseId, lessonRef, text) {
     var c = byId("courses", courseId);
@@ -565,7 +594,8 @@
     isEnrolled: isEnrolled, enrollmentsOf: enrollmentsOf, isDone: isDone, progressFor: progressFor, progressCount: progressCount,
     enrollFree: enrollFree, requestPayment: requestPayment, approvePayment: approvePayment, rejectPayment: rejectPayment, manualEnroll: manualEnroll,
     completeLesson: completeLesson, submitTest: submitTest, testResultFor: testResultFor, issueCertificate: issueCertificate,
-    addReview: addReview, askQuestion: askQuestion, answerQuestion: answerQuestion,
+    addReview: addReview, addLessonComment: addLessonComment, commentsOfLesson: commentsOfLesson,
+    askQuestion: askQuestion, answerQuestion: answerQuestion,
     notify: notify, notificationsOf: notificationsOf, markNotifRead: markNotifRead, log: log,
     setUserStatus: setUserStatus, setUserRole: setUserRole, deleteUser: deleteUser,
     setCourseStatus: setCourseStatus, toggleFeatured: toggleFeatured, addCourse: addCourse, deleteCourse: deleteCourse,
