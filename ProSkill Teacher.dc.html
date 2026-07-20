@@ -774,6 +774,25 @@
     </div>
   </sc-if>
 
+  <!-- ===== MODUL FORMA ===== -->
+  <sc-if value="{{ showModuleForm }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeModuleForm }}" style="position:fixed;inset:0;z-index:110;background:rgba(4,3,9,.7);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:20px">
+      <div onClick="{{ stopProp }}" style="background:var(--solid);border:1px solid var(--border);border-radius:20px;padding:26px;max-width:440px;width:100%;animation:pop .25s ease both;box-shadow:0 30px 70px rgba(0,0,0,.55)">
+        <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:19px;margin-bottom:6px">{{ moduleFormTitle }}</div>
+        <p style="font-size:13px;color:var(--muted);margin-bottom:16px">{{ moduleFormHint }}</p>
+        <label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">Modul nomi *</label>
+        <input value="{{ moduleTitle }}" onInput="{{ onModuleTitle }}" placeholder="Masalan: Modul 1 — Kirish va asoslar" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:11px;padding:12px 14px;color:var(--text);font-size:14px;outline:none;margin-bottom:12px" />
+        <sc-if value="{{ moduleFormError }}" hint-placeholder-val="{{ false }}">
+          <div style="background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.3);border-radius:11px;padding:10px 12px;font-size:13px;color:#fb7185;margin-bottom:12px">{{ moduleFormError }}</div>
+        </sc-if>
+        <div style="display:flex;gap:10px">
+          <button onClick="{{ closeModuleForm }}" style="cursor:pointer;flex:1;border:1px solid var(--border);background:var(--panel);color:var(--text);font-weight:700;font-size:14px;padding:12px;border-radius:11px">Bekor qilish</button>
+          <button onClick="{{ submitModule }}" style="cursor:pointer;flex:1.2;border:none;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-weight:800;font-size:14px;padding:12px;border-radius:11px">{{ moduleFormConfirm }}</button>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
   <!-- ===== TOAST ===== -->
   <sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
     <div style="position:fixed;bottom:26px;left:50%;transform:translateX(-50%);z-index:120;background:var(--solid);border:1px solid rgba(99,102,241,.4);color:var(--text);font-weight:600;font-size:14px;padding:14px 22px;border-radius:13px;box-shadow:0 20px 50px rgba(0,0,0,.4);display:flex;align-items:center;gap:11px;animation:fadeUp .3s ease both"><span style="width:9px;height:9px;border-radius:50%;background:#34d399"></span>{{ toast }}</div>
@@ -978,6 +997,7 @@ class Component extends DCLogic {
     ];
     this.state={tab:"dashboard",theme:"dark",search:"",userFilter:"Hammasi",modal:null,toast:null,lessonCourse:"t1",builderCourse:"t1",courseFilter:"Hammasi",qaFilter:"Hammasi",audience:"all",logFilter:"Hammasi",accent:"#6366f1",
       showCourseForm:false,newCourseTitle:"",newCourseCat:"Python",newCourseLevel:"Boshlang'ich",newCoursePrice:"690000",newCourseDesc:"",courseFormError:null,
+      showModuleForm:false,editModuleId:null,moduleTitle:"",moduleFormError:null,
       permissions:{Manager:{users:true,payments:true,courses:false,settings:false},Teacher:{users:false,payments:false,courses:true,settings:false},Student:{users:false,payments:false,courses:false,settings:false}}};
   }
 
@@ -986,6 +1006,55 @@ class Component extends DCLogic {
   }
   closeCourseForm(){ this.setState({showCourseForm:false,courseFormError:null}); }
   stopProp(e){ if(e&&e.stopPropagation)e.stopPropagation(); }
+
+  openAddModule(){
+    const DB=window.ProSkillDB;const me=DB&&DB.currentUser();
+    const cid=this.state.lessonCourse;
+    if(!cid){ this.notify("Avval chapdan kurs tanlang"); return; }
+    if(!DB||!me){ this.notify("Avval teacher sifatida kiring"); return; }
+    const n=(DB.modulesOf(cid)||[]).length+1;
+    this.setState({showModuleForm:true,editModuleId:null,moduleTitle:"Modul "+n+" — Yangi modul",moduleFormError:null});
+  }
+  openEditModule(mod){
+    this.setState({showModuleForm:true,editModuleId:mod.id,moduleTitle:mod.title||"",moduleFormError:null});
+  }
+  closeModuleForm(){ this.setState({showModuleForm:false,editModuleId:null,moduleTitle:"",moduleFormError:null}); }
+  submitModule(){
+    const DB=window.ProSkillDB;const me=DB&&DB.currentUser();
+    if(!DB||!me){ this.notify("Avval teacher sifatida kiring"); return; }
+    const title=(this.state.moduleTitle||"").trim();
+    if(!title){ this.setState({moduleFormError:"Modul nomini kiriting"}); return; }
+    const cid=this.state.lessonCourse;
+    if(this.state.editModuleId){
+      const r=DB.updateModule(this.state.editModuleId,{title:title},me.name,"teacher");
+      if(!r||!r.ok){ this.setState({moduleFormError:(r&&r.error)||"Saqlanmadi"}); return; }
+      this.setState({showModuleForm:false,editModuleId:null,moduleTitle:"",moduleFormError:null});
+      this.notify("Modul yangilandi ✓");
+    } else {
+      if(!cid){ this.setState({moduleFormError:"Kurs tanlanmagan"}); return; }
+      const r=DB.addModule(cid,title,me.name,"teacher");
+      if(!r||!r.ok){ this.setState({moduleFormError:(r&&r.error)||"Yaratilmadi"}); return; }
+      // boshlang'ich 1 dars
+      DB.insert("lessons",{moduleId:r.module.id,courseId:cid,title:"Yangi dars",duration:"10:00",free:false,order:0});
+      this.setState({showModuleForm:false,editModuleId:null,moduleTitle:"",moduleFormError:null});
+      this.notify('"'+title+'" qo\'shildi ✓');
+    }
+    this.forceUpdate();
+  }
+  deleteModuleById(mod){
+    const DB=window.ProSkillDB;const me=DB&&DB.currentUser();
+    if(!DB||!me||!mod) return;
+    this.ask({
+      title:"Modulni o'chirish",
+      msg:'"'+mod.title+'" va uning barcha darslari o\'chiriladi. Qaytarib bo\'lmaydi.',
+      confirm:"O'chirish",danger:true,icon:"🗑",
+      onConfirm:()=>{
+        const r=DB.deleteModule(mod.id,me.name,"teacher");
+        if(r&&r.ok){ this.notify('"'+mod.title+'" o\'chirildi'); this.forceUpdate(); }
+        else this.notify((r&&r.error)||"O'chirib bo'lmadi");
+      }
+    });
+  }
 
   submitNewCourse(){
     const DB=window.ProSkillDB;
@@ -1169,8 +1238,34 @@ class Component extends DCLogic {
         onFeature:()=>{c.featured=!c.featured;this.notify(c.featured?"Featured qilindi ★":"Featured olib tashlandi");this.forceUpdate();},onToggle:()=>{c.status=pub?"draft":"published";this.notify(pub?"Kurs draftga o'tkazildi":"Kurs publish qilindi ✓");this.forceUpdate();},onDelete:()=>this.deleteItem(c.title,()=>{this.courses=this.courses.filter(x=>x!==c);})};}),
 
       // ===== MODULES & LESSONS (Video Darslar) =====
-      lessonCourseList:this.myCourses.map(c=>{const sel=st.lessonCourse===c.id;return{...c,onSelect:()=>this.setState({lessonCourse:c.id}),bg:sel?"linear-gradient(135deg,rgba(99,102,241,.2),rgba(99,102,241,.13))":"transparent",color:sel?"var(--text)":"var(--muted)"};}),
-      moduleList:(this.modulesByCourse[st.lessonCourse]||[]).map((m,mi)=>({title:m.title,count:m.lessons.length,onAdd:()=>this.notify("Yangi dars qo'shish (demo)"),lessons:m.lessons.map(l=>({title:l.title,duration:l.duration,iconEl:this.ic("video",13),onPreview:()=>this.notify('"'+l.title+'" preview (demo)'),onDelete:()=>this.deleteItem(l.title)}))})),
+      lessonCourseList:(()=>{
+        const DB=window.ProSkillDB;const me=DB&&DB.currentUser();
+        if(!DB||!me) return [];
+        return DB.table("courses").filter(c=>c.teacherId===me.id).map(c=>{
+          const sel=st.lessonCourse===c.id;
+          const ls=DB.lessonsOf(c.id);
+          return{
+            id:c.id,title:c.title,cat:c.cat,
+            lessons:ls.length,
+            grad:this.grads[c.cat]||"linear-gradient(135deg,#6366f1,#8b5cf6)",
+            initial:(c.cat||"K").charAt(0),
+            onSelect:()=>this.setState({lessonCourse:c.id}),
+            bg:sel?"linear-gradient(135deg,rgba(99,102,241,.2),rgba(99,102,241,.13))":"transparent",
+            color:sel?"var(--text)":"var(--muted)"
+          };
+        });
+      })(),
+      moduleList:(()=>{
+        const DB=window.ProSkillDB;if(!DB||!st.lessonCourse)return [];
+        return DB.modulesOf(st.lessonCourse).map(m=>{
+          const lessons=DB.table("lessons").filter(l=>l.moduleId===m.id).sort((a,b)=>(a.order||0)-(b.order||0));
+          return{
+            title:m.title,count:lessons.length,
+            onAdd:()=>this.notify("Yangi dars qo'shish — Video Darslar bo'limida"),
+            lessons:lessons.map(l=>({title:l.title,duration:l.duration||"0:00",iconEl:this.ic("video",13),onPreview:()=>this.notify('"'+l.title+'" preview'),onDelete:()=>this.deleteItem(l.title,()=>{DB.remove("lessons",l.id);this.forceUpdate();})}))
+          };
+        });
+      })(),
 
       // ===== MY COURSES (DB — faqat o'z kurslarim) =====
       myCourseCards:(()=>{
@@ -1207,9 +1302,28 @@ class Component extends DCLogic {
       })(),
       onCreateCourse:()=>this.openCourseForm(),
 
-      // ===== MODULES (boshqaruv) =====
-      onAddModule:()=>this.notify("Yangi modul qo'shildi (demo)"),
-      moduleCards:(this.modulesByCourse[st.lessonCourse]||[]).map((m)=>({title:m.title,count:m.lessons.length,onEdit:()=>this.notify('"'+m.title+'" tahrirlash (demo)'),onDelete:()=>this.deleteItem(m.title)})),
+      // ===== MODULES (boshqaruv — DB) =====
+      onAddModule:()=>this.openAddModule(),
+      moduleCards:(()=>{
+        const DB=window.ProSkillDB;if(!DB||!st.lessonCourse)return [];
+        return DB.modulesOf(st.lessonCourse).map(m=>{
+          const count=DB.table("lessons").filter(l=>l.moduleId===m.id).length;
+          return{
+            id:m.id,title:m.title,count:count,
+            onEdit:()=>this.openEditModule(m),
+            onDelete:()=>this.deleteModuleById(m)
+          };
+        });
+      })(),
+      showModuleForm:!!st.showModuleForm,
+      moduleTitle:st.moduleTitle||"",
+      moduleFormError:st.moduleFormError||null,
+      moduleFormTitle:st.editModuleId?"Modulni tahrirlash":"Yangi modul",
+      moduleFormHint:st.editModuleId?"Modul nomini o'zgartiring va saqlang.":"Yangi modul tanlangan kursga qo'shiladi.",
+      moduleFormConfirm:st.editModuleId?"Saqlash":"Qo'shish",
+      onModuleTitle:(e)=>this.setState({moduleTitle:e.target.value,moduleFormError:null}),
+      closeModuleForm:()=>this.closeModuleForm(),
+      submitModule:()=>this.submitModule(),
 
       // ===== TESTS & ASSIGNMENTS =====
       testRows:this.myTests.map(t=>({...t,statusLabel:t.active?"Aktiv":"Noaktiv",statusColor:t.active?"#34d399":"#9b98ad",avgLabel:t.avg>0?t.avg+"%":"—",avgColor:t.avg>=75?"#34d399":(t.avg>0?"#fbbf24":"#9b98ad")})),

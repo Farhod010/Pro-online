@@ -399,6 +399,42 @@
     log(byUser || "Teacher", role || "teacher", "Yangi kurs yaratdi", c.title + " (draft)", "content");
     return { ok: true, course: c };
   }
+  function addModule(courseId, title, byUser, role) {
+    if (!courseId) return { ok: false, error: "Kurs tanlanmagan" };
+    if (!title || !String(title).trim()) return { ok: false, error: "Modul nomi majburiy" };
+    var mods = modulesOf(courseId);
+    var m = insert("modules", {
+      courseId: courseId,
+      title: String(title).trim(),
+      order: mods.length
+    });
+    log(byUser || "Teacher", role || "teacher", "Yangi modul qo'shdi", courseTitle(courseId) + " → " + m.title, "content");
+    return { ok: true, module: m };
+  }
+  function updateModule(id, patch, byUser, role) {
+    var m = byId("modules", id);
+    if (!m) return { ok: false, error: "Modul topilmadi" };
+    update("modules", id, patch || {});
+    log(byUser || "Teacher", role || "teacher", "Modulni tahrirladi", (patch && patch.title) || m.title, "content");
+    return { ok: true, module: byId("modules", id) };
+  }
+  function deleteModule(id, byUser, role) {
+    var m = byId("modules", id);
+    if (!m) return { ok: false, error: "Modul topilmadi" };
+    var title = m.title;
+    var courseId = m.courseId;
+    data.lessons = data.lessons.filter(function (l) { return l.moduleId !== id; });
+    data.progress = (data.progress || []).filter(function (p) {
+      return data.lessons.some(function (l) { return l.id === p.lessonId; });
+    });
+    remove("modules", id);
+    // re-order remaining
+    modulesOf(courseId).forEach(function (mod, i) { mod.order = i; });
+    save();
+    log(byUser || "Teacher", role || "teacher", "Modulni o'chirdi", courseTitle(courseId) + " → " + title, "content");
+    return { ok: true };
+  }
+
   function deleteCourse(id, byUser, role) {
     var c = byId("courses", id);
     if (!c) return { ok: false, error: "Kurs topilmadi" };
@@ -475,6 +511,7 @@
     notify: notify, notificationsOf: notificationsOf, markNotifRead: markNotifRead, log: log,
     setUserStatus: setUserStatus, setUserRole: setUserRole, deleteUser: deleteUser,
     setCourseStatus: setCourseStatus, toggleFeatured: toggleFeatured, addCourse: addCourse, deleteCourse: deleteCourse,
+    addModule: addModule, updateModule: updateModule, deleteModule: deleteModule,
     analytics: analytics, topCourses: topCourses, money: money
   };
 })();
