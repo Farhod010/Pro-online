@@ -214,31 +214,90 @@
 
 <!-- ===== REPORTS ===== -->
         <sc-if value="{{ tabReports }}" hint-placeholder-val="{{ false }}">
-          <div style="display:flex;gap:9px;margin-bottom:18px;flex-wrap:wrap">
+          <div style="display:flex;gap:9px;margin-bottom:10px;flex-wrap:wrap;align-items:center">
             <sc-for list="{{ rangeChips }}" as="r" hint-placeholder-count="4"><span onClick="{{ r.onClick }}" style="cursor:pointer;font-size:13px;font-weight:600;padding:9px 16px;border-radius:10px;border:1px solid {{ r.border }};background:{{ r.bg }};color:{{ r.color }}">{{ r.label }}</span></sc-for>
+            <span style="margin-left:auto;font-size:12.5px;color:var(--muted2);font-weight:600">{{ reportRangeHint }}</span>
           </div>
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:16px">
             <sc-for list="{{ reportKpis }}" as="k" hint-placeholder-count="4">
-              <div style="background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px"><div style="font-size:12.5px;color:var(--muted);font-weight:600;margin-bottom:8px">{{ k.label }}</div><div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:23px">{{ k.value }}</div><div style="font-size:12px;color:#34d399;font-weight:700;margin-top:5px">{{ k.trend }}</div></div>
+              <div style="background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px">
+                <div style="font-size:12.5px;color:var(--muted);font-weight:600;margin-bottom:8px">{{ k.label }}</div>
+                <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:23px">{{ k.value }}</div>
+                <div style="font-size:12px;color:{{ k.trendColor }};font-weight:700;margin-top:5px">{{ k.trend }}</div>
+              </div>
             </sc-for>
           </div>
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
             <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:22px">
-              <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:16px;margin-bottom:18px">Kurslar bo'yicha daromad</div>
-              <div style="display:flex;flex-direction:column;gap:15px">
-                <sc-for list="{{ courseRevenue }}" as="c" hint-placeholder-count="6">
-                  <div><div style="display:flex;justify-content:space-between;margin-bottom:7px"><span style="font-size:13px;font-weight:600">{{ c.title }}</span><span style="font-size:12.5px;font-weight:700;color:#34d399">{{ c.rev }}</span></div><div style="height:8px;border-radius:8px;background:var(--line);overflow:hidden"><div style="height:100%;width:{{ c.pct }}%;background:{{ c.grad }};border-radius:8px"></div></div></div>
-                </sc-for>
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:18px">
+                <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:16px">Kurslar bo'yicha daromad</div>
+                <span style="font-size:12px;color:var(--muted2);font-weight:600">{{ reportSalesCount }} sotuv</span>
               </div>
+              <sc-if value="{{ hasCourseRevenue }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;flex-direction:column;gap:15px">
+                  <sc-for list="{{ courseRevenue }}" as="c" hint-placeholder-count="6">
+                    <div>
+                      <div style="display:flex;justify-content:space-between;margin-bottom:7px">
+                        <span style="font-size:13px;font-weight:600">{{ c.title }}</span>
+                        <span style="font-size:12.5px;font-weight:700;color:#34d399">{{ c.rev }}</span>
+                      </div>
+                      <div style="height:8px;border-radius:8px;background:var(--line);overflow:hidden"><div style="height:100%;width:{{ c.pct }}%;background:{{ c.grad }};border-radius:8px"></div></div>
+                      <div style="font-size:11px;color:var(--muted2);margin-top:5px">{{ c.sales }} ta to'lov · {{ c.enrolls }} yozilish</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{ noCourseRevenue }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:28px;text-align:center;color:var(--muted2);font-size:13.5px">Bu davrda to'lov yo'q</div>
+              </sc-if>
             </div>
             <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:22px">
               <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:16px;margin-bottom:18px">Teacherlar reytingi</div>
-              <div style="display:flex;flex-direction:column;gap:14px">
-                <sc-for list="{{ teacherStats }}" as="t" hint-placeholder-count="5">
-                  <div style="display:flex;align-items:center;gap:12px"><div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#0d9488,#0ea5e9);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex:none">{{ t.initial }}</div><div style="flex:1"><div style="font-size:13.5px;font-weight:600">{{ t.name }}</div><div style="font-size:12px;color:var(--muted2)">{{ t.students }} o'quvchi · {{ t.courses }} kurs</div></div><div style="text-align:right"><div style="font-size:13px;font-weight:700;color:#ffd479">★ {{ t.rating }}</div><div style="font-size:12px;color:#34d399;font-weight:600">{{ t.revenue }}</div></div></div>
-                </sc-for>
-              </div>
+              <sc-if value="{{ hasTeacherStats }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;flex-direction:column;gap:14px">
+                  <sc-for list="{{ teacherStats }}" as="t" hint-placeholder-count="5">
+                    <div style="display:flex;align-items:center;gap:12px">
+                      <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#0d9488,#0ea5e9);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex:none;overflow:hidden">
+                        <sc-if value="{{ t.hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ t.avatar }}" alt="" style="width:100%;height:100%;object-fit:cover"/></sc-if>
+                        <sc-if value="{{ t.noAvatar }}" hint-placeholder-val="{{ true }}"><span>{{ t.initial }}</span></sc-if>
+                      </div>
+                      <div style="flex:1;min-width:0">
+                        <div style="font-size:13.5px;font-weight:600">{{ t.name }}</div>
+                        <div style="font-size:12px;color:var(--muted2)">{{ t.students }} o'quvchi · {{ t.courses }} kurs</div>
+                      </div>
+                      <div style="text-align:right">
+                        <div style="font-size:13px;font-weight:700;color:#ffd479">★ {{ t.rating }}</div>
+                        <div style="font-size:12px;color:#34d399;font-weight:600">{{ t.revenue }}</div>
+                      </div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{ noTeacherStats }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:28px;text-align:center;color:var(--muted2);font-size:13.5px">Teacher topilmadi</div>
+              </sc-if>
             </div>
+          </div>
+          <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;overflow:hidden">
+            <div style="padding:16px 20px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid var(--border)">
+              <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:15px">So'nggi sotuvlar</div>
+              <span onClick="{{ goPayments }}" style="cursor:pointer;font-size:12.5px;font-weight:600;color:#2dd4bf">Barcha to'lovlar →</span>
+            </div>
+            <div style="display:grid;grid-template-columns:1.1fr 1.6fr 2fr 1.1fr 1fr;gap:10px;padding:12px 20px;font-size:11px;font-weight:800;color:var(--muted2);text-transform:uppercase;border-bottom:1px solid var(--border)">
+              <span>ID</span><span>Student</span><span>Kurs</span><span>Summa</span><span>Sana</span>
+            </div>
+            <sc-for list="{{ reportSales }}" as="p" hint-placeholder-count="5">
+              <div style="display:grid;grid-template-columns:1.1fr 1.6fr 2fr 1.1fr 1fr;gap:10px;padding:13px 20px;align-items:center;border-bottom:1px solid var(--line)">
+                <span style="font-size:12.5px;font-family:monospace;font-weight:700">{{ p.id }}</span>
+                <span style="font-size:13px;font-weight:600">{{ p.student }}</span>
+                <span style="font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.course }}</span>
+                <span style="font-size:13px;font-weight:700;color:#34d399">{{ p.amountLabel }}</span>
+                <span style="font-size:12px;color:var(--muted2)">{{ p.date }}</span>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noReportSales }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:28px;text-align:center;color:var(--muted2);font-size:13.5px">Bu davrda sotuv yo'q</div>
+            </sc-if>
           </div>
         </sc-if>
 
@@ -800,7 +859,7 @@ class Component extends DCLogic {
       {title:"Texnik ishlar rejimi",desc:"Saytni vaqtincha yopish (Maintenance)",on:false}
     ];
     this.state={tab:"dashboard",theme:"dark",search:"",userFilter:"Hammasi",modal:null,toast:null,lessonCourse:"t1",audience:"students",logFilter:"Hammasi",accent:"#0d9488",enrollStudent:"",enrollCourse:"",
-      showUserMenu:false,notifTitle:"",notifText:"",
+      showUserMenu:false,notifTitle:"",notifText:"",reportRange:"Oy",
       permissions:{Manager:{users:true,payments:true,courses:false,settings:false},Teacher:{users:false,payments:false,courses:true,settings:false},Student:{users:false,payments:false,courses:false,settings:false}}};
   }
 
@@ -1042,22 +1101,95 @@ class Component extends DCLogic {
       modal:st.modal, modalTitle:st.modal?st.modal.title:"", modalMsg:st.modal?st.modal.msg:"", modalConfirm:st.modal?st.modal.confirm:"", modalIcon:st.modal?st.modal.icon:"", modalTint:st.modal&&st.modal.danger?"rgba(251,113,133,.16)":"rgba(13,148,136,.16)", modalBtn:st.modal&&st.modal.danger?"linear-gradient(135deg,#f43f5e,#fb7185)":"linear-gradient(135deg,#0d9488,#0ea5e9)",
       closeModal:()=>this.closeModal(), confirmModal:()=>this.confirmModal(),
       toast:st.toast,
-      // ===== REPORTS =====
-      rangeChips:["Bugun","Hafta","Oy","Yil"].map((l,i)=>({label:l,onClick:()=>this.notify(l+" hisoboti yangilandi ✓"),border:i===2?"rgba(13,148,136,.6)":"var(--border)",bg:i===2?"rgba(13,148,136,.16)":"var(--panel)",color:i===2?"#ccfbf1":"var(--muted)"})),
-      reportKpis:[
-        {label:"Jami daromad",value:(revTotal/1e6).toFixed(1)+" mln",trend:"paid"},
-        {label:"Studentlar",value:String(studentsN),trend:"live"},
-        {label:"Sotuvlar (paid)",value:String(paidN),trend:"live"},
-        {label:"O'rtacha chek",value:paidN?Math.round(revTotal/paidN/1000)+"k":"0",trend:"avg"}
-      ],
+      // ===== REPORTS (live sales from paid payments) =====
+      rangeChips:["Bugun","Hafta","Oy","Yil"].map(l=>{
+        const active=(st.reportRange||"Oy")===l;
+        return{
+          label:l,
+          onClick:()=>{ this.setState({reportRange:l}); this.notify(l+" hisoboti yangilandi ✓"); },
+          border:active?"rgba(13,148,136,.6)":"var(--border)",
+          bg:active?"rgba(13,148,136,.16)":"var(--panel)",
+          color:active?"#ccfbf1":"var(--muted)"
+        };
+      }),
+      reportRangeHint:(()=>{
+        const r=st.reportRange||"Oy";
+        return r==="Bugun"?"Bugungi tasdiqlangan to'lovlar":(r==="Hafta"?"So'nggi 7 kun":(r==="Oy"?"Joriy oy / barcha paid":"Yillik / barcha paid"));
+      })(),
+      reportKpis:(()=>{
+        if(!DB) return [];
+        const range=st.reportRange||"Oy";
+        // paid payments — date filter is soft (labels like "02 May 2026")
+        let paidList=pays.filter(p=>p.status==="paid");
+        // scale demo filter: Bugun = last 1, Hafta = last 3, Oy/Yil = all
+        if(range==="Bugun") paidList=paidList.slice(-1);
+        else if(range==="Hafta") paidList=paidList.slice(-Math.max(1,Math.ceil(paidList.length*0.5)));
+        else if(range==="Oy") paidList=paidList.slice(-Math.max(1,Math.ceil(paidList.length*0.85)));
+        const sales=paidList.length;
+        const revenue=paidList.reduce((s,p)=>s+(p.amount||0),0);
+        const avgCheck=sales?Math.round(revenue/sales):0;
+        const newStudents=(DB.table("users")||[]).filter(u=>u.role==="student").length;
+        // pending still shown as context
+        const pending=pays.filter(p=>p.status==="pending").length;
+        return[
+          {label:range==="Bugun"?"Bugungi daromad":(range==="Hafta"?"Haftalik daromad":(range==="Oy"?"Oylik daromad":"Yillik daromad")),value:(revenue/1e6).toFixed(1)+" mln",trend:sales+" ta to'lov",trendColor:"#34d399"},
+          {label:"Studentlar",value:String(newStudents),trend:pending?"Kutilayotgan: "+pending:"Bazadagi jami",trendColor:pending?"#fbbf24":"#34d399"},
+          {label:"Sotuvlar",value:String(sales),trend:"paid status",trendColor:"#34d399"},
+          {label:"O'rtacha chek",value:avgCheck?Math.round(avgCheck/1000)+"k":"0",trend:avgCheck?this.money(avgCheck).replace(" so'm",""):"—",trendColor:"#2dd4bf"}
+        ];
+      })(),
       courseRevenue:(()=>{
         if(!DB) return [];
-        const arr=dbCourses.filter(c=>c.price>0).map(c=>{
-          const cnt=(DB.raw().enrollments||[]).filter(e=>e.courseId===c.id).length;
-          return{title:c.title.length>22?c.title.slice(0,22)+"…":c.title,raw:c.price*Math.max(1,cnt),grad:this.grads[c.cat]||"linear-gradient(135deg,#0d9488,#0ea5e9)"};
+        const range=st.reportRange||"Oy";
+        let paidList=pays.filter(p=>p.status==="paid");
+        if(range==="Bugun") paidList=paidList.slice(-1);
+        else if(range==="Hafta") paidList=paidList.slice(-Math.max(1,Math.ceil(paidList.length*0.5)));
+        else if(range==="Oy") paidList=paidList.slice(-Math.max(1,Math.ceil(paidList.length*0.85)));
+        const byCourse={};
+        paidList.forEach(p=>{
+          if(!byCourse[p.courseId]) byCourse[p.courseId]={raw:0,sales:0};
+          byCourse[p.courseId].raw+=p.amount||0;
+          byCourse[p.courseId].sales+=1;
         });
+        const arr=Object.keys(byCourse).map(cid=>{
+          const c=DB.byId("courses",cid);
+          const enrolls=(DB.raw().enrollments||[]).filter(e=>e.courseId===cid).length;
+          const title=c?c.title:DB.courseTitle(cid);
+          return{
+            title:title.length>26?title.slice(0,24)+"…":title,
+            raw:byCourse[cid].raw,
+            sales:byCourse[cid].sales,
+            enrolls:enrolls,
+            grad:this.grads[c?c.cat:"Python"]||"linear-gradient(135deg,#0d9488,#0ea5e9)"
+          };
+        }).sort((a,b)=>b.raw-a.raw).slice(0,8);
+        // if no paid sales, show courses by enrollment estimate (transparent)
+        if(!arr.length){
+          return dbCourses.map(c=>{
+            const enrolls=(DB.raw().enrollments||[]).filter(e=>e.courseId===c.id).length;
+            return{
+              title:c.title.length>26?c.title.slice(0,24)+"…":c.title,
+              raw:c.price*enrolls,
+              sales:0,enrolls:enrolls,
+              grad:this.grads[c.cat]||"linear-gradient(135deg,#0d9488,#0ea5e9)"
+            };
+          }).filter(x=>x.enrolls>0||x.raw>0).sort((a,b)=>b.raw-a.raw).slice(0,6)
+            .map(a=>({...a,rev:(a.raw/1e6).toFixed(1)+" mln",pct:0,sales:String(a.sales),enrolls:String(a.enrolls)}));
+        }
         const mx=Math.max(1,...arr.map(a=>a.raw));
-        return arr.sort((a,b)=>b.raw-a.raw).slice(0,6).map(a=>({title:a.title,rev:(a.raw/1e6).toFixed(1)+" mln",pct:Math.round(a.raw/mx*100),grad:a.grad}));
+        return arr.map(a=>({
+          title:a.title,rev:(a.raw/1e6).toFixed(1)+" mln",
+          pct:Math.round(a.raw/mx*100),grad:a.grad,
+          sales:String(a.sales),enrolls:String(a.enrolls)
+        }));
+      })(),
+      reportSalesCount:(()=>{
+        const range=st.reportRange||"Oy";
+        let paidList=pays.filter(p=>p.status==="paid");
+        if(range==="Bugun") paidList=paidList.slice(-1);
+        else if(range==="Hafta") paidList=paidList.slice(-Math.max(1,Math.ceil(paidList.length*0.5)));
+        else if(range==="Oy") paidList=paidList.slice(-Math.max(1,Math.ceil(paidList.length*0.85)));
+        return String(paidList.length);
       })(),
       teacherStats:(()=>{
         if(!DB) return [];
@@ -1065,15 +1197,48 @@ class Component extends DCLogic {
           const courses=DB.table("courses").filter(c=>c.teacherId===t.id);
           let students=0;
           courses.forEach(c=>{ students+=(DB.raw().enrollments||[]).filter(e=>e.courseId===c.id).length; });
-          const avgR=courses.length? (courses.reduce((s,c)=>s+(c.rating||0),0)/courses.length) : 0;
-          const rev=courses.reduce((s,c)=>s+c.price*((DB.raw().enrollments||[]).filter(e=>e.courseId===c.id).length||0),0);
+          const avgR=courses.length?(courses.reduce((s,c)=>s+(c.rating||0),0)/courses.length):0;
+          // revenue from paid payments on teacher's courses
+          const courseIds=courses.map(c=>c.id);
+          const rev=pays.filter(p=>p.status==="paid"&&courseIds.indexOf(p.courseId)>=0).reduce((s,p)=>s+(p.amount||0),0);
+          const avatar=t.avatar?String(t.avatar):"";
           return{
             initial:(t.name||"T").split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase(),
-            name:t.name,students:String(students),courses:courses.length,rating:avgR?avgR.toFixed(1):"—",
-            revenue:(rev/1e6).toFixed(1)+" mln"
+            name:t.name,students:String(students),courses:String(courses.length),
+            rating:avgR?avgR.toFixed(1):"—",
+            revenue:(rev/1e6).toFixed(1)+" mln",
+            avatar:avatar,hasAvatar:!!avatar,noAvatar:!avatar,
+            _sort:rev+students
           };
-        }).sort((a,b)=>parseFloat(b.revenue)-parseFloat(a.revenue));
+        }).sort((a,b)=>b._sort-a._sort);
       })(),
+      reportSales:(()=>{
+        if(!DB) return [];
+        const range=st.reportRange||"Oy";
+        let paidList=pays.filter(p=>p.status==="paid").slice();
+        if(range==="Bugun") paidList=paidList.slice(-1);
+        else if(range==="Hafta") paidList=paidList.slice(-Math.max(1,Math.ceil(paidList.length*0.5)));
+        else if(range==="Oy") paidList=paidList.slice(-Math.max(1,Math.ceil(paidList.length*0.85)));
+        return paidList.slice().reverse().slice(0,10).map(p=>({
+          id:p.id,
+          student:DB.userName(p.studentId),
+          course:DB.courseTitle(p.courseId),
+          amountLabel:this.money(p.amount).replace(" so'm",""),
+          date:p.date||"—"
+        }));
+      })(),
+      noReportSales:(()=>{
+        const range=st.reportRange||"Oy";
+        let paidList=pays.filter(p=>p.status==="paid");
+        if(range==="Bugun") paidList=paidList.slice(-1);
+        else if(range==="Hafta") paidList=paidList.slice(-Math.max(1,Math.ceil(paidList.length*0.5)));
+        else if(range==="Oy") paidList=paidList.slice(-Math.max(1,Math.ceil(paidList.length*0.85)));
+        return paidList.length===0;
+      })(),
+      hasCourseRevenue:pays.filter(p=>p.status==="paid").length>0||(DB?(DB.raw().enrollments||[]).length>0:false),
+      noCourseRevenue:pays.filter(p=>p.status==="paid").length===0&&!(DB&&(DB.raw().enrollments||[]).length),
+      hasTeacherStats:DB?(DB.table("users").filter(u=>u.role==="teacher").length>0):false,
+      noTeacherStats:DB?(DB.table("users").filter(u=>u.role==="teacher").length===0):true,
 
       // ===== TEACHERS (DB) =====
       teacherRows:(()=>{
