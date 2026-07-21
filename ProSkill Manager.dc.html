@@ -626,16 +626,16 @@
               <div style="display:grid;grid-template-columns:1fr 1fr 180px;gap:14px;align-items:end">
                 <div>
                   <label style="font-size:12px;color:var(--muted);font-weight:700;display:block;margin-bottom:7px">① Student tanlang</label>
-                  <select onChange="{{ setEnrollStudentSelect }}" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:13px 14px;color:var(--text);font-size:14px;outline:none">
+                  <select value="{{ enrollStudent }}" onChange="{{ setEnrollStudentSelect }}" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:13px 14px;color:var(--text);font-size:14px;outline:none">
                     <option value="">Student tanlang…</option>
-                    <sc-for list="{{ enrollStudentOptions }}" as="o" hint-placeholder-count="5"><option value="{{ o.value }}" selected="{{ o.selected }}">{{ o.label }}</option></sc-for>
+                    <sc-for list="{{ enrollStudentOptions }}" as="o" hint-placeholder-count="5"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
                   </select>
                 </div>
                 <div>
                   <label style="font-size:12px;color:var(--muted);font-weight:700;display:block;margin-bottom:7px">② Kurs tanlang</label>
-                  <select onChange="{{ setEnrollCourseSelect }}" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:13px 14px;color:var(--text);font-size:14px;outline:none">
+                  <select value="{{ enrollCourse }}" onChange="{{ setEnrollCourseSelect }}" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:13px 14px;color:var(--text);font-size:14px;outline:none">
                     <option value="">Kurs tanlang…</option>
-                    <sc-for list="{{ enrollCourseOptions }}" as="o" hint-placeholder-count="5"><option value="{{ o.value }}" selected="{{ o.selected }}">{{ o.label }}</option></sc-for>
+                    <sc-for list="{{ enrollCourseOptions }}" as="o" hint-placeholder-count="5"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
                   </select>
                 </div>
                 <button onClick="{{ doManualEnroll }}" style="cursor:pointer;border:none;background:linear-gradient(135deg,#0d9488,#0ea5e9);color:#fff;font-weight:800;font-size:14px;padding:14px 16px;border-radius:12px;box-shadow:0 10px 24px rgba(13,148,136,.3)">③ Kursni ochish</button>
@@ -692,6 +692,9 @@
                     <sc-if value="{{ p.isPending }}" hint-placeholder-val="{{ false }}">
                       <span onClick="{{ p.onApprove }}" style="cursor:pointer;font-size:11.5px;font-weight:800;padding:7px 10px;border-radius:8px;border:none;background:linear-gradient(135deg,#34d399,#10b981);color:#042f1a">✓</span>
                       <span onClick="{{ p.onReject }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:7px 10px;border-radius:8px;border:1px solid rgba(251,113,133,.3);background:rgba(251,113,133,.1);color:#fb7185">✕</span>
+                    </sc-if>
+                    <sc-if value="{{ p.isFailed }}" hint-placeholder-val="{{ false }}">
+                      <span onClick="{{ p.onRetry }}" style="cursor:pointer;font-size:11.5px;font-weight:800;padding:7px 10px;border-radius:8px;border:none;background:rgba(251,191,36,.18);color:#fbbf24">Qayta</span>
                     </sc-if>
                     <sc-if value="{{ p.isDone }}" hint-placeholder-val="{{ true }}">
                       <span onClick="{{ p.onView }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--muted)">Ko'rish</span>
@@ -991,7 +994,7 @@ class Component extends DCLogic {
       {title:"Texnik ishlar rejimi",desc:"Saytni vaqtincha yopish (Maintenance)",on:false}
     ];
     this.state={tab:"dashboard",theme:"dark",search:"",userFilter:"Hammasi",modal:null,toast:null,lessonCourse:"t1",audience:"students",logFilter:"Hammasi",accent:"#0d9488",enrollStudent:"",enrollCourse:"",
-      showUserMenu:false,notifTitle:"",notifText:"",reportRange:"Oy",payFilter:"Hammasi",enrollError:null,
+      showUserMenu:false,notifTitle:"",notifText:"",reportRange:"Oy",payFilter:"Hammasi",enrollError:null,payRev:0,
       permissions:{Manager:{users:true,payments:true,courses:false,settings:false},Teacher:{users:false,payments:false,courses:true,settings:false},Student:{users:false,payments:false,courses:false,settings:false}}};
   }
 
@@ -1064,22 +1067,56 @@ class Component extends DCLogic {
     this.notify((u.name||"User")+" faollashtirildi ✓"); this.forceUpdate();
   }
   deleteItem(name,cb){this.ask({title:"O'chirishni tasdiqlang",msg:'"'+name+'" butunlay o\'chiriladi. Bu amalni qaytarib bo\'lmaydi.',confirm:"O'chirish",danger:true,icon:"🗑",onConfirm:()=>{if(cb)cb();this.notify(name+" o'chirildi");}});}
-  approvePay(p){const DB=window.ProSkillDB;const me=this.meUser();if(!DB||!p)return;const r=DB.approvePayment(p.id,me?me.name:"Manager");if(r&&r.ok===false){this.notify("Tasdiqlanmadi");return;}this.notify("To'lov tasdiqlandi ✓ Kurs ochildi");this.forceUpdate();}
-  rejectPay(p){this.ask({title:"To'lovni rad qilish",msg:(p.id||"")+" to'lovi rad etiladi. Studentga xabar ketadi. Davom etasizmi?",confirm:"Rad qilish",danger:true,icon:"✕",onConfirm:()=>{const DB=window.ProSkillDB;const me=this.meUser();DB.rejectPayment(p.id,"Manager rad etdi",me?me.name:"Manager");this.notify("To'lov rad qilindi");this.forceUpdate();}});}
+  refreshPays(){ this.setState(s=>({payRev:(s.payRev||0)+1,enrollError:null})); }
+  approvePay(p){
+    const DB=window.ProSkillDB;const me=this.meUser();
+    if(!DB||!p){ this.notify("To'lov topilmadi"); return; }
+    const r=DB.approvePayment(p.id,me?me.name:"Manager");
+    if(!r||!r.ok){ this.notify((r&&r.error)||"Tasdiqlanmadi"); return; }
+    this.notify((p.student||"Student")+" — to'lov tasdiqlandi ✓ Kurs ochildi");
+    this.refreshPays();
+  }
+  rejectPay(p){
+    this.ask({
+      title:"To'lovni rad etish",
+      msg:(p.student||"")+" · "+(p.course||"")+"\n"+(p.id||"")+" to'lovi rad etiladi.",
+      confirm:"Rad etish",danger:true,icon:"✕",
+      onConfirm:()=>{
+        const DB=window.ProSkillDB;const me=this.meUser();
+        const r=DB.rejectPayment(p.id,"Manager rad etdi",me?me.name:"Manager");
+        if(!r||!r.ok){ this.notify((r&&r.error)||"Rad etilmadi"); return; }
+        this.notify("To'lov rad etildi");
+        this.refreshPays();
+      }
+    });
+  }
   approveAllPending(){
     const DB=window.ProSkillDB;const me=this.meUser();
     if(!DB) return;
-    const list=(DB.raw().payments||[]).filter(p=>p.status==="pending");
+    const list=(DB.raw().payments||[]).filter(x=>x.status==="pending");
     if(!list.length){ this.notify("Kutilayotgan to'lov yo'q"); return; }
     this.ask({
       title:"Barchasini tasdiqlash",
       msg:list.length+" ta kutilayotgan to'lov tasdiqlanadi va kurslar ochiladi.",
       confirm:"Tasdiqlash",icon:"✓",
       onConfirm:()=>{
-        list.forEach(p=>DB.approvePayment(p.id,me?me.name:"Manager"));
-        this.notify(list.length+" ta to'lov tasdiqlandi ✓"); this.forceUpdate();
+        let n=0;
+        list.forEach(x=>{ const r=DB.approvePayment(x.id,me?me.name:"Manager"); if(r&&r.ok) n++; });
+        this.notify(n+" ta to'lov tasdiqlandi ✓");
+        this.refreshPays();
       }
     });
+  }
+  doManualEnrollNow(){
+    const DB=window.ProSkillDB;const me=this.meUser();
+    if(!DB){ this.notify("DB yuklanmadi"); return; }
+    const s=(this.state.enrollStudent||"").trim();
+    const c=(this.state.enrollCourse||"").trim();
+    if(!s||!c){ this.setState({enrollError:"Student va kursni tanlang"}); return; }
+    const r=DB.manualEnroll(s,c,me?me.name:"Manager");
+    if(!r||!r.ok){ this.setState({enrollError:(r&&r.error)||"Ochilmadi"}); return; }
+    this.setState({enrollStudent:"",enrollCourse:"",enrollError:null,payRev:(this.state.payRev||0)+1});
+    this.notify((r.student?r.student.name:s)+' → "'+(r.course?r.course.title:c)+'" ochildi ✓');
   }
   toggleReview(r){
     const DB=window.ProSkillDB;
@@ -1585,7 +1622,8 @@ class Component extends DCLogic {
           amountLabel:this.money(p.amount).replace(" so'm",""),
           initial:(name||"S").split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase(),
           avatar:avatar,hasAvatar:!!avatar,noAvatar:!avatar,
-          onApprove:()=>this.approvePay(p),onReject:()=>this.rejectPay(p)
+          onApprove:()=>this.approvePay({id:p.id,student:name,course:DB.courseTitle(p.courseId)}),
+          onReject:()=>this.rejectPay({id:p.id,student:name,course:DB.courseTitle(p.courseId)})
         };
       }),
       payFilterChips:["Hammasi","pending","paid","failed"].map(f=>{
@@ -1621,13 +1659,21 @@ class Component extends DCLogic {
             amountLabel:this.money(p.amount).replace(" so'm",""),
             statusColor:stColor(p.status),statusLabel:stLabel(p.status),statusBg:statusBg,
             methodBg:mm[0],methodColor:mm[1],
-            isPending:p.status==="pending",isDone:p.status!=="pending",
+            isPending:p.status==="pending",
+            isFailed:p.status==="failed",
+            isDone:p.status==="paid",
             initial:(name||"S").split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase(),
             avatar:avatar,hasAvatar:!!avatar,noAvatar:!avatar,
-            onApprove:()=>this.approvePay(p),onReject:()=>this.rejectPay(p),
+            onApprove:()=>this.approvePay({id:p.id,student:name,course:DB.courseTitle(p.courseId)}),
+            onReject:()=>this.rejectPay({id:p.id,student:name,course:DB.courseTitle(p.courseId)}),
+            onRetry:()=>{
+              DB.update("payments",p.id,{status:"pending",reason:""});
+              this.notify(p.id+" qayta kutilmoqda holatiga o'tkazildi");
+              this.refreshPays();
+            },
             onView:()=>this.ask({
               title:"To'lov tafsiloti",
-              msg:p.id+"\n"+name+"\n"+DB.courseTitle(p.courseId)+"\n"+this.money(p.amount)+" · "+method+"\nHolat: "+stLabel(p.status)+(p.reason?"\nSabab: "+p.reason:""),
+              msg:p.id+" · "+name+"\n"+DB.courseTitle(p.courseId)+"\n"+this.money(p.amount)+" · "+method+"\nHolat: "+stLabel(p.status)+(p.reason?"\nSabab: "+p.reason:""),
               confirm:"Yopish",icon:"💳",
               onConfirm:()=>{}
             })
@@ -1657,29 +1703,18 @@ class Component extends DCLogic {
       })),
       // ===== MANUAL ENROLLER =====
       enrollStudent:st.enrollStudent||"", enrollCourse:st.enrollCourse||"", enrollError:st.enrollError||null,
-      enrollStudentOptions:(DB?DB.table("users").filter(u=>u.role==="student"):[]).map(u=>({
+      payRev:st.payRev||0,
+      enrollStudentOptions:(DB?DB.table("users").filter(u=>u.role==="student"&&u.status!=="blocked"):[]).map(u=>({
         value:u.email||u.name,
-        label:u.name+" · "+(u.email||""),
-        selected:(st.enrollStudent||"")===(u.email||u.name)
+        label:u.name+" · "+(u.email||"")
       })),
       enrollCourseOptions:dbCourses.filter(c=>c.status==="published"||c.status==="pending"||c.status==="draft").map(c=>({
         value:c.title,
-        label:c.title+(c.price?(" · "+this.money(c.price).replace(" so'm","")):" · Bepul"),
-        selected:(st.enrollCourse||"")===c.title
+        label:c.title+(c.price?(" · "+this.money(c.price).replace(" so'm","")):" · Bepul")
       })),
-      setEnrollStudent:e=>this.setState({enrollStudent:e.target.value,enrollError:null}),
-      setEnrollCourse:e=>this.setState({enrollCourse:e.target.value,enrollError:null}),
-      setEnrollStudentSelect:e=>this.setState({enrollStudent:e.target.value,enrollError:null}),
-      setEnrollCourseSelect:e=>this.setState({enrollCourse:e.target.value,enrollError:null}),
-      doManualEnroll:()=>{
-        const s=(st.enrollStudent||"").trim(),c=(st.enrollCourse||"").trim();
-        if(!s||!c){ this.setState({enrollError:"Student va kursni tanlang yoki yozing"}); return; }
-        const r=DB.manualEnroll(s,c,me?me.name:"Manager");
-        if(!r.ok){ this.setState({enrollError:r.error||"Yozib bo'lmadi"}); return; }
-        this.setState({enrollStudent:"",enrollCourse:"",enrollError:null});
-        this.notify('"'+s+'" → "'+c+'" kursiga ochildi ✓');
-        this.forceUpdate();
-      },
+      setEnrollStudentSelect:(e)=>this.setState({enrollStudent:(e&&e.target?e.target.value:""),enrollError:null}),
+      setEnrollCourseSelect:(e)=>this.setState({enrollCourse:(e&&e.target?e.target.value:""),enrollError:null}),
+      doManualEnroll:()=>this.doManualEnrollNow(),
 
       // ===== SECURITY =====
       permRows:["Manager","Teacher","Student"].map(role=>({role,cells:["users","payments","courses","settings"].map(key=>{const on=st.permissions[role][key];return{on,track:on?"linear-gradient(135deg,#0d9488,#0ea5e9)":"var(--line)",knob:on?"20px":"3px",onToggle:()=>this.togglePerm(role,key)};})})),

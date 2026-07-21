@@ -314,32 +314,64 @@
     log(userName(studentId), "student", "To'lov yubordi", courseTitle(courseId), "payment");
     return { ok: true, payment: p };
   }
+  function findPayment(paymentId) {
+    var id = paymentId == null ? "" : String(paymentId);
+    return data.payments.filter(function (x) { return String(x.id) === id; })[0] || null;
+  }
   function approvePayment(paymentId, byUser) {
-    var p = byId("payments", paymentId); if (!p) return { ok: false };
-    p.status = "paid"; 
+    var p = findPayment(paymentId) || byId("payments", paymentId);
+    if (!p) return { ok: false, error: "To'lov topilmadi" };
+    if (p.status === "paid") return { ok: true, payment: p, already: true };
+    p.status = "paid";
+    p.reason = "";
     if (!isEnrolled(p.studentId, p.courseId))
       insert("enrollments", { studentId: p.studentId, courseId: p.courseId, type: "paid", status: "active", createdAt: todayLabel() });
     save();
     notify(p.studentId, "To'lov tasdiqlandi", '"' + courseTitle(p.courseId) + '" kursi ochildi. O\'qishni boshlang!');
     log(byUser || "Manager", "manager", "To'lovni tasdiqladi", p.id + " · " + courseTitle(p.courseId), "payment");
-    return { ok: true };
+    return { ok: true, payment: p };
   }
   function rejectPayment(paymentId, reason, byUser) {
-    var p = byId("payments", paymentId); if (!p) return { ok: false };
-    p.status = "failed"; p.reason = reason || "To'lov rad etildi"; save();
+    var p = findPayment(paymentId) || byId("payments", paymentId);
+    if (!p) return { ok: false, error: "To'lov topilmadi" };
+    p.status = "failed";
+    p.reason = reason || "To'lov rad etildi";
+    save();
     notify(p.studentId, "To'lov rad etildi", '"' + courseTitle(p.courseId) + '" uchun to\'lov rad etildi: ' + p.reason);
     log(byUser || "Manager", "manager", "To'lovni rad qildi", p.id, "payment");
-    return { ok: true };
+    return { ok: true, payment: p };
   }
   function manualEnroll(studentEmailOrName, courseTitleOrId, byUser) {
-    var u = data.users.filter(function (x) { return x.email.toLowerCase() === (studentEmailOrName || "").toLowerCase() || x.name.toLowerCase() === (studentEmailOrName || "").toLowerCase(); })[0];
-    var c = data.courses.filter(function (x) { return x.id === courseTitleOrId || x.title.toLowerCase().indexOf((courseTitleOrId || "").toLowerCase()) >= 0; })[0];
-    if (!u || !c) return { ok: false, error: "Student yoki kurs topilmadi" };
-    if (isEnrolled(u.id, c.id)) return { ok: false, error: "Allaqachon yozilgan" };
+    var key = String(studentEmailOrName || "").trim().toLowerCase();
+    var ckey = String(courseTitleOrId || "").trim();
+    var u = data.users.filter(function (x) {
+      return (x.email && x.email.toLowerCase() === key) ||
+        (x.name && x.name.toLowerCase() === key) ||
+        (x.id && x.id === studentEmailOrName);
+    })[0];
+    var c = data.courses.filter(function (x) {
+      return x.id === ckey ||
+        (x.title && x.title.toLowerCase() === ckey.toLowerCase()) ||
+        (x.title && x.title.toLowerCase().indexOf(ckey.toLowerCase()) >= 0);
+    })[0];
+    if (!u) return { ok: false, error: "Student topilmadi — ro'yxatdan tanlang" };
+    if (!c) return { ok: false, error: "Kurs topilmadi — ro'yxatdan tanlang" };
+    if (isEnrolled(u.id, c.id)) return { ok: false, error: "Bu student allaqachon shu kursga yozilgan" };
     insert("enrollments", { studentId: u.id, courseId: c.id, type: "paid", status: "active", createdAt: todayLabel() });
+    // tarix uchun paid to'lov yozuvi
+    insert("payments", {
+      id: "#M" + (10000 + data.payments.length),
+      studentId: u.id,
+      courseId: c.id,
+      amount: c.price || 0,
+      method: "Naqd",
+      status: "paid",
+      date: todayLabel(),
+      reason: "Manual enroll"
+    });
     notify(u.id, "Kurs ochildi", '"' + c.title + '" kursi qo\'lda ochildi.');
     log(byUser || "Manager", "manager", "Qo'lda kursga yozdi", u.name + " → " + c.title, "enroll");
-    return { ok: true };
+    return { ok: true, student: u, course: c };
   }
   function completeLesson(studentId, lessonId) {
     if (!isDone(studentId, lessonId)) { data.progress.push({ studentId: studentId, lessonId: lessonId }); save(); }
