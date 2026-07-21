@@ -78,11 +78,16 @@
         var modId = "mod_" + c.id + "_" + mi;
         modules.push({ id: modId, courseId: c.id, title: lessonTitles[mi][0], order: mi });
         lessonTitles[mi][1].forEach(function (lt, li) {
+          // Demo video URL for first lesson of each module (preview / student play)
+          var demoUrl = (li === 0)
+            ? ("https://www.youtube.com/watch?v=rfscVS0vtbw&t=" + ((mi + 1) * 60))
+            : "";
           lessons.push({
             id: "les_" + c.id + "_" + mi + "_" + li,
             moduleId: modId, courseId: c.id, title: lt,
             duration: (8 + ((mi * 3 + li) % 14)) + ":" + ("0" + ((li * 17) % 60)).slice(-2),
-            free: (mi === 0 && li === 0), order: li
+            free: (mi === 0 && li === 0), order: li,
+            videoUrl: demoUrl
           });
         });
       }
