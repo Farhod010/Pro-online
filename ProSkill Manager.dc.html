@@ -375,26 +375,99 @@
           </div>
         </sc-if>
 
-        <!-- ===== STUDENTS ===== -->
+        <!-- ===== STUDENTS & PROGRESS (full working) ===== -->
         <sc-if value="{{ tabStudents }}" hint-placeholder-val="{{ false }}">
+          <!-- KPI -->
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px">
+            <sc-for list="{{ studentKpis }}" as="k" hint-placeholder-count="4">
+              <div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px 16px;border-left:3px solid {{ k.color }}">
+                <div style="font-size:11.5px;color:var(--muted2);font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">{{ k.label }}</div>
+                <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:22px;color:{{ k.color }}">{{ k.value }}</div>
+                <div style="font-size:11.5px;color:var(--muted2);margin-top:3px">{{ k.sub }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <!-- Filters -->
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+            <span style="font-size:12.5px;color:var(--muted2);font-weight:600">Holat:</span>
+            <sc-for list="{{ studentFilterChips }}" as="f" hint-placeholder-count="4">
+              <span onClick="{{ f.onClick }}" style="cursor:pointer;font-size:12.5px;font-weight:700;padding:7px 13px;border-radius:20px;border:1px solid {{ f.border }};background:{{ f.bg }};color:{{ f.color }}">{{ f.label }}</span>
+            </sc-for>
+            <span style="margin-left:auto;font-size:12px;color:var(--muted2)">Qidiruv: yuqoridagi maydon (ism / email)</span>
+          </div>
+
+          <!-- List -->
           <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;overflow:hidden">
-            <div style="display:grid;grid-template-columns:2fr 1fr 1.6fr 1fr 1fr 1fr 1.3fr;gap:12px;padding:14px 22px;font-size:11.5px;font-weight:800;color:var(--muted2);text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--border)">
-              <span>Student</span><span>Kurslar</span><span>Progress</span><span>To'lagan</span><span>Sertifikat</span><span>Holat</span><span>Amallar</span>
+            <div style="display:grid;grid-template-columns:2fr 0.7fr 1.5fr 1fr 0.8fr 1fr 1.6fr;gap:10px;padding:12px 18px;font-size:10.5px;font-weight:800;color:var(--muted2);text-transform:uppercase;letter-spacing:.35px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02)">
+              <span>Student</span><span>Kurslar</span><span>Progress</span><span>To'lagan</span><span>Sert.</span><span>Holat</span><span style="text-align:right">Amallar</span>
             </div>
-            <sc-for list="{{ studentRows }}" as="s" hint-placeholder-count="7">
-              <div style="display:grid;grid-template-columns:2fr 1fr 1.6fr 1fr 1fr 1fr 1.3fr;gap:12px;padding:13px 22px;align-items:center;border-bottom:1px solid var(--line)">
-                <div style="display:flex;align-items:center;gap:11px"><div style="width:34px;height:34px;border-radius:9px;background:linear-gradient(135deg,#10b981,#34d399);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex:none;overflow:hidden"><sc-if value="{{ s.hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ s.avatar }}" alt="" style="width:100%;height:100%;object-fit:cover"/></sc-if><sc-if value="{{ s.noAvatar }}" hint-placeholder-val="{{ true }}"><span>{{ s.initial }}</span></sc-if></div><span style="font-size:13.5px;font-weight:600">{{ s.name }}</span></div>
-                <span style="font-size:13.5px;color:var(--muted)">{{ s.courses }} ta</span>
-                <div style="display:flex;align-items:center;gap:8px"><div style="flex:1;height:6px;border-radius:6px;background:var(--line);overflow:hidden"><div style="height:100%;width:{{ s.progress }}%;background:linear-gradient(90deg,#0d9488,#0ea5e9)"></div></div><span style="font-size:12px;color:var(--muted2);width:32px">{{ s.progress }}%</span></div>
-                <span style="font-size:13px;font-weight:600">{{ s.paid }}</span>
-                <span style="font-size:13.5px;color:var(--muted)">{{ s.certs }} 🎓</span>
-                <span style="font-size:12.5px;font-weight:700;color:{{ s.statusColor }}">● {{ s.statusLabel }}</span>
-                <div style="display:flex;gap:6px">
-                  <span onClick="{{ s.onEnroll }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:6px 11px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text)">Kursga yozish</span>
-                  <span onClick="{{ s.onToggle }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--muted)">{{ s.toggleIcon }}</span>
+            <sc-for list="{{ studentRows }}" as="s" hint-placeholder-count="6">
+              <div style="border-bottom:1px solid var(--line)">
+                <div style="display:grid;grid-template-columns:2fr 0.7fr 1.5fr 1fr 0.8fr 1fr 1.6fr;gap:10px;padding:13px 18px;align-items:center" style-hover="background:var(--hover)">
+                  <div style="display:flex;align-items:center;gap:11px;min-width:0">
+                    <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#10b981,#34d399);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex:none;overflow:hidden">
+                      <sc-if value="{{ s.hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ s.avatar }}" alt="" style="width:100%;height:100%;object-fit:cover"/></sc-if>
+                      <sc-if value="{{ s.noAvatar }}" hint-placeholder-val="{{ true }}"><span>{{ s.initial }}</span></sc-if>
+                    </div>
+                    <div style="min-width:0">
+                      <div style="font-size:13.5px;font-weight:700">{{ s.name }}</div>
+                      <div style="font-size:11.5px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ s.email }}</div>
+                    </div>
+                  </div>
+                  <span style="font-size:13.5px;font-weight:700;color:var(--text)">{{ s.courses }} ta</span>
+                  <div style="display:flex;align-items:center;gap:8px">
+                    <div style="flex:1;height:7px;border-radius:7px;background:var(--line);overflow:hidden"><div style="height:100%;width:{{ s.progress }}%;background:linear-gradient(90deg,#0d9488,#0ea5e9)"></div></div>
+                    <span style="font-size:12px;font-weight:700;color:var(--muted2);width:36px">{{ s.progress }}%</span>
+                  </div>
+                  <span style="font-size:13px;font-weight:700">{{ s.paid }}</span>
+                  <span style="font-size:13px;font-weight:700;color:var(--muted)">{{ s.certs }} 🎓</span>
+                  <span style="font-size:11.5px;font-weight:800;padding:5px 10px;border-radius:8px;background:{{ s.statusBg }};color:{{ s.statusColor }};justify-self:start">{{ s.statusLabel }}</span>
+                  <div style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap">
+                    <span onClick="{{ s.onDetail }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text)">Batafsil</span>
+                    <span onClick="{{ s.onEnroll }}" style="cursor:pointer;font-size:11.5px;font-weight:800;padding:7px 10px;border-radius:8px;border:none;background:linear-gradient(135deg,#0d9488,#0ea5e9);color:#fff">+ Kurs</span>
+                    <sc-if value="{{ s.isPending }}" hint-placeholder-val="{{ false }}">
+                      <span onClick="{{ s.onActivate }}" style="cursor:pointer;font-size:11.5px;font-weight:800;padding:7px 10px;border-radius:8px;border:none;background:rgba(52,211,153,.16);color:#34d399">Faollashtir</span>
+                    </sc-if>
+                    <sc-if value="{{ s.isBlocked }}" hint-placeholder-val="{{ false }}">
+                      <span onClick="{{ s.onActivate }}" style="cursor:pointer;font-size:11.5px;font-weight:800;padding:7px 10px;border-radius:8px;border:none;background:rgba(52,211,153,.16);color:#34d399">✓</span>
+                    </sc-if>
+                    <sc-if value="{{ s.isActive }}" hint-placeholder-val="{{ true }}">
+                      <span onClick="{{ s.onBlock }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:7px 10px;border-radius:8px;border:1px solid rgba(251,113,133,.3);background:rgba(251,113,133,.1);color:#fb7185">Blok</span>
+                    </sc-if>
+                  </div>
                 </div>
               </div>
             </sc-for>
+            <sc-if value="{{ noStudentRows }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:40px;text-align:center;color:var(--muted2);font-size:14px">Bu filter / qidiruv bo'yicha student topilmadi</div>
+            </sc-if>
+          </div>
+
+          <!-- Quick enroll panel -->
+          <div style="margin-top:16px;background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:18px 20px">
+            <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:15px;margin-bottom:4px">Tezkor: studentni kursga yozish</div>
+            <div style="font-size:12.5px;color:var(--muted2);margin-bottom:14px">Ro'yxatdagi «+ Kurs» yoki shu yerdan tanlang — darhol yoziladi</div>
+            <div style="display:grid;grid-template-columns:1fr 1fr 160px;gap:12px;align-items:end">
+              <div>
+                <label style="font-size:12px;color:var(--muted);font-weight:700;display:block;margin-bottom:6px">Student</label>
+                <select value="{{ enrollStudent }}" onChange="{{ setEnrollStudentSelect }}" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:11px;padding:12px 13px;color:var(--text);font-size:13.5px;outline:none">
+                  <option value="">Tanlang…</option>
+                  <sc-for list="{{ enrollStudentOptions }}" as="o" hint-placeholder-count="5"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+                </select>
+              </div>
+              <div>
+                <label style="font-size:12px;color:var(--muted);font-weight:700;display:block;margin-bottom:6px">Kurs</label>
+                <select value="{{ enrollCourse }}" onChange="{{ setEnrollCourseSelect }}" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:11px;padding:12px 13px;color:var(--text);font-size:13.5px;outline:none">
+                  <option value="">Tanlang…</option>
+                  <sc-for list="{{ enrollCourseOptions }}" as="o" hint-placeholder-count="5"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+                </select>
+              </div>
+              <button onClick="{{ doManualEnroll }}" style="cursor:pointer;border:none;background:linear-gradient(135deg,#0d9488,#0ea5e9);color:#fff;font-weight:800;font-size:13.5px;padding:13px;border-radius:11px">Yozish ✓</button>
+            </div>
+            <sc-if value="{{ enrollError }}" hint-placeholder-val="{{ false }}">
+              <div style="margin-top:12px;background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.3);border-radius:11px;padding:10px 12px;font-size:13px;color:#fb7185">{{ enrollError }}</div>
+            </sc-if>
           </div>
         </sc-if>
 
@@ -994,7 +1067,7 @@ class Component extends DCLogic {
       {title:"Texnik ishlar rejimi",desc:"Saytni vaqtincha yopish (Maintenance)",on:false}
     ];
     this.state={tab:"dashboard",theme:"dark",search:"",userFilter:"Hammasi",modal:null,toast:null,lessonCourse:"t1",audience:"students",logFilter:"Hammasi",accent:"#0d9488",enrollStudent:"",enrollCourse:"",
-      showUserMenu:false,notifTitle:"",notifText:"",reportRange:"Oy",payFilter:"Hammasi",enrollError:null,payRev:0,
+      showUserMenu:false,notifTitle:"",notifText:"",reportRange:"Oy",payFilter:"Hammasi",enrollError:null,payRev:0,studentFilter:"Hammasi",studentRev:0,
       permissions:{Manager:{users:true,payments:true,courses:false,settings:false},Teacher:{users:false,payments:false,courses:true,settings:false},Student:{users:false,payments:false,courses:false,settings:false}}};
   }
 
@@ -1049,22 +1122,77 @@ class Component extends DCLogic {
   togglePerm(role,key){this.setState(s=>({permissions:{...s.permissions,[role]:{...s.permissions[role],[key]:!s.permissions[role][key]}}}));}
   meUser(){const DB=window.ProSkillDB;return DB?DB.currentUser():null;}
 
+  refreshStudents(){ this.setState(s=>({studentRev:(s.studentRev||0)+1,payRev:(s.payRev||0)+1})); }
   blockUser(u){
     const DB=window.ProSkillDB;const me=this.meUser();
     if(!DB||!u) return;
     const id=u.id||null;
-    this.ask({title:"Foydalanuvchini bloklash",msg:'"'+(u.name||"") +'" bloklanadi va platformaga kira olmaydi. Davom etasizmi?',confirm:"Bloklash",danger:true,icon:"⛔",onConfirm:()=>{
-      if(id) DB.setUserStatus(id,"blocked",me?me.name:"Manager");
-      else u.status="blocked";
-      this.notify((u.name||"User")+" bloklandi"); this.forceUpdate();
+    const name=u.name||"User";
+    this.ask({title:"Bloklash",msg:'"'+name+'" bloklanadi va platformaga kira olmaydi.',confirm:"Bloklash",danger:true,icon:"⛔",onConfirm:()=>{
+      if(!id){ this.notify("ID topilmadi"); return; }
+      const r=DB.setUserStatus(id,"blocked",me?me.name:"Manager");
+      if(r&&r.ok===false){ this.notify(r.error||"Bloklanmadi"); return; }
+      this.notify(name+" bloklandi");
+      this.refreshStudents();
     }});
   }
   activateUser(u){
     const DB=window.ProSkillDB;const me=this.meUser();
+    if(!DB||!u||!u.id){ this.notify("Student topilmadi"); return; }
+    const r=DB.setUserStatus(u.id,"active",me?me.name:"Manager");
+    if(r&&r.ok===false){ this.notify(r.error||"Faollashtirilmadi"); return; }
+    this.notify((u.name||"User")+" faollashtirildi ✓");
+    this.refreshStudents();
+  }
+  enrollStudentToCourse(studentKey, courseTitle){
+    const DB=window.ProSkillDB;const me=this.meUser();
+    if(!DB) return;
+    const r=DB.manualEnroll(studentKey, courseTitle, me?me.name:"Manager");
+    if(!r||!r.ok){ this.notify((r&&r.error)||"Yozilmadi"); return; }
+    this.notify((r.student?r.student.name:studentKey)+' → "'+(r.course?r.course.title:courseTitle)+'" yozildi ✓');
+    this.refreshStudents();
+  }
+  openEnrollForStudent(u){
+    const email=u.email||u.name||"";
+    this.setState({enrollStudent:email,enrollError:null,enrollCourse:""});
+    // scroll-friendly: stay on students, prefill form
+    this.notify(u.name+" tanlandi — pastdan kurs tanlang");
+  }
+  showStudentDetail(u, meta){
+    const DB=window.ProSkillDB;
     if(!DB||!u) return;
-    if(u.id) DB.setUserStatus(u.id,"active",me?me.name:"Manager");
-    else u.status="active";
-    this.notify((u.name||"User")+" faollashtirildi ✓"); this.forceUpdate();
+    const enr=DB.enrollmentsOf(u.id)||[];
+    const lines=enr.map(e=>{
+      const pr=DB.progressFor(u.id,e.courseId);
+      const pc=DB.progressCount(u.id,e.courseId);
+      return "• "+DB.courseTitle(e.courseId)+" — "+pr+"% ("+pc.done+"/"+pc.total+")";
+    });
+    const paid=(DB.raw().payments||[]).filter(p=>p.studentId===u.id&&p.status==="paid");
+    const paidSum=paid.reduce((s,p)=>s+(p.amount||0),0);
+    const certs=(DB.raw().certificates||[]).filter(c=>c.studentId===u.id);
+    const msg=[
+      u.name+" · "+(u.email||""),
+      "Holat: "+(u.status||"—")+" · Tel: "+(u.phone||"—"),
+      "",
+      "Kurslar ("+enr.length+"):",
+      lines.length?lines.join("\n"):"— yozilmagan",
+      "",
+      "To'lovlar: "+paid.length+" ta · "+this.money(paidSum),
+      "Sertifikatlar: "+certs.length+(certs.length?" · "+certs.map(c=>c.id).join(", "):"")
+    ].join("\n");
+    this.ask({
+      title:"Student batafsil",
+      msg:msg,
+      confirm: meta&&meta.canCert?"Sertifikat berish":"Yopish",
+      icon:"👤",
+      onConfirm:()=>{
+        if(meta&&meta.canCert&&meta.certCourseId){
+          const r=DB.issueCertificate(u.id, meta.certCourseId);
+          if(r&&r.ok){ this.notify("Sertifikat berildi 🎓"); this.refreshStudents(); }
+          else this.notify((r&&r.error)||"Sertifikat berilmadi");
+        }
+      }
+    });
   }
   deleteItem(name,cb){this.ask({title:"O'chirishni tasdiqlang",msg:'"'+name+'" butunlay o\'chiriladi. Bu amalni qaytarib bo\'lmaydi.',confirm:"O'chirish",danger:true,icon:"🗑",onConfirm:()=>{if(cb)cb();this.notify(name+" o'chirildi");}});}
   refreshPays(){ this.setState(s=>({payRev:(s.payRev||0)+1,enrollError:null})); }
@@ -1190,6 +1318,7 @@ class Component extends DCLogic {
       {title:"TIZIM",items:[mk("notifications","Bildirishnomalar","notifications"),mk("security","Xavfsizlik","security"),mk("logs","Activity Logs","logs"),mk("settings","Sozlamalar","settings")]}
     ];
     const meta={dashboard:["Operatsion markaz","Manager Dashboard",null],reports:["Tahlil","Hisobot & Sotuvlar",null],teachers:["Operatsiyalar","Ustozlar Faoliyati",null],students:["Operatsiyalar","Talabalar & Progress",null],courses:["Kontent","Kurslar & Aktivlik",null],lessons:["Kontent","Course Review",null],reviews:["Kontent","Feedback & Reviews",null],payments:["Operatsiyalar","To'lovlar — 3 bosqich",null],notifications:["Aloqa","Bildirishnomalar","Xabar yuborish"],logs:["Aloqa","Activity Logs",null]};
+    // student tab title stays
     const m=meta[tab]||["",""];
 
     // KPIs from live DB
@@ -1449,24 +1578,81 @@ class Component extends DCLogic {
         });
       })(),
 
-      // ===== STUDENTS (DB + avatar) =====
-      studentRows:(DB?DB.table("users").filter(u=>u.role==="student"):[]).map(u=>{
-        const blocked=u.status==="blocked";
-        const enr=DB.enrollmentsOf(u.id);
-        const avg=enr.length?Math.round(enr.reduce((s,e)=>s+DB.progressFor(u.id,e.courseId),0)/enr.length):0;
-        const paid=pays.filter(p=>p.studentId===u.id&&p.status==="paid").reduce((s,p)=>s+p.amount,0);
-        const certs=(DB.raw().certificates||[]).filter(c=>c.studentId===u.id).length;
-        const avatar=u.avatar?String(u.avatar):"";
+      // ===== STUDENTS & PROGRESS (full) =====
+      studentKpis:(()=>{
+        const all=DB?DB.table("users").filter(u=>u.role==="student"):[];
+        const active=all.filter(u=>u.status==="active").length;
+        const pending=all.filter(u=>u.status==="pending").length;
+        const blocked=all.filter(u=>u.status==="blocked").length;
+        const enrolled=DB?(DB.raw().enrollments||[]).length:0;
+        return[
+          {label:"Jami student",value:String(all.length),color:"#e2e8f0",sub:enrolled+" yozilish"},
+          {label:"Faol",value:String(active),color:"#34d399",sub:"platformada"},
+          {label:"Kutilmoqda",value:String(pending),color:"#fbbf24",sub:"tasdiq kerak"},
+          {label:"Bloklangan",value:String(blocked),color:"#fb7185",sub:"kirish yopiq"}
+        ];
+      })(),
+      studentFilterChips:["Hammasi","active","pending","blocked"].map(f=>{
+        const label=f==="Hammasi"?"Hammasi":(f==="active"?"Faol":(f==="pending"?"Kutilmoqda":"Bloklangan"));
+        const active=(st.studentFilter||"Hammasi")===f;
         return{
-          id:u.id,name:u.name,courses:enr.length,progress:avg,
-          paid:(paid/1e6).toFixed(1)+" mln",certs:certs,status:u.status,
-          initial:(u.name||"S").split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase(),
-          statusColor:stColor(u.status),statusLabel:stLabel(u.status),toggleIcon:blocked?"✓":"⛔",
-          avatar:avatar,hasAvatar:!!avatar,noAvatar:!avatar,
-          onEnroll:()=>{this.setState({tab:"payments",enrollStudent:u.email||u.name});this.notify("Manual Enroller: student to'ldirildi");},
-          onToggle:()=>blocked?this.activateUser(u):this.blockUser(u)
+          label, onClick:()=>this.setState({studentFilter:f}),
+          border:active?"rgba(13,148,136,.55)":"var(--border)",
+          bg:active?"rgba(13,148,136,.16)":"var(--panel)",
+          color:active?"#ccfbf1":"var(--muted)"
         };
       }),
+      studentRows:(()=>{
+        if(!DB) return [];
+        const f=st.studentFilter||"Hammasi";
+        const q=(st.search||"").toLowerCase();
+        // payRev/studentRev force re-read
+        void st.studentRev; void st.payRev;
+        return DB.table("users").filter(u=>u.role==="student")
+          .filter(u=>f==="Hammasi"||u.status===f)
+          .filter(u=>{
+            if(!q) return true;
+            return (u.name||"").toLowerCase().includes(q)||(u.email||"").toLowerCase().includes(q)||(u.phone||"").toLowerCase().includes(q);
+          })
+          .map(u=>{
+            const enr=DB.enrollmentsOf(u.id)||[];
+            const avg=enr.length?Math.round(enr.reduce((s,e)=>s+DB.progressFor(u.id,e.courseId),0)/enr.length):0;
+            const paidSum=pays.filter(p=>p.studentId===u.id&&p.status==="paid").reduce((s,p)=>s+(p.amount||0),0);
+            const certs=(DB.raw().certificates||[]).filter(c=>c.studentId===u.id);
+            const avatar=u.avatar?String(u.avatar):"";
+            // sertifikat berish mumkin bo'lgan 100% kurs
+            let certCourseId=null;
+            enr.forEach(e=>{
+              if(DB.progressFor(u.id,e.courseId)>=100 && !certs.some(c=>c.courseId===e.courseId)) certCourseId=e.courseId;
+            });
+            const statusBg=u.status==="active"?"rgba(52,211,153,.12)":(u.status==="pending"?"rgba(251,191,36,.14)":"rgba(251,113,133,.12)");
+            return{
+              id:u.id,name:u.name,email:u.email||"",
+              courses:enr.length,progress:avg,
+              paid:(paidSum/1e6).toFixed(1)+" mln",
+              certs:certs.length,
+              status:u.status,
+              statusColor:stColor(u.status),statusLabel:stLabel(u.status),statusBg:statusBg,
+              initial:(u.name||"S").split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase(),
+              avatar:avatar,hasAvatar:!!avatar,noAvatar:!avatar,
+              isActive:u.status==="active",isPending:u.status==="pending",isBlocked:u.status==="blocked",
+              onDetail:()=>this.showStudentDetail(u,{canCert:!!certCourseId,certCourseId:certCourseId}),
+              onEnroll:()=>this.openEnrollForStudent(u),
+              onBlock:()=>this.blockUser(u),
+              onActivate:()=>this.activateUser(u)
+            };
+          })
+          .sort((a,b)=>b.progress-a.progress);
+      })(),
+      noStudentRows:(()=>{
+        if(!DB) return true;
+        const f=st.studentFilter||"Hammasi";
+        const q=(st.search||"").toLowerCase();
+        return DB.table("users").filter(u=>u.role==="student")
+          .filter(u=>f==="Hammasi"||u.status===f)
+          .filter(u=>!q||(u.name||"").toLowerCase().includes(q)||(u.email||"").toLowerCase().includes(q))
+          .length===0;
+      })(),
 
       // ===== COURSES (DB) =====
       courseRows:(()=>{
