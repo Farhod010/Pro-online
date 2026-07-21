@@ -533,163 +533,176 @@
           </div>
         </sc-if>
 
-        <!-- ===== PAYMENTS & MANUAL ENROLLER ===== -->
+        <!-- ===== PAYMENTS — 3-step clear ops desk ===== -->
         <sc-if value="{{ tabPayments }}" hint-placeholder-val="{{ false }}">
-          <!-- KPI strip -->
-          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-bottom:16px">
+
+          <!-- Guide strip: only 2 paths -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:18px">
+            <div style="display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,rgba(251,191,36,.12),rgba(251,191,36,.04));border:1px solid rgba(251,191,36,.28);border-radius:16px;padding:14px 16px">
+              <div style="width:44px;height:44px;border-radius:12px;background:rgba(251,191,36,.2);display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;color:#fbbf24;flex:none">1</div>
+              <div>
+                <div style="font-weight:800;font-size:14.5px;color:#fde68a">Onlayn to'lov kelganmi?</div>
+                <div style="font-size:12.5px;color:var(--muted2);margin-top:2px">Pastdagi sariq blokda <b style="color:var(--text)">✓ Tasdiq</b> bosing → kurs ochiladi</div>
+              </div>
+            </div>
+            <div style="display:flex;align-items:center;gap:14px;background:linear-gradient(135deg,rgba(13,148,136,.14),rgba(14,165,233,.06));border:1px solid rgba(13,148,136,.28);border-radius:16px;padding:14px 16px">
+              <div style="width:44px;height:44px;border-radius:12px;background:rgba(13,148,136,.22);display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;color:#2dd4bf;flex:none">2</div>
+              <div>
+                <div style="font-weight:800;font-size:14.5px;color:#99f6e4">Naqd / boshqa yo'l to'lovmi?</div>
+                <div style="font-size:12.5px;color:var(--muted2);margin-top:2px">Qo'lda ochish formasida student + kurs tanlang → <b style="color:var(--text)">Ochish</b></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Compact summary -->
+          <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px">
             <sc-for list="{{ payStats }}" as="p" hint-placeholder-count="4">
-              <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:16px 18px;position:relative;overflow:hidden">
-                <div style="position:absolute;right:-8px;top:-8px;width:64px;height:64px;border-radius:50%;background:{{ p.glow }};opacity:.55"></div>
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px">
-                  <div style="width:36px;height:36px;border-radius:11px;background:{{ p.iconBg }};display:flex;align-items:center;justify-content:center;font-size:16px">{{ p.icon }}</div>
-                  <span style="font-size:11px;font-weight:800;color:{{ p.color }};background:{{ p.badgeBg }};padding:3px 8px;border-radius:20px">{{ p.badge }}</span>
-                </div>
-                <div style="font-size:12px;color:var(--muted);font-weight:600;margin-bottom:4px">{{ p.label }}</div>
-                <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:24px;color:{{ p.color }};letter-spacing:-.4px">{{ p.value }}</div>
-                <div style="font-size:11.5px;color:var(--muted2);margin-top:4px">{{ p.sub }}</div>
+              <div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px 16px;border-left:3px solid {{ p.color }}">
+                <div style="font-size:11.5px;color:var(--muted2);font-weight:700;text-transform:uppercase;letter-spacing:.3px;margin-bottom:6px">{{ p.label }}</div>
+                <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:22px;color:{{ p.color }};letter-spacing:-.3px">{{ p.value }}</div>
+                <div style="font-size:11.5px;color:var(--muted2);margin-top:3px">{{ p.sub }}</div>
               </div>
             </sc-for>
           </div>
 
-          <!-- Pending spotlight -->
-          <sc-if value="{{ hasPendingPays }}" hint-placeholder-val="{{ true }}">
-            <div style="background:linear-gradient(135deg,rgba(251,191,36,.1),rgba(13,148,136,.06));border:1px solid rgba(251,191,36,.28);border-radius:18px;padding:18px 20px;margin-bottom:16px">
-              <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:14px;flex-wrap:wrap">
-                <div style="display:flex;align-items:center;gap:12px">
-                  <div style="width:42px;height:42px;border-radius:12px;background:rgba(251,191,36,.18);display:flex;align-items:center;justify-content:center;font-size:18px">⏳</div>
-                  <div>
-                    <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:16px">Kutilayotgan to'lovlar</div>
-                    <div style="font-size:12.5px;color:var(--muted2)">{{ pendingPayHint }} — tez tasdiqlang, kurs avtomatik ochiladi</div>
-                  </div>
+          <!-- ═══════ BLOK 1: KUTILAYOTGAN ═══════ -->
+          <div style="margin-bottom:20px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+              <span style="width:26px;height:26px;border-radius:8px;background:rgba(251,191,36,.2);color:#fbbf24;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800">1</span>
+              <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:16px">Kutilayotgan to'lovlar</div>
+              <span style="font-size:12px;font-weight:700;padding:3px 10px;border-radius:20px;background:rgba(251,191,36,.14);color:#fbbf24">{{ pendingCountLabel }}</span>
+              <div style="flex:1;height:1px;background:var(--border);margin-left:6px"></div>
+            </div>
+
+            <sc-if value="{{ hasPendingPays }}" hint-placeholder-val="{{ true }}">
+              <div style="background:var(--panel);border:1px solid rgba(251,191,36,.25);border-radius:18px;overflow:hidden">
+                <div style="padding:12px 16px;background:rgba(251,191,36,.08);border-bottom:1px solid rgba(251,191,36,.2);display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+                  <div style="font-size:13px;color:var(--muted)">Faqat shu ro'yxatni tasdiqlang — qolganlari pastda tarixda</div>
+                  <button onClick="{{ approveAllPending }}" style="cursor:pointer;border:none;background:linear-gradient(135deg,#34d399,#10b981);color:#042f1a;font-weight:800;font-size:12.5px;padding:9px 14px;border-radius:10px">✓ Hammasini tasdiqlash</button>
                 </div>
-                <button onClick="{{ approveAllPending }}" style="cursor:pointer;border:none;background:linear-gradient(135deg,#34d399,#10b981);color:#042f1a;font-weight:800;font-size:13px;padding:11px 16px;border-radius:11px;box-shadow:0 10px 24px rgba(16,185,129,.25)">✓ Barchasini tasdiqlash</button>
-              </div>
-              <div style="display:flex;flex-direction:column;gap:10px">
                 <sc-for list="{{ pendingPayCards }}" as="p" hint-placeholder-count="2">
-                  <div style="display:grid;grid-template-columns:1fr auto;gap:12px;align-items:center;background:var(--solid);border:1px solid var(--border);border-radius:14px;padding:12px 14px">
-                    <div style="display:flex;align-items:center;gap:12px;min-width:0">
-                      <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#0d9488,#0ea5e9);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#fff;flex:none;overflow:hidden">
-                        <sc-if value="{{ p.hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ p.avatar }}" alt="" style="width:100%;height:100%;object-fit:cover"/></sc-if>
-                        <sc-if value="{{ p.noAvatar }}" hint-placeholder-val="{{ true }}"><span>{{ p.initial }}</span></sc-if>
-                      </div>
-                      <div style="min-width:0">
-                        <div style="font-size:13.5px;font-weight:700">{{ p.student }} <span style="font-family:monospace;font-size:11.5px;color:var(--muted2);font-weight:600">{{ p.id }}</span></div>
-                        <div style="font-size:12px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.course }} · {{ p.method }} · {{ p.date }}</div>
-                      </div>
+                  <div style="display:flex;align-items:center;gap:14px;padding:14px 16px;border-bottom:1px solid var(--line)" style-hover="background:var(--hover)">
+                    <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#0d9488,#0ea5e9);display:flex;align-items:center;justify-content:center;font-weight:800;font-size:13px;color:#fff;flex:none;overflow:hidden">
+                      <sc-if value="{{ p.hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ p.avatar }}" alt="" style="width:100%;height:100%;object-fit:cover"/></sc-if>
+                      <sc-if value="{{ p.noAvatar }}" hint-placeholder-val="{{ true }}"><span>{{ p.initial }}</span></sc-if>
                     </div>
-                    <div style="display:flex;align-items:center;gap:10px">
-                      <div style="text-align:right;margin-right:4px">
-                        <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:16px;color:#fbbf24">{{ p.amountLabel }}</div>
-                        <div style="font-size:11px;color:var(--muted2)">so'm</div>
-                      </div>
-                      <button onClick="{{ p.onApprove }}" style="cursor:pointer;border:none;background:linear-gradient(135deg,#34d399,#10b981);color:#042f1a;font-weight:800;font-size:12.5px;padding:10px 14px;border-radius:10px">✓ Tasdiq</button>
-                      <button onClick="{{ p.onReject }}" style="cursor:pointer;border:1px solid rgba(251,113,133,.35);background:rgba(251,113,133,.1);color:#fb7185;font-weight:700;font-size:12.5px;padding:10px 12px;border-radius:10px">Rad</button>
+                    <div style="flex:1;min-width:0">
+                      <div style="font-size:14px;font-weight:700">{{ p.student }}</div>
+                      <div style="font-size:12.5px;color:var(--muted2);margin-top:2px">{{ p.course }}</div>
+                      <div style="font-size:11.5px;color:var(--muted2);margin-top:3px"><span style="font-family:monospace">{{ p.id }}</span> · {{ p.method }} · {{ p.date }}</div>
+                    </div>
+                    <div style="text-align:right;flex:none">
+                      <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;color:#fbbf24">{{ p.amountLabel }}</div>
+                      <div style="font-size:11px;color:var(--muted2)">so'm</div>
+                    </div>
+                    <div style="display:flex;flex-direction:column;gap:6px;flex:none">
+                      <button onClick="{{ p.onApprove }}" style="cursor:pointer;border:none;background:linear-gradient(135deg,#34d399,#10b981);color:#042f1a;font-weight:800;font-size:12.5px;padding:10px 16px;border-radius:10px;min-width:110px">✓ Tasdiqlash</button>
+                      <button onClick="{{ p.onReject }}" style="cursor:pointer;border:1px solid rgba(251,113,133,.3);background:transparent;color:#fb7185;font-weight:700;font-size:12px;padding:8px 16px;border-radius:10px">Rad etish</button>
                     </div>
                   </div>
                 </sc-for>
               </div>
-            </div>
-          </sc-if>
+            </sc-if>
 
-          <div style="display:grid;grid-template-columns:1.15fr .85fr;gap:16px;align-items:start;margin-bottom:16px">
-            <!-- Manual enroll card -->
-            <div style="background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:22px;position:relative;overflow:hidden">
-              <div style="position:absolute;inset:0;background:radial-gradient(500px 200px at 100% 0%,rgba(13,148,136,.16),transparent 60%);pointer-events:none"></div>
-              <div style="position:relative">
-                <div style="display:flex;align-items:center;gap:12px;margin-bottom:16px">
-                  <div style="width:44px;height:44px;border-radius:13px;background:linear-gradient(135deg,#0d9488,#0ea5e9);display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 12px 28px rgba(13,148,136,.35)">🔓</div>
-                  <div>
-                    <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:17px">Manual Enroller</div>
-                    <div style="font-size:12.5px;color:var(--muted2)">Naqd / boshqa yo'l to'lovini qo'lda ochish</div>
-                  </div>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px">
-                  <div>
-                    <label style="font-size:12px;color:var(--muted);font-weight:700;display:block;margin-bottom:6px">Student</label>
-                    <select onChange="{{ setEnrollStudentSelect }}" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:11px;padding:12px 13px;color:var(--text);font-size:13.5px;outline:none">
-                      <option value="">— tanlang yoki yozing —</option>
-                      <sc-for list="{{ enrollStudentOptions }}" as="o" hint-placeholder-count="5"><option value="{{ o.value }}" selected="{{ o.selected }}">{{ o.label }}</option></sc-for>
-                    </select>
-                    <input value="{{ enrollStudent }}" onInput="{{ setEnrollStudent }}" placeholder="yoki ism / email yozing" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:11px;padding:11px 13px;color:var(--text);font-size:13px;outline:none;margin-top:8px" />
-                  </div>
-                  <div>
-                    <label style="font-size:12px;color:var(--muted);font-weight:700;display:block;margin-bottom:6px">Kurs</label>
-                    <select onChange="{{ setEnrollCourseSelect }}" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:11px;padding:12px 13px;color:var(--text);font-size:13.5px;outline:none">
-                      <option value="">— kurs tanlang —</option>
-                      <sc-for list="{{ enrollCourseOptions }}" as="o" hint-placeholder-count="5"><option value="{{ o.value }}" selected="{{ o.selected }}">{{ o.label }}</option></sc-for>
-                    </select>
-                    <input value="{{ enrollCourse }}" onInput="{{ setEnrollCourse }}" placeholder="yoki kurs nomini yozing" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:11px;padding:11px 13px;color:var(--text);font-size:13px;outline:none;margin-top:8px" />
-                  </div>
-                </div>
-                <sc-if value="{{ enrollError }}" hint-placeholder-val="{{ false }}">
-                  <div style="background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.3);border-radius:11px;padding:10px 12px;font-size:13px;color:#fb7185;margin-bottom:12px">{{ enrollError }}</div>
-                </sc-if>
-                <div style="display:flex;gap:10px;align-items:center">
-                  <button onClick="{{ doManualEnroll }}" style="cursor:pointer;border:none;background:linear-gradient(135deg,#0d9488,#0ea5e9);color:#fff;font-weight:800;font-size:14px;padding:13px 20px;border-radius:12px;box-shadow:0 12px 28px rgba(13,148,136,.32)">Kursga ochish →</button>
-                  <span style="font-size:12px;color:var(--muted2);line-height:1.4">Student darhol yoziladi · log saqlanadi</span>
-                </div>
+            <sc-if value="{{ noPendingPays }}" hint-placeholder-val="{{ false }}">
+              <div style="background:var(--panel);border:1px dashed rgba(52,211,153,.35);border-radius:16px;padding:22px;text-align:center">
+                <div style="font-size:22px;margin-bottom:6px">✓</div>
+                <div style="font-weight:700;font-size:14.5px;color:#6ee7b7">Kutilayotgan to'lov yo'q</div>
+                <div style="font-size:13px;color:var(--muted2);margin-top:4px">Hamma navbat tozalangan. Naqd to'lov bo'lsa — 2-bosqichga o'ting</div>
               </div>
+            </sc-if>
+          </div>
+
+          <!-- ═══════ BLOK 2: QO'LDA OCHISH ═══════ -->
+          <div style="margin-bottom:20px">
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+              <span style="width:26px;height:26px;border-radius:8px;background:rgba(13,148,136,.2);color:#2dd4bf;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800">2</span>
+              <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:16px">Qo'lda kurs ochish</div>
+              <span style="font-size:12px;color:var(--muted2);font-weight:600">faqat naqd / bank o'tkazma</span>
+              <div style="flex:1;height:1px;background:var(--border);margin-left:6px"></div>
             </div>
 
-            <!-- Quick tips / flow -->
-            <div style="background:var(--panel);border:1px solid var(--border);border-radius:20px;padding:22px">
-              <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:15px;margin-bottom:14px">Qanday ishlaydi?</div>
-              <div style="display:flex;flex-direction:column;gap:12px">
-                <div style="display:flex;gap:11px;align-items:flex-start"><span style="width:28px;height:28px;border-radius:8px;background:rgba(13,148,136,.16);color:#2dd4bf;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex:none">1</span><div style="font-size:13px;color:var(--muted);line-height:1.45"><b style="color:var(--text)">Kutilayotgan</b> to'lovni ✓ Tasdiqlang — kurs avtomatik ochiladi</div></div>
-                <div style="display:flex;gap:11px;align-items:flex-start"><span style="width:28px;height:28px;border-radius:8px;background:rgba(14,165,233,.16);color:#7dd3fc;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex:none">2</span><div style="font-size:13px;color:var(--muted);line-height:1.45"><b style="color:var(--text)">Naqd to'lov</b> bo'lsa Manual Enroller orqali oching</div></div>
-                <div style="display:flex;gap:11px;align-items:flex-start"><span style="width:28px;height:28px;border-radius:8px;background:rgba(251,113,133,.14);color:#fb7185;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;flex:none">3</span><div style="font-size:13px;color:var(--muted);line-height:1.45"><b style="color:var(--text)">Rad etish</b> — studentga xabar yuboriladi</div></div>
+            <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:20px 22px">
+              <div style="display:grid;grid-template-columns:1fr 1fr 180px;gap:14px;align-items:end">
+                <div>
+                  <label style="font-size:12px;color:var(--muted);font-weight:700;display:block;margin-bottom:7px">① Student tanlang</label>
+                  <select onChange="{{ setEnrollStudentSelect }}" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:13px 14px;color:var(--text);font-size:14px;outline:none">
+                    <option value="">Student tanlang…</option>
+                    <sc-for list="{{ enrollStudentOptions }}" as="o" hint-placeholder-count="5"><option value="{{ o.value }}" selected="{{ o.selected }}">{{ o.label }}</option></sc-for>
+                  </select>
+                </div>
+                <div>
+                  <label style="font-size:12px;color:var(--muted);font-weight:700;display:block;margin-bottom:7px">② Kurs tanlang</label>
+                  <select onChange="{{ setEnrollCourseSelect }}" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:13px 14px;color:var(--text);font-size:14px;outline:none">
+                    <option value="">Kurs tanlang…</option>
+                    <sc-for list="{{ enrollCourseOptions }}" as="o" hint-placeholder-count="5"><option value="{{ o.value }}" selected="{{ o.selected }}">{{ o.label }}</option></sc-for>
+                  </select>
+                </div>
+                <button onClick="{{ doManualEnroll }}" style="cursor:pointer;border:none;background:linear-gradient(135deg,#0d9488,#0ea5e9);color:#fff;font-weight:800;font-size:14px;padding:14px 16px;border-radius:12px;box-shadow:0 10px 24px rgba(13,148,136,.3)">③ Kursni ochish</button>
               </div>
-              <div style="margin-top:18px;padding:14px;border-radius:14px;background:rgba(13,148,136,.08);border:1px solid rgba(13,148,136,.2)">
-                <div style="font-size:12px;color:var(--muted2);font-weight:600;margin-bottom:4px">Jami tasdiqlangan daromad</div>
-                <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:22px;color:#34d399">{{ paidRevenueLabel }}</div>
+              <sc-if value="{{ enrollError }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:12px;background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.3);border-radius:11px;padding:10px 12px;font-size:13px;color:#fb7185">{{ enrollError }}</div>
+              </sc-if>
+              <div style="margin-top:12px;font-size:12.5px;color:var(--muted2)">Tanlashdan keyin tugmani bosing. Student darhol kursga yoziladi, log saqlanadi.</div>
+              <div style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+                <span style="font-size:12.5px;color:var(--muted2)">Tasdiqlangan jami daromad</span>
+                <span style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;color:#34d399">{{ paidRevenueLabel }}</span>
               </div>
             </div>
           </div>
 
-          <!-- All payments table -->
-          <div style="background:var(--panel);border:1px solid var(--border);border-radius:20px;overflow:hidden">
-            <div style="padding:14px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px;flex-wrap:wrap">
-              <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:15px;margin-right:auto">Barcha to'lovlar</div>
-              <div style="display:flex;gap:7px;flex-wrap:wrap">
+          <!-- ═══════ BLOK 3: TARIX ═══════ -->
+          <div>
+            <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
+              <span style="width:26px;height:26px;border-radius:8px;background:rgba(148,163,184,.15);color:#94a3b8;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800">3</span>
+              <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:16px">To'lovlar tarixi</div>
+              <span style="font-size:12px;color:var(--muted2);font-weight:600">barcha yozuvlar</span>
+              <div style="flex:1;height:1px;background:var(--border);margin-left:6px"></div>
+            </div>
+
+            <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;overflow:hidden">
+              <div style="padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                <span style="font-size:12.5px;color:var(--muted2);font-weight:600;margin-right:4px">Filter:</span>
                 <sc-for list="{{ payFilterChips }}" as="f" hint-placeholder-count="4">
-                  <span onClick="{{ f.onClick }}" style="cursor:pointer;font-size:12px;font-weight:700;padding:7px 12px;border-radius:9px;border:1px solid {{ f.border }};background:{{ f.bg }};color:{{ f.color }}">{{ f.label }}</span>
+                  <span onClick="{{ f.onClick }}" style="cursor:pointer;font-size:12.5px;font-weight:700;padding:7px 13px;border-radius:20px;border:1px solid {{ f.border }};background:{{ f.bg }};color:{{ f.color }}">{{ f.label }}</span>
                 </sc-for>
+                <span style="margin-left:auto;font-size:12px;color:var(--muted2)">Qidiruv: yuqoridagi qidiruv maydoni</span>
               </div>
-            </div>
-            <div style="display:grid;grid-template-columns:1fr 1.7fr 2fr 1.1fr .9fr 1fr 1.5fr;gap:12px;padding:12px 18px;font-size:10.5px;font-weight:800;color:var(--muted2);text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--border);background:var(--panel2)">
-              <span>ID</span><span>Student</span><span>Kurs</span><span>Summa</span><span>Usul</span><span>Holat</span><span>Amallar</span>
-            </div>
-            <sc-for list="{{ paymentRows }}" as="p" hint-placeholder-count="8">
-              <div style="display:grid;grid-template-columns:1fr 1.7fr 2fr 1.1fr .9fr 1fr 1.5fr;gap:12px;padding:13px 18px;align-items:center;border-bottom:1px solid var(--line)" style-hover="background:var(--hover)">
-                <span style="font-size:12px;font-weight:700;font-family:monospace;color:var(--muted)">{{ p.id }}</span>
-                <div style="display:flex;align-items:center;gap:10px;min-width:0">
-                  <div style="width:34px;height:34px;border-radius:10px;background:linear-gradient(135deg,#0d9488,#0ea5e9);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex:none;overflow:hidden">
-                    <sc-if value="{{ p.hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ p.avatar }}" alt="" style="width:100%;height:100%;object-fit:cover"/></sc-if>
-                    <sc-if value="{{ p.noAvatar }}" hint-placeholder-val="{{ true }}"><span>{{ p.initial }}</span></sc-if>
+              <div style="display:grid;grid-template-columns:90px 1.6fr 1.8fr 1fr 90px 110px 140px;gap:10px;padding:11px 16px;font-size:10.5px;font-weight:800;color:var(--muted2);text-transform:uppercase;letter-spacing:.35px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02)">
+                <span>ID</span><span>Student</span><span>Kurs</span><span>Summa</span><span>Usul</span><span>Holat</span><span style="text-align:right">Amal</span>
+              </div>
+              <sc-for list="{{ paymentRows }}" as="p" hint-placeholder-count="6">
+                <div style="display:grid;grid-template-columns:90px 1.6fr 1.8fr 1fr 90px 110px 140px;gap:10px;padding:12px 16px;align-items:center;border-bottom:1px solid var(--line)" style-hover="background:var(--hover)">
+                  <span style="font-size:12px;font-weight:700;font-family:monospace;color:var(--muted2)">{{ p.id }}</span>
+                  <div style="display:flex;align-items:center;gap:10px;min-width:0">
+                    <div style="width:32px;height:32px;border-radius:9px;background:linear-gradient(135deg,#0d9488,#0ea5e9);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;color:#fff;flex:none;overflow:hidden">
+                      <sc-if value="{{ p.hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ p.avatar }}" alt="" style="width:100%;height:100%;object-fit:cover"/></sc-if>
+                      <sc-if value="{{ p.noAvatar }}" hint-placeholder-val="{{ true }}"><span>{{ p.initial }}</span></sc-if>
+                    </div>
+                    <div style="min-width:0">
+                      <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.student }}</div>
+                      <div style="font-size:11px;color:var(--muted2)">{{ p.date }}</div>
+                    </div>
                   </div>
-                  <div style="min-width:0">
-                    <div style="font-size:13px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.student }}</div>
-                    <div style="font-size:11px;color:var(--muted2)">{{ p.date }}</div>
+                  <span style="font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.course }}</span>
+                  <span style="font-size:13.5px;font-weight:800">{{ p.amountLabel }}</span>
+                  <span style="font-size:11px;font-weight:700;padding:4px 8px;border-radius:7px;background:{{ p.methodBg }};color:{{ p.methodColor }};justify-self:start">{{ p.method }}</span>
+                  <span style="font-size:11.5px;font-weight:800;padding:5px 10px;border-radius:8px;background:{{ p.statusBg }};color:{{ p.statusColor }};justify-self:start">{{ p.statusLabel }}</span>
+                  <div style="display:flex;gap:6px;justify-content:flex-end">
+                    <sc-if value="{{ p.isPending }}" hint-placeholder-val="{{ false }}">
+                      <span onClick="{{ p.onApprove }}" style="cursor:pointer;font-size:11.5px;font-weight:800;padding:7px 10px;border-radius:8px;border:none;background:linear-gradient(135deg,#34d399,#10b981);color:#042f1a">✓</span>
+                      <span onClick="{{ p.onReject }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:7px 10px;border-radius:8px;border:1px solid rgba(251,113,133,.3);background:rgba(251,113,133,.1);color:#fb7185">✕</span>
+                    </sc-if>
+                    <sc-if value="{{ p.isDone }}" hint-placeholder-val="{{ true }}">
+                      <span onClick="{{ p.onView }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:7px 12px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--muted)">Ko'rish</span>
+                    </sc-if>
                   </div>
                 </div>
-                <span style="font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ p.course }}</span>
-                <span style="font-size:13.5px;font-weight:800">{{ p.amountLabel }}</span>
-                <span style="font-size:11px;font-weight:700;padding:4px 8px;border-radius:7px;background:{{ p.methodBg }};color:{{ p.methodColor }};justify-self:start">{{ p.method }}</span>
-                <span style="font-size:11.5px;font-weight:800;padding:5px 10px;border-radius:8px;background:{{ p.statusBg }};color:{{ p.statusColor }};justify-self:start">{{ p.statusLabel }}</span>
-                <div style="display:flex;gap:6px;flex-wrap:wrap">
-                  <sc-if value="{{ p.isPending }}" hint-placeholder-val="{{ false }}">
-                    <span onClick="{{ p.onApprove }}" style="cursor:pointer;font-size:11.5px;font-weight:800;padding:7px 11px;border-radius:9px;border:none;background:linear-gradient(135deg,#34d399,#10b981);color:#042f1a">✓ Tasdiq</span>
-                    <span onClick="{{ p.onReject }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:7px 10px;border-radius:9px;border:1px solid rgba(251,113,133,.3);background:rgba(251,113,133,.1);color:#fb7185">✕</span>
-                  </sc-if>
-                  <sc-if value="{{ p.isDone }}" hint-placeholder-val="{{ true }}">
-                    <span onClick="{{ p.onView }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:7px 11px;border-radius:9px;border:1px solid var(--border);background:var(--panel);color:var(--text)">Tafsilot</span>
-                  </sc-if>
-                </div>
-              </div>
-            </sc-for>
-            <sc-if value="{{ noPaymentRows }}" hint-placeholder-val="{{ false }}">
-              <div style="padding:36px;text-align:center;color:var(--muted2);font-size:14px">Bu filter bo'yicha to'lov topilmadi</div>
-            </sc-if>
+              </sc-for>
+              <sc-if value="{{ noPaymentRows }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:36px;text-align:center;color:var(--muted2);font-size:14px">Bu filter bo'yicha yozuv yo'q — boshqa filter tanlang</div>
+              </sc-if>
+            </div>
           </div>
         </sc-if>
 
@@ -1139,7 +1152,7 @@ class Component extends DCLogic {
       {title:"MOLIYA",items:[mk("payments","To'lovlar","payments","2")]},
       {title:"TIZIM",items:[mk("notifications","Bildirishnomalar","notifications"),mk("security","Xavfsizlik","security"),mk("logs","Activity Logs","logs"),mk("settings","Sozlamalar","settings")]}
     ];
-    const meta={dashboard:["Operatsion markaz","Manager Dashboard",null],reports:["Tahlil","Hisobot & Sotuvlar",null],teachers:["Operatsiyalar","Ustozlar Faoliyati",null],students:["Operatsiyalar","Talabalar & Progress",null],courses:["Kontent","Kurslar & Aktivlik",null],lessons:["Kontent","Course Review",null],reviews:["Kontent","Feedback & Reviews",null],payments:["Operatsiyalar","To'lovlar & Manual Enroller",null],notifications:["Aloqa","Bildirishnomalar","Xabar yuborish"],logs:["Aloqa","Activity Logs",null]};
+    const meta={dashboard:["Operatsion markaz","Manager Dashboard",null],reports:["Tahlil","Hisobot & Sotuvlar",null],teachers:["Operatsiyalar","Ustozlar Faoliyati",null],students:["Operatsiyalar","Talabalar & Progress",null],courses:["Kontent","Kurslar & Aktivlik",null],lessons:["Kontent","Course Review",null],reviews:["Kontent","Feedback & Reviews",null],payments:["Operatsiyalar","To'lovlar — 3 bosqich",null],notifications:["Aloqa","Bildirishnomalar","Xabar yuborish"],logs:["Aloqa","Activity Logs",null]};
     const m=meta[tab]||["",""];
 
     // KPIs from live DB
@@ -1551,15 +1564,17 @@ class Component extends DCLogic {
         };
       }),
 
-      // ===== PAYMENTS (premium ops desk) =====
+      // ===== PAYMENTS (clear 3-step desk) =====
       payStats:[
-        {label:"Jami to'lovlar",value:String(pays.length),color:"var(--text)",icon:"💳",badge:"ALL",badgeBg:"rgba(255,255,255,.06)",iconBg:"rgba(13,148,136,.14)",glow:"rgba(13,148,136,.18)",sub:"bazadagi barcha yozuvlar"},
-        {label:"Tasdiqlangan",value:String(paidN),color:"#34d399",icon:"✓",badge:"PAID",badgeBg:"rgba(52,211,153,.12)",iconBg:"rgba(52,211,153,.14)",glow:"rgba(52,211,153,.16)",sub:(revTotal/1e6).toFixed(1)+" mln so'm"},
-        {label:"Kutilayotgan",value:String(pendN),color:"#fbbf24",icon:"⏳",badge:pendN?"HOT":"OK",badgeBg:"rgba(251,191,36,.14)",iconBg:"rgba(251,191,36,.14)",glow:"rgba(251,191,36,.16)",sub:pendN?"tez korib chiqing":"navbat bo'sh"},
-        {label:"Rad etilgan",value:String(failN),color:"#fb7185",icon:"✕",badge:"FAIL",badgeBg:"rgba(251,113,133,.12)",iconBg:"rgba(251,113,133,.12)",glow:"rgba(251,113,133,.14)",sub:"qayta urinish mumkin"}
+        {label:"Jami",value:String(pays.length),color:"#e2e8f0",sub:"barcha yozuvlar"},
+        {label:"To'langan",value:String(paidN),color:"#34d399",sub:(revTotal/1e6).toFixed(1)+" mln so'm"},
+        {label:"Kutilmoqda",value:String(pendN),color:"#fbbf24",sub:pendN?"1-bosqichda ishlang":"navbat bo'sh"},
+        {label:"Rad etilgan",value:String(failN),color:"#fb7185",sub:"tarixda ko'rinadi"}
       ],
       paidRevenueLabel:(revTotal/1e6).toFixed(2)+" mln so'm",
       pendingPayHint:pendN+" ta · "+(pays.filter(p=>p.status==="pending").reduce((s,p)=>s+(p.amount||0),0)/1e6).toFixed(1)+" mln",
+      pendingCountLabel:pendN+" ta",
+      noPendingPays:pendN===0,
       approveAllPending:()=>this.approveAllPending(),
       pendingPayCards:pays.filter(p=>p.status==="pending").slice().reverse().map(p=>{
         const stu=DB.byId("users",p.studentId);
