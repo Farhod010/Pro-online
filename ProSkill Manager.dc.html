@@ -556,7 +556,7 @@
         <sc-if value="{{ tabLessons }}" hint-placeholder-val="{{ false }}">
           <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">
             <sc-for list="{{ reviewKpis }}" as="k" hint-placeholder-count="3">
-              <div style="background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px 16px;border-left:3px solid {{ k.color }}">
+              <div onClick="{{ k.onClick }}" style="cursor:pointer;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px 16px;border-left:3px solid {{ k.color }}" style-hover="background:var(--hover)">
                 <div style="font-size:11.5px;color:var(--muted2);font-weight:700;text-transform:uppercase">{{ k.label }}</div>
                 <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:22px;color:{{ k.color }};margin-top:4px">{{ k.value }}</div>
               </div>
@@ -609,71 +609,57 @@
                   </sc-if>
 
                   <label style="font-size:12px;color:var(--muted);font-weight:700;display:block;margin-bottom:6px">Manager izohi (teacherga ko'rinadi)</label>
-                  <textarea rows="2" value="{{ reviewNote }}" onInput="{{ onReviewNote }}" placeholder="Masalan: 2-modulda video qo'shing, dars nomlarini tuzating..." style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-size:13.5px;outline:none;resize:vertical;margin-bottom:12px"></textarea>
+                  <textarea rows="3" value="{{ reviewNote }}" onInput="{{ onReviewNote }}" placeholder="Masalan: 2-modulda video qo'shing..." style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:12px;padding:12px 14px;color:var(--text);font-size:13.5px;outline:none;resize:vertical;margin-bottom:12px"></textarea>
                   <sc-if value="{{ reviewError }}" hint-placeholder-val="{{ false }}">
                     <div style="background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.3);border-radius:10px;padding:10px;font-size:13px;color:#fb7185;margin-bottom:12px">{{ reviewError }}</div>
                   </sc-if>
 
-                  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
-                    <button onClick="{{ reviewAddNote }}" style="cursor:pointer;border:1px solid var(--border);background:var(--panel);color:var(--text);font-weight:700;font-size:13px;padding:11px 16px;border-radius:11px">✎ Izohni saqlash</button>
-                    <sc-if value="{{ canSendBack }}" hint-placeholder-val="{{ true }}">
-                      <button onClick="{{ reviewSendBack }}" style="cursor:pointer;border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.12);color:#fbbf24;font-weight:800;font-size:13px;padding:11px 16px;border-radius:11px">↩ Teacherga qaytarish</button>
-                    </sc-if>
-                    <sc-if value="{{ canPublish }}" hint-placeholder-val="{{ true }}">
-                      <button onClick="{{ reviewApprove }}" style="cursor:pointer;border:none;background:linear-gradient(135deg,#0d9488,#0ea5e9);color:#fff;font-weight:800;font-size:13px;padding:11px 18px;border-radius:11px;box-shadow:0 10px 22px rgba(13,148,136,.28)">✓ Tekshirildi (Publish)</button>
-                    </sc-if>
-                    <sc-if value="{{ canUnpublish }}" hint-placeholder-val="{{ false }}">
-                      <button onClick="{{ reviewUnpublish }}" style="cursor:pointer;border:1px solid rgba(251,113,133,.35);background:rgba(251,113,133,.1);color:#fb7185;font-weight:800;font-size:13px;padding:11px 16px;border-radius:11px">↓ Draftga olish</button>
-                    </sc-if>
+                  <!-- Always-visible actions (no nested sc-if) — same pattern as To'lovlar -->
+                  <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+                    <span onClick="{{ reviewAddNote }}" style="cursor:pointer;user-select:none;border:1px solid var(--border);background:var(--panel);color:var(--text);font-weight:700;font-size:13px;padding:11px 16px;border-radius:11px">Izohni saqlash</span>
+                    <span onClick="{{ reviewSendBack }}" style="cursor:pointer;user-select:none;border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.12);color:#fbbf24;font-weight:800;font-size:13px;padding:11px 16px;border-radius:11px">Teacherga qaytarish</span>
+                    <span onClick="{{ reviewApprove }}" style="cursor:pointer;user-select:none;border:none;background:linear-gradient(135deg,#0d9488,#0ea5e9);color:#fff;font-weight:800;font-size:13px;padding:11px 18px;border-radius:11px;box-shadow:0 10px 22px rgba(13,148,136,.28)">Tekshirildi (Publish)</span>
+                    <span onClick="{{ reviewUnpublish }}" style="cursor:pointer;user-select:none;border:1px solid rgba(251,113,133,.35);background:rgba(251,113,133,.1);color:#fb7185;font-weight:800;font-size:13px;padding:11px 16px;border-radius:11px">Draftga olish</span>
                   </div>
                   <div style="margin-top:12px;font-size:12px;color:var(--muted2);line-height:1.45">
-                    <b style="color:var(--text)">Publish</b> — studentlarga ochiladi ·
-                    <b style="color:var(--text)">Qaytarish</b> — rejected + izoh teacherga ·
-                    <b style="color:var(--text)">Izoh</b> — kursda saqlanadi ·
-                    Video: <b style="color:var(--text)">{{ reviewVideoStats }}</b>
+                    Video holati: <b style="color:var(--text)">{{ reviewVideoStats }}</b>
                   </div>
                 </div>
 
-                <sc-for list="{{ moduleList }}" as="m" hint-placeholder-count="3">
-                  <div style="background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:hidden">
-                    <div style="display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border);background:var(--panel2)">
-                      <div style="flex:1"><div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:14.5px">{{ m.title }}</div><div style="font-size:11.5px;color:var(--muted2)">{{ m.count }} dars</div></div>
-                    </div>
-                    <sc-for list="{{ m.lessons }}" as="l" hint-placeholder-count="3">
-                      <div style="display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--line)">
-                        <span style="width:28px;height:28px;border-radius:8px;background:rgba(13,148,136,.14);display:flex;align-items:center;justify-content:center;color:#2dd4bf;flex:none">{{ l.iconEl }}</span>
-                        <div style="flex:1;min-width:0">
-                          <div style="font-size:13.5px;font-weight:600">{{ l.title }}</div>
-                          <sc-if value="{{ l.hasVideo }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;color:#34d399;font-weight:600">Video URL bor</span></sc-if>
-                          <sc-if value="{{ l.noVideo }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;color:#fbbf24;font-weight:600">Video URL yo'q</span></sc-if>
-                        </div>
-                        <span style="font-size:12px;color:var(--muted2);flex:none">{{ l.duration }}</span>
-                        <span onClick="{{ l.onPreview }}" style="cursor:pointer;font-size:12px;font-weight:700;padding:6px 10px;border-radius:8px;border:1px solid var(--border);color:var(--text)">👁 Ko'rish</span>
+                <!-- Flat lesson list (no nested sc-for — more reliable clicks) -->
+                <div style="background:var(--panel);border:1px solid var(--border);border-radius:16px;overflow:hidden">
+                  <div style="padding:14px 18px;border-bottom:1px solid var(--border);background:var(--panel2);font-family:'Plus Jakarta Sans';font-weight:700;font-size:14.5px">Darslar ro'yxati</div>
+                  <sc-for list="{{ flatLessonList }}" as="l" hint-placeholder-count="6">
+                    <div style="display:flex;align-items:center;gap:12px;padding:12px 18px;border-bottom:1px solid var(--line)">
+                      <span style="width:28px;height:28px;border-radius:8px;background:rgba(13,148,136,.14);display:flex;align-items:center;justify-content:center;color:#2dd4bf;flex:none;font-size:12px">▶</span>
+                      <div style="flex:1;min-width:0">
+                        <div style="font-size:12px;color:var(--muted2);margin-bottom:2px">{{ l.moduleTitle }}</div>
+                        <div style="font-size:13.5px;font-weight:600">{{ l.title }}</div>
+                        <div style="font-size:11px;font-weight:600;color:{{ l.videoColor }};margin-top:2px">{{ l.videoLabel }}</div>
                       </div>
-                    </sc-for>
-                    <sc-if value="{{ m.noLessons }}" hint-placeholder-val="{{ false }}">
-                      <div style="padding:16px;text-align:center;color:var(--muted2);font-size:13px">Bu modulda dars yo'q</div>
-                    </sc-if>
-                  </div>
-                </sc-for>
-                <sc-if value="{{ noModulesReview }}" hint-placeholder-val="{{ false }}">
-                  <div style="background:var(--panel);border:1px dashed var(--border);border-radius:16px;padding:32px;text-align:center;color:var(--muted2)">Bu kursda modul yo'q — teacher qo'shishi kerak</div>
-                </sc-if>
+                      <span style="font-size:12px;color:var(--muted2);flex:none">{{ l.duration }}</span>
+                      <span onClick="{{ l.onPreview }}" style="cursor:pointer;user-select:none;font-size:12px;font-weight:700;padding:7px 12px;border-radius:8px;border:1px solid var(--border);color:var(--text);background:var(--panel)">Korish</span>
+                    </div>
+                  </sc-for>
+                  <sc-if value="{{ noModulesReview }}" hint-placeholder-val="{{ false }}">
+                    <div style="padding:28px;text-align:center;color:var(--muted2);font-size:13px">Bu kursda dars yo'q — teacher qo'shishi kerak</div>
+                  </sc-if>
+                </div>
               </sc-if>
 
               <sc-if value="{{ noReviewCourse }}" hint-placeholder-val="{{ false }}">
                 <div style="background:var(--panel);border:1px dashed var(--border);border-radius:18px;padding:48px;text-align:center;color:var(--muted2)">
                   <div style="font-size:15px;font-weight:700;margin-bottom:6px">Chapdan kurs tanlang</div>
-                  <div style="font-size:13px">Avval «Tekshiruvda» holatidagi kurslarni ko'ring</div>
+                  <div style="font-size:13px">Filter yoki ro'yxatdan kursni bosing</div>
                 </div>
               </sc-if>
             </div>
           </div>
         </sc-if>
 
-        <!-- Lesson preview modal -->
+        <!-- Lesson preview modal (root level, high z-index) -->
         <sc-if value="{{ showReviewPreview }}" hint-placeholder-val="{{ false }}">
-          <div onClick="{{ closeReviewPreview }}" style="position:fixed;inset:0;z-index:110;background:rgba(4,3,9,.72);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:20px">
+          <div onClick="{{ closeReviewPreview }}" style="position:fixed;inset:0;z-index:200;background:rgba(4,3,9,.75);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:20px">
             <div onClick="{{ stopProp }}" style="background:var(--solid);border:1px solid var(--border);border-radius:20px;padding:24px;max-width:520px;width:100%;box-shadow:0 30px 70px rgba(0,0,0,.5)">
               <div style="font-size:12px;color:#2dd4bf;font-weight:700;margin-bottom:4px">{{ previewCourse }}</div>
               <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;margin-bottom:12px">{{ previewTitle }}</div>
@@ -681,11 +667,11 @@
                 <div style="width:56px;height:56px;border-radius:50%;background:#fff;display:flex;align-items:center;justify-content:center;font-size:22px;color:#0d2a1e">▶</div>
                 <div style="position:absolute;bottom:10px;right:12px;font-size:12px;font-weight:700;color:rgba(255,255,255,.85)">{{ previewDuration }}</div>
               </div>
-              <div style="font-size:13.5px;color:var(--muted);margin-bottom:10px">{{ previewMeta }}</div>
+              <div style="font-size:13.5px;color:var(--muted);margin-bottom:10px;white-space:pre-wrap">{{ previewMeta }}</div>
               <sc-if value="{{ previewHasUrl }}" hint-placeholder-val="{{ false }}">
-                <a href="{{ previewUrl }}" target="_blank" rel="noopener" style="display:inline-block;font-size:13.5px;font-weight:700;color:#2dd4bf;margin-bottom:12px">Video havolasini ochish ↗</a>
+                <a href="{{ previewUrl }}" target="_blank" rel="noopener" style="display:inline-block;font-size:13.5px;font-weight:700;color:#2dd4bf;margin-bottom:12px">Video havolasini ochish</a>
               </sc-if>
-              <button onClick="{{ closeReviewPreview }}" style="cursor:pointer;width:100%;border:1px solid var(--border);background:var(--panel);color:var(--text);font-weight:700;font-size:14px;padding:12px;border-radius:11px;margin-top:6px">Yopish</button>
+              <div onClick="{{ closeReviewPreview }}" style="cursor:pointer;text-align:center;width:100%;border:1px solid var(--border);background:var(--panel);color:var(--text);font-weight:700;font-size:14px;padding:12px;border-radius:11px;margin-top:6px">Yopish</div>
             </div>
           </div>
         </sc-if>
@@ -1059,7 +1045,7 @@
 
   <!-- ===== CONFIRM MODAL ===== -->
   <sc-if value="{{ modal }}" hint-placeholder-val="{{ false }}">
-    <div onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:100;background:rgba(4,3,9,.65);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:24px">
+    <div onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:250;background:rgba(4,3,9,.65);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:24px">
       <div onClick="{{ stopProp }}" style="background:var(--solid);border:1px solid var(--border);border-radius:20px;padding:26px;max-width:400px;width:100%;animation:pop .25s ease both;box-shadow:0 30px 70px rgba(0,0,0,.5)">
         <div style="width:46px;height:46px;border-radius:13px;background:{{ modalTint }};display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:16px">{{ modalIcon }}</div>
         <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:19px;margin-bottom:8px">{{ modalTitle }}</div>
@@ -1480,67 +1466,101 @@ class Component extends DCLogic {
     });
   }
   saveReviewNote(){
-    const DB=window.ProSkillDB;const me=this.meUser();
-    if(!DB){ this.notify("DB yuklanmadi"); return; }
-    const id=this.state.lessonCourse;
-    const c=id?DB.byId("courses",id):null;
-    if(!c){ this.setState({reviewError:"Avval chapdan kurs tanlang"}); return; }
-    const note=(this.state.reviewNote||"").trim();
-    if(!note){ this.setState({reviewError:"Izoh matnini yozing"}); return; }
-    DB.update("courses",c.id,{comment:note});
-    if(c.teacherId) DB.notify(c.teacherId,"Manager izohi",'"'+c.title+'" boyicha: '+note);
-    DB.log(me?me.name:"Manager","manager","Kursga izoh yozdi",c.title,"content");
-    this.refreshReview({reviewNote:note});
-    this.notify("Izoh saqlandi — teacher koradi ✓");
+    try{
+      const DB=window.ProSkillDB;const me=this.meUser();
+      if(!DB){ this.notify("DB yuklanmadi"); return; }
+      const id=this.state.lessonCourse;
+      const c=id?DB.byId("courses",id):null;
+      if(!c){ this.setState({reviewError:"Avval chapdan kurs tanlang"}); this.notify("Avval kurs tanlang"); return; }
+      const note=(this.state.reviewNote||"").trim();
+      if(!note){ this.setState({reviewError:"Izoh matnini yozing"}); this.notify("Izoh yozing"); return; }
+      DB.update("courses",c.id,{comment:note});
+      if(c.teacherId) DB.notify(c.teacherId,"Manager izohi",'"'+c.title+'": '+note);
+      DB.log(me?me.name:"Manager","manager","Kursga izoh yozdi",c.title,"content");
+      this.refreshReview({reviewNote:note});
+      this.notify("Izoh saqlandi — teacher koradi");
+    }catch(e){ this.notify("Izoh xato: "+(e&&e.message?e.message:e)); }
   }
   approveCourse(id){
-    const DB=window.ProSkillDB;const me=this.meUser();
-    if(!DB||!id){ this.notify("Kurs tanlang"); return; }
-    const c=DB.byId("courses",id);
-    if(!c){ this.notify("Kurs topilmadi"); return; }
-    const note=(this.state.reviewNote||"").trim();
-    const r=DB.setCourseStatus(id,"published",me?me.name:"manager","manager");
-    if(!r||!r.ok){ this.notify((r&&r.error)||"Publish bolmadi"); return; }
-    if(note) DB.update("courses",id,{comment:note});
-    if(c.teacherId) DB.notify(c.teacherId,"Kurs publish qilindi ✓",'"'+c.title+'" studentlarga ochildi.'+(note?(" Izoh: "+note):""));
-    const next=this.pickNextReviewCourse(id);
-    const stillPending=next&&next.status==="pending";
-    this.refreshReview({
-      reviewNote:next&&next.comment?String(next.comment):(note||""),
-      lessonCourse:next?next.id:id,
-      reviewFilter:stillPending?"pending":"all"
-    });
-    this.notify('"'+c.title+'" publish qilindi ✓');
+    try{
+      const DB=window.ProSkillDB;const me=this.meUser();
+      id=id||this.state.lessonCourse;
+      if(!DB||!id){ this.notify("Kurs tanlang"); return; }
+      const c=DB.byId("courses",id);
+      if(!c){ this.notify("Kurs topilmadi"); return; }
+      if(c.status==="published"){ this.notify("Bu kurs allaqachon Published"); return; }
+      const note=(this.state.reviewNote||"").trim();
+      const r=DB.setCourseStatus(id,"published",me?me.name:"manager","manager");
+      if(!r||!r.ok){ this.notify((r&&r.error)||"Publish bolmadi"); return; }
+      if(note) DB.update("courses",id,{comment:note});
+      if(c.teacherId) DB.notify(c.teacherId,"Kurs publish qilindi",'"'+c.title+'" studentlarga ochildi.'+(note?(" Izoh: "+note):""));
+      const next=this.pickNextReviewCourse(id);
+      const stillPending=next&&next.status==="pending";
+      this.refreshReview({
+        reviewNote:next&&next.comment?String(next.comment):(note||""),
+        lessonCourse:next?next.id:id,
+        reviewFilter:stillPending?"pending":"all"
+      });
+      this.notify('"'+c.title+'" PUBLISH qilindi');
+    }catch(e){ this.notify("Publish xato: "+(e&&e.message?e.message:e)); }
   }
   rejectCourse(id,comment){
-    const DB=window.ProSkillDB;const me=this.meUser();
-    if(!DB||!id){ this.notify("Kurs tanlang"); return; }
-    const c=DB.byId("courses",id);
-    if(!c){ this.notify("Kurs topilmadi"); return; }
-    const note=(comment||this.state.reviewNote||"").trim()||"Tuzatish kerak — qayta yuboring.";
-    const r=DB.setCourseStatus(id,"rejected",me?me.name:"manager","manager");
-    if(!r||!r.ok){ this.notify((r&&r.error)||"Qaytarilmadi"); return; }
-    DB.update("courses",id,{comment:note});
-    if(c.teacherId) DB.notify(c.teacherId,"Kurs qaytarildi ↩",'"'+c.title+'" tuzatish uchun: '+note);
-    const next=this.pickNextReviewCourse(id);
-    const stillPending=next&&next.status==="pending";
-    this.refreshReview({
-      reviewNote:next&&next.comment?String(next.comment):note,
-      lessonCourse:next?next.id:id,
-      reviewFilter:stillPending?"pending":"rejected"
-    });
-    this.notify('"'+c.title+'" teacherga qaytarildi ↩');
+    try{
+      const DB=window.ProSkillDB;const me=this.meUser();
+      id=id||this.state.lessonCourse;
+      if(!DB||!id){ this.notify("Kurs tanlang"); return; }
+      const c=DB.byId("courses",id);
+      if(!c){ this.notify("Kurs topilmadi"); return; }
+      const note=(comment||this.state.reviewNote||"").trim()||"Tuzatish kerak — qayta yuboring.";
+      const r=DB.setCourseStatus(id,"rejected",me?me.name:"manager","manager");
+      if(!r||!r.ok){ this.notify((r&&r.error)||"Qaytarilmadi"); return; }
+      DB.update("courses",id,{comment:note});
+      if(c.teacherId) DB.notify(c.teacherId,"Kurs qaytarildi",'"'+c.title+'" tuzatish: '+note);
+      const next=this.pickNextReviewCourse(id);
+      const stillPending=next&&next.status==="pending";
+      this.refreshReview({
+        reviewNote:next&&next.comment?String(next.comment):note,
+        lessonCourse:next?next.id:id,
+        reviewFilter:stillPending?"pending":"rejected"
+      });
+      this.notify('"'+c.title+'" teacherga qaytarildi');
+    }catch(e){ this.notify("Qaytarish xato: "+(e&&e.message?e.message:e)); }
   }
   unpublishCourse(id){
-    const DB=window.ProSkillDB;const me=this.meUser();
-    if(!DB||!id){ this.notify("Kurs tanlang"); return; }
-    const c=DB.byId("courses",id);
-    if(!c){ this.notify("Kurs topilmadi"); return; }
-    const r=DB.setCourseStatus(id,"draft",me?me.name:"manager","manager");
-    if(!r||!r.ok){ this.notify((r&&r.error)||"Draft bolmadi"); return; }
-    if(c.teacherId) DB.notify(c.teacherId,"Kurs draftga olindi",'"'+c.title+'" studentlardan yopildi (draft).');
-    this.refreshReview({reviewNote:c.comment||""});
-    this.notify('"'+c.title+'" draftga olindi');
+    try{
+      const DB=window.ProSkillDB;const me=this.meUser();
+      id=id||this.state.lessonCourse;
+      if(!DB||!id){ this.notify("Kurs tanlang"); return; }
+      const c=DB.byId("courses",id);
+      if(!c){ this.notify("Kurs topilmadi"); return; }
+      if(c.status!=="published"){ this.notify("Faqat Published kursni draftga olish mumkin"); return; }
+      const r=DB.setCourseStatus(id,"draft",me?me.name:"manager","manager");
+      if(!r||!r.ok){ this.notify((r&&r.error)||"Draft bolmadi"); return; }
+      if(c.teacherId) DB.notify(c.teacherId,"Kurs draftga olindi",'"'+c.title+'" studentlardan yopildi (draft).');
+      this.refreshReview({reviewNote:c.comment||"",reviewFilter:"rejected"});
+      this.notify('"'+c.title+'" draftga olindi');
+    }catch(e){ this.notify("Draft xato: "+(e&&e.message?e.message:e)); }
+  }
+  setReviewFilter(f){
+    const DB=window.ProSkillDB;
+    if(!DB) return;
+    let list=(DB.table("courses")||[]).slice();
+    if(f==="pending") list=list.filter(c=>c.status==="pending");
+    else if(f==="published") list=list.filter(c=>c.status==="published");
+    else if(f==="rejected") list=list.filter(c=>c.status==="rejected"||c.status==="draft");
+    list.sort((a,b)=>{
+      const order={pending:0,draft:1,rejected:2,published:3};
+      return (order[a.status]||9)-(order[b.status]||9);
+    });
+    const keep=list.some(c=>c.id===this.state.lessonCourse);
+    const next=keep?null:list[0];
+    this.setState({
+      reviewFilter:f,
+      lessonCourse:next?next.id:this.state.lessonCourse,
+      reviewNote:next?(next.comment||""):(this.state.reviewNote||""),
+      reviewError:null,
+      showReviewPreview:false
+    });
   }
   sendBroadcast(){
     const DB=window.ProSkillDB;const me=this.meUser();
@@ -2039,12 +2059,16 @@ class Component extends DCLogic {
       dashRevenueLabel:(revTotal/1e6).toFixed(1)+" mln",
       dashPendingLabel:pendN+" ta · "+((pays.filter(p=>p.status==="pending").reduce((s,p)=>s+(p.amount||0),0)/1e6).toFixed(1))+" mln",
       reviewKpis:(()=>{
-        if(!DB) return [{label:"Tekshiruvda",value:"0",color:"#fbbf24"},{label:"Published",value:"0",color:"#34d399"},{label:"Rad etilgan",value:"0",color:"#fb7185"}];
+        if(!DB) return [
+          {label:"Tekshiruvda",value:"0",color:"#fbbf24",onClick:()=>this.setReviewFilter("pending")},
+          {label:"Published",value:"0",color:"#34d399",onClick:()=>this.setReviewFilter("published")},
+          {label:"Rad / Draft",value:"0",color:"#fb7185",onClick:()=>this.setReviewFilter("rejected")}
+        ];
         const all=dbCourses;
         return [
-          {label:"Tekshiruvda",value:String(all.filter(c=>c.status==="pending").length),color:"#fbbf24"},
-          {label:"Published",value:String(all.filter(c=>c.status==="published").length),color:"#34d399"},
-          {label:"Rad / Draft",value:String(all.filter(c=>c.status==="rejected"||c.status==="draft").length),color:"#fb7185"}
+          {label:"Tekshiruvda",value:String(all.filter(c=>c.status==="pending").length),color:"#fbbf24",onClick:()=>this.setReviewFilter("pending")},
+          {label:"Published",value:String(all.filter(c=>c.status==="published").length),color:"#34d399",onClick:()=>this.setReviewFilter("published")},
+          {label:"Rad / Draft",value:String(all.filter(c=>c.status==="rejected"||c.status==="draft").length),color:"#fb7185",onClick:()=>this.setReviewFilter("rejected")}
         ];
       })(),
       reviewFilterChips:(()=>{
@@ -2063,25 +2087,7 @@ class Component extends DCLogic {
           const on=(st.reviewFilter||"pending")===k;
           return{
             label:l+(n?" · "+n:""),
-            onClick:()=>{
-              const f=k;
-              let list=dbCourses.slice();
-              if(f==="pending") list=list.filter(c=>c.status==="pending");
-              else if(f==="published") list=list.filter(c=>c.status==="published");
-              else if(f==="rejected") list=list.filter(c=>c.status==="rejected"||c.status==="draft");
-              list.sort((a,b)=>{
-                const order={pending:0,draft:1,rejected:2,published:3};
-                return (order[a.status]||9)-(order[b.status]||9);
-              });
-              const keep=list.some(c=>c.id===st.lessonCourse);
-              const next=keep?null:list[0];
-              this.setState({
-                reviewFilter:f,
-                lessonCourse:next?next.id:st.lessonCourse,
-                reviewNote:next?(next.comment||""):(st.reviewNote||""),
-                reviewError:null
-              });
-            },
+            onClick:()=>this.setReviewFilter(k),
             border:on?"rgba(13,148,136,.55)":"var(--border)",
             bg:on?"rgba(13,148,136,.16)":"transparent",
             color:on?"#ccfbf1":"var(--muted)"
@@ -2158,9 +2164,6 @@ class Component extends DCLogic {
       reviewStatusBg:(()=>{ const c=DB&&st.lessonCourse?DB.byId("courses",st.lessonCourse):null; return c?this.courseStatusMeta(c.status).bg:"rgba(255,255,255,.06)"; })(),
       hasReviewComment:(()=>{ const c=DB&&st.lessonCourse?DB.byId("courses",st.lessonCourse):null; return !!(c&&c.comment&&String(c.comment).trim()); })(),
       reviewComment:(()=>{ const c=DB&&st.lessonCourse?DB.byId("courses",st.lessonCourse):null; return c&&c.comment?String(c.comment):""; })(),
-      canPublish:(()=>{ const c=DB&&st.lessonCourse?DB.byId("courses",st.lessonCourse):null; return !!(c&&c.status!=="published"); })(),
-      canSendBack:(()=>{ const c=DB&&st.lessonCourse?DB.byId("courses",st.lessonCourse):null; return !!(c&&c.status!=="rejected"); })(),
-      canUnpublish:(()=>{ const c=DB&&st.lessonCourse?DB.byId("courses",st.lessonCourse):null; return !!(c&&c.status==="published"); })(),
       reviewVideoStats:(()=>{
         if(!DB||!st.lessonCourse) return "—";
         const ls=DB.lessonsOf(st.lessonCourse);
@@ -2168,65 +2171,34 @@ class Component extends DCLogic {
         const withV=ls.filter(l=>l.videoUrl&&String(l.videoUrl).trim()).length;
         return withV+"/"+ls.length+" darsda video";
       })(),
-      moduleList:(()=>{
+      flatLessonList:(()=>{
         if(!DB||!st.lessonCourse) return [];
         const course=DB.byId("courses",st.lessonCourse);
         const ctitle=course?course.title:"";
-        return DB.modulesOf(st.lessonCourse).map(m=>{
+        const out=[];
+        DB.modulesOf(st.lessonCourse).forEach(m=>{
           const lessons=DB.table("lessons").filter(l=>l.moduleId===m.id).sort((a,b)=>(a.order||0)-(b.order||0));
-          return{
-            title:m.title,count:lessons.length,
-            noLessons:lessons.length===0,
-            lessons:lessons.map(l=>{
-              const hasUrl=!!(l.videoUrl&&String(l.videoUrl).trim());
-              return{
-                title:l.title,duration:l.duration||"0:00",iconEl:this.ic("video",13),
-                hasVideo:hasUrl,noVideo:!hasUrl,
-                onPreview:()=>this.openReviewPreview(l,ctitle)
-              };
-            })
-          };
+          lessons.forEach(l=>{
+            const hasUrl=!!(l.videoUrl&&String(l.videoUrl).trim());
+            out.push({
+              id:l.id,
+              title:l.title,
+              moduleTitle:m.title||"Modul",
+              duration:l.duration||"0:00",
+              videoLabel:hasUrl?"Video URL bor":"Video URL yoq",
+              videoColor:hasUrl?"#34d399":"#fbbf24",
+              onPreview:()=>this.openReviewPreview(l,ctitle)
+            });
+          });
         });
+        return out;
       })(),
-      noModulesReview:!(DB&&st.lessonCourse&&DB.modulesOf(st.lessonCourse).length),
+      moduleList:[],
+      noModulesReview:!(DB&&st.lessonCourse&&DB.lessonsOf(st.lessonCourse).length),
       reviewAddNote:()=>this.saveReviewNote(),
-      reviewSendBack:()=>{
-        if(!st.lessonCourse){ this.notify("Kurs tanlang"); return; }
-        const c=DB?DB.byId("courses",st.lessonCourse):null;
-        if(!c){ this.notify("Kurs topilmadi"); return; }
-        const note=(st.reviewNote||"").trim();
-        this.ask({
-          title:"Teacherga qaytarish",
-          msg:'"'+c.title+'" rejected holatiga otadi'+(note?(".\nIzoh: "+note):".\nDefault izoh yoziladi.")+"\nTeacher tuzatib qayta yuboradi.",
-          confirm:"Qaytarish",icon:"↩",
-          onConfirm:()=>this.rejectCourse(st.lessonCourse,note||null)
-        });
-      },
-      reviewApprove:()=>{
-        if(!st.lessonCourse){ this.notify("Kurs tanlang"); return; }
-        const c=DB?DB.byId("courses",st.lessonCourse):null;
-        if(!c){ this.notify("Kurs topilmadi"); return; }
-        const ls=DB.lessonsOf(c.id);
-        const noVideo=ls.filter(l=>!(l.videoUrl&&String(l.videoUrl).trim())).length;
-        const warn=noVideo?("\nDiqqat: "+noVideo+" darsda video URL yoq."):"\nBarcha videolar joyida.";
-        this.ask({
-          title:"Publish qilish",
-          msg:'"'+c.title+'" studentlarga ochiladi.'+warn,
-          confirm:"Publish",icon:"✓",
-          onConfirm:()=>this.approveCourse(st.lessonCourse)
-        });
-      },
-      reviewUnpublish:()=>{
-        if(!st.lessonCourse){ this.notify("Kurs tanlang"); return; }
-        const c=DB?DB.byId("courses",st.lessonCourse):null;
-        if(!c){ this.notify("Kurs topilmadi"); return; }
-        this.ask({
-          title:"Draftga olish",
-          msg:'"'+c.title+'" studentlardan yopiladi (draft).',
-          confirm:"Draft",danger:true,icon:"↓",
-          onConfirm:()=>this.unpublishCourse(st.lessonCourse)
-        });
-      },
+      reviewSendBack:()=>this.rejectCourse(this.state.lessonCourse),
+      reviewApprove:()=>this.approveCourse(this.state.lessonCourse),
+      reviewUnpublish:()=>this.unpublishCourse(this.state.lessonCourse),
       showReviewPreview:!!st.showReviewPreview,
       closeReviewPreview:()=>this.closeReviewPreview(),
       stopProp:(e)=>this.stopProp(e),
