@@ -88,7 +88,7 @@
         </div>
         <div style="flex:1"></div>
         <div onClick="{{ toggleTheme }}" style="cursor:pointer;width:40px;height:40px;border-radius:11px;border:1px solid var(--border);background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:16px">{{ themeIcon }}</div>
-        <div style="position:relative;width:40px;height:40px;border-radius:11px;border:1px solid var(--border);background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer">🔔<sc-if value="{{ hasPendingPays }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;top:7px;right:8px;width:7px;height:7px;border-radius:50%;background:#fb7185;border:2px solid var(--bg)"></span></sc-if></div>
+        <div onClick="{{ goPayments }}" title="To'lovlar" style="position:relative;width:40px;height:40px;border-radius:11px;border:1px solid var(--border);background:var(--panel);display:flex;align-items:center;justify-content:center;font-size:15px;cursor:pointer">🔔<sc-if value="{{ hasPendingPays }}" hint-placeholder-val="{{ true }}"><span style="position:absolute;top:7px;right:8px;width:7px;height:7px;border-radius:50%;background:#fb7185;border:2px solid var(--bg)"></span></sc-if></div>
         <div style="position:relative;padding-left:8px;border-left:1px solid var(--border)">
           <div onClick="{{ toggleUserMenu }}" class="user-chip {{ userChipClass }}" title="Profil menyusi">
             <div style="width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#0d9488,#0ea5e9);display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;color:#fff;flex:none;overflow:hidden;box-shadow:0 6px 16px rgba(13,148,136,.35)">
@@ -175,8 +175,8 @@
                 </sc-for>
               </div>
               <div style="margin-top:22px;padding-top:18px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                <div><div style="font-size:12px;color:var(--muted)">Bugungi daromad</div><div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;color:#34d399;margin-top:3px">4.2 mln</div></div>
-                <div><div style="font-size:12px;color:var(--muted)">Haftalik</div><div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;margin-top:3px">28.6 mln</div></div>
+                <div><div style="font-size:12px;color:var(--muted)">Jami daromad</div><div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;color:#34d399;margin-top:3px">{{ dashRevenueLabel }}</div></div>
+                <div><div style="font-size:12px;color:var(--muted)">Kutilayotgan</div><div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;margin-top:3px;color:#fbbf24">{{ dashPendingLabel }}</div></div>
               </div>
             </div>
           </div>
@@ -614,15 +614,23 @@
                     <div style="background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.3);border-radius:10px;padding:10px;font-size:13px;color:#fb7185;margin-bottom:12px">{{ reviewError }}</div>
                   </sc-if>
 
-                  <div style="display:flex;gap:10px;flex-wrap:wrap">
+                  <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center">
                     <button onClick="{{ reviewAddNote }}" style="cursor:pointer;border:1px solid var(--border);background:var(--panel);color:var(--text);font-weight:700;font-size:13px;padding:11px 16px;border-radius:11px">✎ Izohni saqlash</button>
-                    <button onClick="{{ reviewSendBack }}" style="cursor:pointer;border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.12);color:#fbbf24;font-weight:800;font-size:13px;padding:11px 16px;border-radius:11px">↩ Teacherga qaytarish</button>
-                    <button onClick="{{ reviewApprove }}" style="cursor:pointer;border:none;background:linear-gradient(135deg,#0d9488,#0ea5e9);color:#fff;font-weight:800;font-size:13px;padding:11px 18px;border-radius:11px;box-shadow:0 10px 22px rgba(13,148,136,.28)">✓ Tekshirildi (Publish)</button>
+                    <sc-if value="{{ canSendBack }}" hint-placeholder-val="{{ true }}">
+                      <button onClick="{{ reviewSendBack }}" style="cursor:pointer;border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.12);color:#fbbf24;font-weight:800;font-size:13px;padding:11px 16px;border-radius:11px">↩ Teacherga qaytarish</button>
+                    </sc-if>
+                    <sc-if value="{{ canPublish }}" hint-placeholder-val="{{ true }}">
+                      <button onClick="{{ reviewApprove }}" style="cursor:pointer;border:none;background:linear-gradient(135deg,#0d9488,#0ea5e9);color:#fff;font-weight:800;font-size:13px;padding:11px 18px;border-radius:11px;box-shadow:0 10px 22px rgba(13,148,136,.28)">✓ Tekshirildi (Publish)</button>
+                    </sc-if>
+                    <sc-if value="{{ canUnpublish }}" hint-placeholder-val="{{ false }}">
+                      <button onClick="{{ reviewUnpublish }}" style="cursor:pointer;border:1px solid rgba(251,113,133,.35);background:rgba(251,113,133,.1);color:#fb7185;font-weight:800;font-size:13px;padding:11px 16px;border-radius:11px">↓ Draftga olish</button>
+                    </sc-if>
                   </div>
                   <div style="margin-top:12px;font-size:12px;color:var(--muted2);line-height:1.45">
-                    <b style="color:var(--text)">Publish</b> — kurs studentlarga ochiladi ·
-                    <b style="color:var(--text)">Qaytarish</b> — holat «Rad etilgan», teacher tuzatadi ·
-                    <b style="color:var(--text)">Izoh</b> — kursda saqlanadi
+                    <b style="color:var(--text)">Publish</b> — studentlarga ochiladi ·
+                    <b style="color:var(--text)">Qaytarish</b> — rejected + izoh teacherga ·
+                    <b style="color:var(--text)">Izoh</b> — kursda saqlanadi ·
+                    Video: <b style="color:var(--text)">{{ reviewVideoStats }}</b>
                   </div>
                 </div>
 
@@ -1052,10 +1060,10 @@
   <!-- ===== CONFIRM MODAL ===== -->
   <sc-if value="{{ modal }}" hint-placeholder-val="{{ false }}">
     <div onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:100;background:rgba(4,3,9,.65);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:24px">
-      <div style="background:var(--solid);border:1px solid var(--border);border-radius:20px;padding:26px;max-width:400px;width:100%;animation:pop .25s ease both;box-shadow:0 30px 70px rgba(0,0,0,.5)">
+      <div onClick="{{ stopProp }}" style="background:var(--solid);border:1px solid var(--border);border-radius:20px;padding:26px;max-width:400px;width:100%;animation:pop .25s ease both;box-shadow:0 30px 70px rgba(0,0,0,.5)">
         <div style="width:46px;height:46px;border-radius:13px;background:{{ modalTint }};display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:16px">{{ modalIcon }}</div>
         <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:19px;margin-bottom:8px">{{ modalTitle }}</div>
-        <p style="font-size:14px;color:var(--muted);line-height:1.55;margin-bottom:24px">{{ modalMsg }}</p>
+        <p style="font-size:14px;color:var(--muted);line-height:1.55;margin-bottom:24px;white-space:pre-wrap">{{ modalMsg }}</p>
         <div style="display:flex;gap:11px">
           <button onClick="{{ closeModal }}" style="cursor:pointer;flex:1;border:1px solid var(--border);background:var(--panel);color:var(--text);font-weight:700;font-size:14px;padding:12px;border-radius:11px">Bekor qilish</button>
           <button onClick="{{ confirmModal }}" style="cursor:pointer;flex:1;border:none;background:{{ modalBtn }};color:#fff;font-weight:700;font-size:14px;padding:12px;border-radius:11px">{{ modalConfirm }}</button>
@@ -1425,7 +1433,10 @@ class Component extends DCLogic {
     r.status=r.status==="visible"?"hidden":"visible";
     this.notify(r.status==="hidden"?"Sharh yashirildi":"Sharh ko'rsatildi"); this.forceUpdate();
   }
-  refreshReview(){ this.setState(s=>({reviewRev:(s.reviewRev||0)+1,reviewError:null})); }
+  refreshReview(extra){
+    const patch=Object.assign({reviewRev:(this.state.reviewRev||0)+1,reviewError:null},extra||{});
+    this.setState(patch);
+  }
   courseStatusMeta(status){
     const map={
       published:{label:"Published",color:"#34d399",bg:"rgba(52,211,153,.14)",border:"rgba(52,211,153,.35)"},
@@ -1435,6 +1446,15 @@ class Component extends DCLogic {
     };
     return map[status]||map.draft;
   }
+  pickNextReviewCourse(excludeId){
+    const DB=window.ProSkillDB;
+    if(!DB) return null;
+    const all=DB.table("courses")||[];
+    const pending=all.filter(c=>c.status==="pending"&&c.id!==excludeId);
+    if(pending.length) return pending[0];
+    const other=all.filter(c=>c.id!==excludeId);
+    return other[0]||null;
+  }
   openReviewPreview(lesson,courseTitle){
     const url=(lesson&&lesson.videoUrl)?String(lesson.videoUrl).trim():"";
     this.setState({
@@ -1442,13 +1462,23 @@ class Component extends DCLogic {
       previewTitle:lesson?(lesson.title||"Dars"):"Dars",
       previewCourse:courseTitle||"",
       previewDuration:(lesson&&lesson.duration)||"0:00",
-      previewMeta:url?"Video URL mavjud — ochib tekshirishingiz mumkin":"Bu darsda video URL yo'q. Teacherga qaytarib so'rash mumkin.",
+      previewMeta:url?"Video URL mavjud — ochib tekshirishingiz mumkin":"Bu darsda video URL yoq. Teacherga qaytarib sorash mumkin.",
       previewUrl:url||"#",
       previewHasUrl:!!url
     });
   }
   closeReviewPreview(){ this.setState({showReviewPreview:false}); }
-  stopProp(e){ if(e&&e.stopPropagation) e.stopPropagation(); }
+  stopProp(e){ if(e&&e.stopPropagation) e.stopPropagation(); if(e&&e.preventDefault) e.preventDefault(); }
+  selectReviewCourse(id){
+    const DB=window.ProSkillDB;
+    const c=DB&&id?DB.byId("courses",id):null;
+    this.setState({
+      lessonCourse:id||"",
+      reviewNote:c&&c.comment?String(c.comment):"",
+      reviewError:null,
+      showReviewPreview:false
+    });
+  }
   saveReviewNote(){
     const DB=window.ProSkillDB;const me=this.meUser();
     if(!DB){ this.notify("DB yuklanmadi"); return; }
@@ -1458,10 +1488,10 @@ class Component extends DCLogic {
     const note=(this.state.reviewNote||"").trim();
     if(!note){ this.setState({reviewError:"Izoh matnini yozing"}); return; }
     DB.update("courses",c.id,{comment:note});
-    if(c.teacherId) DB.notify(c.teacherId,"Manager izohi",'"'+c.title+'" bo\'yicha: '+note);
+    if(c.teacherId) DB.notify(c.teacherId,"Manager izohi",'"'+c.title+'" boyicha: '+note);
     DB.log(me?me.name:"Manager","manager","Kursga izoh yozdi",c.title,"content");
-    this.setState({reviewError:null,reviewRev:(this.state.reviewRev||0)+1});
-    this.notify("Izoh saqlandi — teacher ko'radi ✓");
+    this.refreshReview({reviewNote:note});
+    this.notify("Izoh saqlandi — teacher koradi ✓");
   }
   approveCourse(id){
     const DB=window.ProSkillDB;const me=this.meUser();
@@ -1470,10 +1500,16 @@ class Component extends DCLogic {
     if(!c){ this.notify("Kurs topilmadi"); return; }
     const note=(this.state.reviewNote||"").trim();
     const r=DB.setCourseStatus(id,"published",me?me.name:"manager","manager");
-    if(!r||!r.ok){ this.notify((r&&r.error)||"Publish bo'lmadi"); return; }
+    if(!r||!r.ok){ this.notify((r&&r.error)||"Publish bolmadi"); return; }
     if(note) DB.update("courses",id,{comment:note});
     if(c.teacherId) DB.notify(c.teacherId,"Kurs publish qilindi ✓",'"'+c.title+'" studentlarga ochildi.'+(note?(" Izoh: "+note):""));
-    this.setState({reviewError:null,reviewNote:"",reviewRev:(this.state.reviewRev||0)+1});
+    const next=this.pickNextReviewCourse(id);
+    const stillPending=next&&next.status==="pending";
+    this.refreshReview({
+      reviewNote:next&&next.comment?String(next.comment):(note||""),
+      lessonCourse:next?next.id:id,
+      reviewFilter:stillPending?"pending":"all"
+    });
     this.notify('"'+c.title+'" publish qilindi ✓');
   }
   rejectCourse(id,comment){
@@ -1486,8 +1522,25 @@ class Component extends DCLogic {
     if(!r||!r.ok){ this.notify((r&&r.error)||"Qaytarilmadi"); return; }
     DB.update("courses",id,{comment:note});
     if(c.teacherId) DB.notify(c.teacherId,"Kurs qaytarildi ↩",'"'+c.title+'" tuzatish uchun: '+note);
-    this.setState({reviewError:null,reviewNote:"",reviewRev:(this.state.reviewRev||0)+1});
+    const next=this.pickNextReviewCourse(id);
+    const stillPending=next&&next.status==="pending";
+    this.refreshReview({
+      reviewNote:next&&next.comment?String(next.comment):note,
+      lessonCourse:next?next.id:id,
+      reviewFilter:stillPending?"pending":"rejected"
+    });
     this.notify('"'+c.title+'" teacherga qaytarildi ↩');
+  }
+  unpublishCourse(id){
+    const DB=window.ProSkillDB;const me=this.meUser();
+    if(!DB||!id){ this.notify("Kurs tanlang"); return; }
+    const c=DB.byId("courses",id);
+    if(!c){ this.notify("Kurs topilmadi"); return; }
+    const r=DB.setCourseStatus(id,"draft",me?me.name:"manager","manager");
+    if(!r||!r.ok){ this.notify((r&&r.error)||"Draft bolmadi"); return; }
+    if(c.teacherId) DB.notify(c.teacherId,"Kurs draftga olindi",'"'+c.title+'" studentlardan yopildi (draft).');
+    this.refreshReview({reviewNote:c.comment||""});
+    this.notify('"'+c.title+'" draftga olindi');
   }
   sendBroadcast(){
     const DB=window.ProSkillDB;const me=this.meUser();
@@ -1983,6 +2036,8 @@ class Component extends DCLogic {
       reviewNote:st.reviewNote||"",
       reviewError:st.reviewError||null,
       onReviewNote:(e)=>this.setState({reviewNote:e&&e.target?e.target.value:"",reviewError:null}),
+      dashRevenueLabel:(revTotal/1e6).toFixed(1)+" mln",
+      dashPendingLabel:pendN+" ta · "+((pays.filter(p=>p.status==="pending").reduce((s,p)=>s+(p.amount||0),0)/1e6).toFixed(1))+" mln",
       reviewKpis:(()=>{
         if(!DB) return [{label:"Tekshiruvda",value:"0",color:"#fbbf24"},{label:"Published",value:"0",color:"#34d399"},{label:"Rad etilgan",value:"0",color:"#fb7185"}];
         const all=dbCourses;
@@ -2008,7 +2063,25 @@ class Component extends DCLogic {
           const on=(st.reviewFilter||"pending")===k;
           return{
             label:l+(n?" · "+n:""),
-            onClick:()=>this.setState({reviewFilter:k}),
+            onClick:()=>{
+              const f=k;
+              let list=dbCourses.slice();
+              if(f==="pending") list=list.filter(c=>c.status==="pending");
+              else if(f==="published") list=list.filter(c=>c.status==="published");
+              else if(f==="rejected") list=list.filter(c=>c.status==="rejected"||c.status==="draft");
+              list.sort((a,b)=>{
+                const order={pending:0,draft:1,rejected:2,published:3};
+                return (order[a.status]||9)-(order[b.status]||9);
+              });
+              const keep=list.some(c=>c.id===st.lessonCourse);
+              const next=keep?null:list[0];
+              this.setState({
+                reviewFilter:f,
+                lessonCourse:next?next.id:st.lessonCourse,
+                reviewNote:next?(next.comment||""):(st.reviewNote||""),
+                reviewError:null
+              });
+            },
             border:on?"rgba(13,148,136,.55)":"var(--border)",
             bg:on?"rgba(13,148,136,.16)":"transparent",
             color:on?"#ccfbf1":"var(--muted)"
@@ -2018,16 +2091,30 @@ class Component extends DCLogic {
       lessonCourseList:(()=>{
         if(!DB) return [];
         const f=st.reviewFilter||"pending";
+        const q=(st.search||"").toLowerCase().trim();
         let list=dbCourses.slice();
         if(f==="pending") list=list.filter(c=>c.status==="pending");
         else if(f==="published") list=list.filter(c=>c.status==="published");
         else if(f==="rejected") list=list.filter(c=>c.status==="rejected"||c.status==="draft");
+        if(q){
+          list=list.filter(c=>{
+            const t=DB.byId("users",c.teacherId);
+            const tn=t?t.name:"";
+            return (c.title||"").toLowerCase().includes(q)||(c.cat||"").toLowerCase().includes(q)||tn.toLowerCase().includes(q);
+          });
+        }
         list.sort((a,b)=>{
           const order={pending:0,draft:1,rejected:2,published:3};
           return (order[a.status]||9)-(order[b.status]||9);
         });
-        if(list.length && !list.some(c=>c.id===st.lessonCourse)){
-          setTimeout(()=>this.setState({lessonCourse:list[0].id,reviewNote:(DB.byId("courses",list[0].id)||{}).comment||"",reviewError:null}),0);
+        // one-shot auto-select without setTimeout thrash
+        if(list.length && !list.some(c=>c.id===st.lessonCourse) && !this._reviewSelecting){
+          this._reviewSelecting=true;
+          const first=list[0];
+          setTimeout(()=>{
+            this._reviewSelecting=false;
+            this.selectReviewCourse(first.id);
+          },0);
         }
         return list.map(c=>{
           const sel=st.lessonCourse===c.id;
@@ -2040,7 +2127,7 @@ class Component extends DCLogic {
             initial:(c.cat||"K").charAt(0),
             grad:this.grads[c.cat]||"linear-gradient(135deg,#0d9488,#0ea5e9)",
             statusLabel:sm.label,statusColor:sm.color,statusBg:sm.bg,
-            onSelect:()=>this.setState({lessonCourse:c.id,reviewNote:c.comment||"",reviewError:null,showReviewPreview:false}),
+            onSelect:()=>this.selectReviewCourse(c.id),
             bg:sel?"linear-gradient(135deg,rgba(13,148,136,.2),rgba(14,165,233,.13))":"transparent",
             border:sel?"rgba(13,148,136,.35)":"transparent",
             color:sel?"var(--text)":"var(--muted)"
@@ -2050,10 +2137,12 @@ class Component extends DCLogic {
       noReviewCourses:(()=>{
         if(!DB) return true;
         const f=st.reviewFilter||"pending";
+        const q=(st.search||"").toLowerCase().trim();
         let list=dbCourses;
         if(f==="pending") list=list.filter(c=>c.status==="pending");
         else if(f==="published") list=list.filter(c=>c.status==="published");
         else if(f==="rejected") list=list.filter(c=>c.status==="rejected"||c.status==="draft");
+        if(q) list=list.filter(c=>(c.title||"").toLowerCase().includes(q));
         return list.length===0;
       })(),
       hasReviewCourse:!!(DB&&st.lessonCourse&&DB.byId("courses",st.lessonCourse)),
@@ -2069,6 +2158,16 @@ class Component extends DCLogic {
       reviewStatusBg:(()=>{ const c=DB&&st.lessonCourse?DB.byId("courses",st.lessonCourse):null; return c?this.courseStatusMeta(c.status).bg:"rgba(255,255,255,.06)"; })(),
       hasReviewComment:(()=>{ const c=DB&&st.lessonCourse?DB.byId("courses",st.lessonCourse):null; return !!(c&&c.comment&&String(c.comment).trim()); })(),
       reviewComment:(()=>{ const c=DB&&st.lessonCourse?DB.byId("courses",st.lessonCourse):null; return c&&c.comment?String(c.comment):""; })(),
+      canPublish:(()=>{ const c=DB&&st.lessonCourse?DB.byId("courses",st.lessonCourse):null; return !!(c&&c.status!=="published"); })(),
+      canSendBack:(()=>{ const c=DB&&st.lessonCourse?DB.byId("courses",st.lessonCourse):null; return !!(c&&c.status!=="rejected"); })(),
+      canUnpublish:(()=>{ const c=DB&&st.lessonCourse?DB.byId("courses",st.lessonCourse):null; return !!(c&&c.status==="published"); })(),
+      reviewVideoStats:(()=>{
+        if(!DB||!st.lessonCourse) return "—";
+        const ls=DB.lessonsOf(st.lessonCourse);
+        if(!ls.length) return "0 dars";
+        const withV=ls.filter(l=>l.videoUrl&&String(l.videoUrl).trim()).length;
+        return withV+"/"+ls.length+" darsda video";
+      })(),
       moduleList:(()=>{
         if(!DB||!st.lessonCourse) return [];
         const course=DB.byId("courses",st.lessonCourse);
@@ -2098,7 +2197,7 @@ class Component extends DCLogic {
         const note=(st.reviewNote||"").trim();
         this.ask({
           title:"Teacherga qaytarish",
-          msg:'"'+c.title+'" rejected holatiga otadi'+(note?(".\nIzoh: "+note):". Default izoh yoziladi.")+" Teacher tuzatib qayta yuboradi.",
+          msg:'"'+c.title+'" rejected holatiga otadi'+(note?(".\nIzoh: "+note):".\nDefault izoh yoziladi.")+"\nTeacher tuzatib qayta yuboradi.",
           confirm:"Qaytarish",icon:"↩",
           onConfirm:()=>this.rejectCourse(st.lessonCourse,note||null)
         });
@@ -2109,12 +2208,23 @@ class Component extends DCLogic {
         if(!c){ this.notify("Kurs topilmadi"); return; }
         const ls=DB.lessonsOf(c.id);
         const noVideo=ls.filter(l=>!(l.videoUrl&&String(l.videoUrl).trim())).length;
-        const warn=noVideo?(" Diqqat: "+noVideo+" darsda video URL yo'q."):"";
+        const warn=noVideo?("\nDiqqat: "+noVideo+" darsda video URL yoq."):"\nBarcha videolar joyida.";
         this.ask({
           title:"Publish qilish",
           msg:'"'+c.title+'" studentlarga ochiladi.'+warn,
           confirm:"Publish",icon:"✓",
           onConfirm:()=>this.approveCourse(st.lessonCourse)
+        });
+      },
+      reviewUnpublish:()=>{
+        if(!st.lessonCourse){ this.notify("Kurs tanlang"); return; }
+        const c=DB?DB.byId("courses",st.lessonCourse):null;
+        if(!c){ this.notify("Kurs topilmadi"); return; }
+        this.ask({
+          title:"Draftga olish",
+          msg:'"'+c.title+'" studentlardan yopiladi (draft).',
+          confirm:"Draft",danger:true,icon:"↓",
+          onConfirm:()=>this.unpublishCourse(st.lessonCourse)
         });
       },
       showReviewPreview:!!st.showReviewPreview,
