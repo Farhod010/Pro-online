@@ -727,22 +727,47 @@
 
         <!-- ===== REVIEWS ===== -->
         <sc-if value="{{ tabReviews }}" hint-placeholder-val="{{ false }}">
+          <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-bottom:16px">
+            <sc-for list="{{ feedbackKpis }}" as="k" hint-placeholder-count="3">
+              <div onClick="{{ k.onClick }}" style="cursor:pointer;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px 16px;border-left:3px solid {{ k.color }}" style-hover="background:var(--hover)">
+                <div style="font-size:11.5px;color:var(--muted2);font-weight:700;text-transform:uppercase">{{ k.label }}</div>
+                <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:22px;color:{{ k.color }};margin-top:4px">{{ k.value }}</div>
+              </div>
+            </sc-for>
+          </div>
+          <div style="display:flex;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+            <sc-for list="{{ feedbackFilterChips }}" as="f" hint-placeholder-count="3">
+              <span onClick="{{ f.onClick }}" style="cursor:pointer;font-size:12.5px;font-weight:700;padding:7px 13px;border-radius:20px;border:1px solid {{ f.border }};background:{{ f.bg }};color:{{ f.color }}">{{ f.label }}</span>
+            </sc-for>
+          </div>
           <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px">
             <sc-for list="{{ reviewRows }}" as="r" hint-placeholder-count="5">
-              <div style="background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:20px;opacity:{{ r.opacity }}">
-                <div style="display:flex;align-items:center;gap:11px;margin-bottom:13px">
-                  <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#0d9488,#0ea5e9);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;overflow:hidden;flex:none"><sc-if value="{{ r.hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ r.avatar }}" alt="" style="width:100%;height:100%;object-fit:cover"/></sc-if><sc-if value="{{ r.noAvatar }}" hint-placeholder-val="{{ true }}"><span>{{ r.initial }}</span></sc-if></div>
-                  <div style="flex:1"><div style="font-size:13.5px;font-weight:700">{{ r.name }}</div><div style="font-size:11.5px;color:var(--muted2)">{{ r.course }}</div></div>
-                  <div style="color:#ffd479;font-size:13px;font-weight:700">{{ r.stars }}</div>
+              <div style="background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px 20px;opacity:{{ r.opacity }}">
+                <div style="display:flex;align-items:center;gap:11px;margin-bottom:12px">
+                  <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#0d9488,#0ea5e9);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;color:#fff;overflow:hidden;flex:none">
+                    <sc-if value="{{ r.hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ r.avatar }}" alt="" style="width:100%;height:100%;object-fit:cover"/></sc-if>
+                    <sc-if value="{{ r.noAvatar }}" hint-placeholder-val="{{ true }}"><span>{{ r.initial }}</span></sc-if>
+                  </div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:13.5px;font-weight:700">{{ r.name }}</div>
+                    <div style="font-size:11.5px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ r.course }}</div>
+                  </div>
+                  <div style="text-align:right;flex:none">
+                    <div style="color:#ffd479;font-size:13px;font-weight:700">{{ r.stars }}</div>
+                    <span style="display:inline-block;margin-top:4px;font-size:10.5px;font-weight:800;padding:2px 8px;border-radius:6px;background:{{ r.statusBg }};color:{{ r.statusColor }}">{{ r.statusLabel }}</span>
+                  </div>
                 </div>
-                <p style="font-size:13.5px;line-height:1.55;color:var(--muted);margin-bottom:16px">{{ r.text }}</p>
-                <div style="display:flex;gap:9px">
-                  <button onClick="{{ r.onToggle }}" style="cursor:pointer;flex:1;border:1px solid var(--border);background:var(--panel);color:var(--text);font-weight:600;font-size:12.5px;padding:9px;border-radius:9px">{{ r.toggleLabel }}</button>
-                  <button onClick="{{ r.onReviewFlag }}" style="cursor:pointer;border:1px solid rgba(251,191,36,.3);background:rgba(251,191,36,.1);color:#fbbf24;font-weight:600;font-size:12.5px;padding:9px 14px;border-radius:9px">Tekshiruvga</button>
+                <p style="font-size:13.5px;line-height:1.55;color:var(--muted);margin-bottom:14px">{{ r.text }}</p>
+                <div style="display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap">
+                  <span onClick="{{ r.onToggle }}" style="cursor:pointer;user-select:none;border:1px solid var(--border);background:var(--panel);color:var(--text);font-weight:700;font-size:12.5px;padding:9px 14px;border-radius:9px">{{ r.toggleLabel }}</span>
+                  <span onClick="{{ r.onDelete }}" style="cursor:pointer;user-select:none;border:1px solid rgba(251,113,133,.3);background:rgba(251,113,133,.1);color:#fb7185;font-weight:700;font-size:12.5px;padding:9px 14px;border-radius:9px">O'chirish</span>
                 </div>
               </div>
             </sc-for>
           </div>
+          <sc-if value="{{ noFeedbackRows }}" hint-placeholder-val="{{ false }}">
+            <div style="background:var(--panel);border:1px dashed var(--border);border-radius:16px;padding:40px;text-align:center;color:var(--muted2);margin-top:8px">Bu filterda sharh yo'q</div>
+          </sc-if>
         </sc-if>
 
         <!-- ===== PAYMENTS — 3-step clear ops desk ===== -->
@@ -1207,6 +1232,7 @@ class Component extends DCLogic {
     ];
     this.state={tab:"dashboard",theme:"dark",search:"",userFilter:"Hammasi",modal:null,toast:null,lessonCourse:"t3",audience:"students",logFilter:"Hammasi",accent:"#0d9488",enrollStudent:"",enrollCourse:"",
       showUserMenu:false,notifTitle:"",notifText:"",reportRange:"Oy",payFilter:"Hammasi",enrollError:null,payRev:0,studentFilter:"Hammasi",studentRev:0,teacherFilter:"Hammasi",
+      feedbackFilter:"Hammasi",feedbackRev:0,
       reviewFilter:"pending",reviewNote:"",reviewError:null,showReviewPreview:false,reviewRev:0,
       previewTitle:"",previewCourse:"",previewDuration:"",previewMeta:"",previewUrl:"",previewHasUrl:false,
       permissions:{Manager:{users:true,payments:true,courses:false,settings:false},Teacher:{users:false,payments:false,courses:true,settings:false},Student:{users:false,payments:false,courses:false,settings:false}}};
@@ -1410,14 +1436,18 @@ class Component extends DCLogic {
   }
   toggleReview(r){
     const DB=window.ProSkillDB;
-    if(DB&&r.id){
-      const next=r.status==="hidden"?"visible":"hidden";
-      DB.update("reviews",r.id,{status:next});
-      this.notify(next==="hidden"?"Sharh yashirildi":"Sharh ko'rsatildi");
-      this.forceUpdate(); return;
-    }
-    r.status=r.status==="visible"?"hidden":"visible";
-    this.notify(r.status==="hidden"?"Sharh yashirildi":"Sharh ko'rsatildi"); this.forceUpdate();
+    if(!DB||!r||!r.id){ this.notify("Sharh topilmadi"); return; }
+    const next=r.status==="hidden"?"visible":"hidden";
+    DB.update("reviews",r.id,{status:next});
+    this.setState(s=>({feedbackRev:(s.feedbackRev||0)+1}));
+    this.notify(next==="hidden"?"Sharh yashirildi (saytda ko'rinmaydi)":"Sharh ko'rsatildi");
+  }
+  deleteReview(r){
+    const DB=window.ProSkillDB;
+    if(!DB||!r||!r.id){ this.notify("Sharh topilmadi"); return; }
+    DB.remove("reviews",r.id);
+    this.setState(s=>({feedbackRev:(s.feedbackRev||0)+1}));
+    this.notify("Sharh o'chirildi");
   }
   refreshReview(extra){
     const patch=Object.assign({reviewRev:(this.state.reviewRev||0)+1,reviewError:null},extra||{});
@@ -2233,22 +2263,79 @@ class Component extends DCLogic {
         onRevoke:()=>this.ask({title:"Sertifikatni bekor qilish",msg:c.id+" bekor qilinadi.",confirm:"Bekor qilish",danger:true,icon:"✕",onConfirm:()=>{DB.update("certificates",c.id,{status:"revoked"});this.notify("Sertifikat bekor qilindi");this.forceUpdate();}})
       })),
 
-      // ===== REVIEWS (DB + avatar) =====
-      reviewRows:(DB?(DB.raw().reviews||[]):[]).slice().reverse().map(r=>{
-        const stu=DB.byId("users",r.studentId);
-        const name=stu?stu.name:DB.userName(r.studentId);
-        const avatar=(stu&&stu.avatar)?String(stu.avatar):"";
-        return{
-          id:r.id,name:name,course:DB.courseTitle(r.courseId),text:r.text||"",rating:r.rating||5,status:r.status,
-          initial:(name||"O").split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase(),
-          stars:"★".repeat(r.rating||5)+"☆".repeat(5-(r.rating||5)),
-          opacity:r.status==="hidden"?".55":"1",
-          toggleLabel:r.status==="hidden"?"Ko'rsatish":"Yashirish",
-          avatar:avatar,hasAvatar:!!avatar,noAvatar:!avatar,
-          onToggle:()=>this.toggleReview(r),
-          onReviewFlag:()=>{DB.update("reviews",r.id,{status:"hidden"});this.notify("Sharh tekshiruvga (yashirildi) ⚑");this.forceUpdate();}
-        };
-      }),
+      // ===== REVIEWS / FEEDBACK (clean working) =====
+      feedbackRev:st.feedbackRev||0,
+      feedbackKpis:(()=>{
+        const all=DB?(DB.raw().reviews||[]):[];
+        const vis=all.filter(r=>r.status!=="hidden").length;
+        const hid=all.filter(r=>r.status==="hidden").length;
+        return[
+          {label:"Jami sharh",value:String(all.length),color:"#e2e8f0",onClick:()=>this.setState({feedbackFilter:"Hammasi"})},
+          {label:"Ko'rinadi",value:String(vis),color:"#34d399",onClick:()=>this.setState({feedbackFilter:"visible"})},
+          {label:"Yashirilgan",value:String(hid),color:"#fbbf24",onClick:()=>this.setState({feedbackFilter:"hidden"})}
+        ];
+      })(),
+      feedbackFilterChips:(()=>{
+        const f=st.feedbackFilter||"Hammasi";
+        return[
+          ["Hammasi","Hammasi"],
+          ["visible","Ko'rinadi"],
+          ["hidden","Yashirilgan"]
+        ].map(([k,l])=>{
+          const on=f===k;
+          return{
+            label:l,
+            onClick:()=>this.setState({feedbackFilter:k}),
+            border:on?"rgba(13,148,136,.55)":"var(--border)",
+            bg:on?"rgba(13,148,136,.16)":"transparent",
+            color:on?"#ccfbf1":"var(--muted)"
+          };
+        });
+      })(),
+      reviewRows:(()=>{
+        if(!DB) return [];
+        const f=st.feedbackFilter||"Hammasi";
+        const q=(st.search||"").toLowerCase().trim();
+        return (DB.raw().reviews||[]).slice().reverse()
+          .filter(r=>{
+            if(f==="visible") return r.status!=="hidden";
+            if(f==="hidden") return r.status==="hidden";
+            return true;
+          })
+          .filter(r=>{
+            if(!q) return true;
+            const name=DB.userName(r.studentId)||"";
+            const course=DB.courseTitle(r.courseId)||"";
+            return name.toLowerCase().includes(q)||course.toLowerCase().includes(q)||String(r.text||"").toLowerCase().includes(q);
+          })
+          .map(r=>{
+            const stu=DB.byId("users",r.studentId);
+            const name=stu?stu.name:DB.userName(r.studentId);
+            const avatar=(stu&&stu.avatar)?String(stu.avatar):"";
+            const hidden=r.status==="hidden";
+            return{
+              id:r.id,name:name,course:DB.courseTitle(r.courseId),text:r.text||"",rating:r.rating||5,status:r.status,
+              initial:(name||"O").split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase(),
+              stars:"★".repeat(r.rating||5)+"☆".repeat(5-(r.rating||5)),
+              opacity:hidden?".55":"1",
+              toggleLabel:hidden?"Ko'rsatish":"Yashirish",
+              statusLabel:hidden?"Yashirilgan":"Ko'rinadi",
+              statusColor:hidden?"#fbbf24":"#34d399",
+              statusBg:hidden?"rgba(251,191,36,.14)":"rgba(52,211,153,.14)",
+              avatar:avatar,hasAvatar:!!avatar,noAvatar:!avatar,
+              onToggle:()=>this.toggleReview(r),
+              onDelete:()=>this.deleteReview(r)
+            };
+          });
+      })(),
+      noFeedbackRows:(()=>{
+        if(!DB) return true;
+        const f=st.feedbackFilter||"Hammasi";
+        const all=DB.raw().reviews||[];
+        if(f==="visible") return all.filter(r=>r.status!=="hidden").length===0;
+        if(f==="hidden") return all.filter(r=>r.status==="hidden").length===0;
+        return all.length===0;
+      })(),
 
       // ===== PAYMENTS (clear 3-step desk) =====
       payStats:[
