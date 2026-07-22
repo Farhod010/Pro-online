@@ -2098,7 +2098,7 @@ class Component extends DCLogic {
         const note=(st.reviewNote||"").trim();
         this.ask({
           title:"Teacherga qaytarish",
-          msg:'"'+c.title+'" rejected holatiga o'tadi'+(note?(".\nIzoh: "+note):". Default izoh yoziladi.")+ " Teacher tuzatib qayta yuboradi.",
+          msg:'"'+c.title+'" rejected holatiga otadi'+(note?(".\nIzoh: "+note):". Default izoh yoziladi.")+" Teacher tuzatib qayta yuboradi.",
           confirm:"Qaytarish",icon:"↩",
           onConfirm:()=>this.rejectCourse(st.lessonCourse,note||null)
         });
