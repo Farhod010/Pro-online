@@ -1049,20 +1049,56 @@
           </div>
         </sc-if>
 
-        <!-- ===== ACTIVITY LOGS ===== -->
+        <!-- ===== ACTIVITY LOGS (optimized) ===== -->
         <sc-if value="{{ tabLogs }}" hint-placeholder-val="{{ false }}">
-          <div style="display:flex;gap:9px;margin-bottom:16px;flex-wrap:wrap">
-            <sc-for list="{{ logFilterChips }}" as="f" hint-placeholder-count="5"><span onClick="{{ f.onClick }}" style="cursor:pointer;font-size:13px;font-weight:600;padding:9px 16px;border-radius:10px;border:1px solid {{ f.border }};background:{{ f.bg }};color:{{ f.color }}">{{ f.label }}</span></sc-for>
-          </div>
-          <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;overflow:hidden">
-            <sc-for list="{{ logRows }}" as="l" hint-placeholder-count="10">
-              <div style="display:flex;align-items:center;gap:14px;padding:14px 22px;border-bottom:1px solid var(--line)">
-                <div style="width:36px;height:36px;border-radius:10px;background:{{ l.tint }};display:flex;align-items:center;justify-content:center;color:{{ l.color }};flex:none">{{ l.iconEl }}</div>
-                <div style="flex:1;min-width:0"><div style="font-size:13.5px"><span style="font-weight:700">{{ l.who }}</span> <span style="color:var(--muted)">{{ l.action }}</span></div><div style="font-size:12px;color:var(--muted2);margin-top:2px">{{ l.target }}</div></div>
-                <span style="font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:7px;background:{{ l.roleTint }};color:{{ l.roleColor }}">{{ l.role }}</span>
-                <span style="font-size:12px;color:var(--muted2);white-space:nowrap">{{ l.time }}</span>
+          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px">
+            <sc-for list="{{ logKpis }}" as="k" hint-placeholder-count="5">
+              <div onClick="{{ k.onClick }}" style="cursor:pointer;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px 16px;border-left:3px solid {{ k.color }}" style-hover="background:var(--hover)">
+                <div style="font-size:11px;color:var(--muted2);font-weight:700;text-transform:uppercase;letter-spacing:.3px">{{ k.label }}</div>
+                <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:22px;color:{{ k.color }};margin-top:4px">{{ k.value }}</div>
               </div>
             </sc-for>
+          </div>
+
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+            <span style="font-size:12.5px;color:var(--muted2);font-weight:600">Filter:</span>
+            <sc-for list="{{ logFilterChips }}" as="f" hint-placeholder-count="6">
+              <span onClick="{{ f.onClick }}" style="cursor:pointer;user-select:none;font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:20px;border:1px solid {{ f.border }};background:{{ f.bg }};color:{{ f.color }}">{{ f.label }}</span>
+            </sc-for>
+            <span style="margin-left:auto;font-size:12px;color:var(--muted2)">{{ logResultLabel }} · qidiruv yuqorida</span>
+          </div>
+
+          <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;overflow:hidden">
+            <div style="display:grid;grid-template-columns:44px 1.6fr 1.4fr 100px 90px 120px;gap:10px;padding:12px 20px;font-size:10.5px;font-weight:800;color:var(--muted2);text-transform:uppercase;letter-spacing:.35px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02)">
+              <span></span><span>Harakat</span><span>Ob'ekt</span><span>Tur</span><span>Rol</span><span style="text-align:right">Vaqt</span>
+            </div>
+            <sc-for list="{{ logRows }}" as="l" hint-placeholder-count="10">
+              <div style="display:grid;grid-template-columns:44px 1.6fr 1.4fr 100px 90px 120px;gap:10px;padding:13px 20px;align-items:center;border-bottom:1px solid var(--line)" style-hover="background:var(--hover)">
+                <div style="width:36px;height:36px;border-radius:10px;background:{{ l.tint }};display:flex;align-items:center;justify-content:center;font-size:15px;flex:none">{{ l.emoji }}</div>
+                <div style="min-width:0">
+                  <div style="font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ l.who }}</div>
+                  <div style="font-size:12.5px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ l.action }}</div>
+                </div>
+                <div style="font-size:12.5px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="{{ l.target }}">{{ l.target }}</div>
+                <span style="font-size:11px;font-weight:800;padding:4px 8px;border-radius:7px;background:{{ l.typeBg }};color:{{ l.typeColor }};justify-self:start">{{ l.typeLabel }}</span>
+                <span style="font-size:11px;font-weight:700;padding:4px 8px;border-radius:7px;background:{{ l.roleTint }};color:{{ l.roleColor }};justify-self:start">{{ l.role }}</span>
+                <span style="font-size:12px;color:var(--muted2);text-align:right;white-space:nowrap">{{ l.time }}</span>
+              </div>
+            </sc-for>
+            <sc-if value="{{ noLogRows }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:40px;text-align:center;color:var(--muted2);font-size:14px">
+                <div style="font-weight:700;margin-bottom:6px">Bu filterda log yo'q</div>
+                <div style="font-size:13px">Boshqa filter tanlang yoki qidiruvni tozalang</div>
+              </div>
+            </sc-if>
+            <sc-if value="{{ hasMoreLogs }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:14px;text-align:center;border-top:1px solid var(--border)">
+                <span onClick="{{ loadMoreLogs }}" style="cursor:pointer;user-select:none;font-size:13px;font-weight:700;padding:10px 18px;border-radius:10px;border:1px solid var(--border);background:var(--panel);color:var(--text)">Yana ko'rsatish ({{ logMoreCount }})</span>
+              </div>
+            </sc-if>
+          </div>
+          <div style="margin-top:12px;font-size:12px;color:var(--muted2);line-height:1.45">
+            Activity Logs — platformadagi barcha muhim harakatlar jurnali. To'lov, kontent, yozilish, kirish va xavfsizlik amallarini shu yerda kuzatasiz.
           </div>
         </sc-if>
 
@@ -1261,7 +1297,7 @@ class Component extends DCLogic {
       {title:"Yangi to'lov tizimlari",desc:"Payme / Click / Paynet ulanishi",on:false},
       {title:"Texnik ishlar rejimi",desc:"Saytni vaqtincha yopish (Maintenance)",on:false}
     ];
-    this.state={tab:"dashboard",theme:"dark",search:"",userFilter:"Hammasi",modal:null,toast:null,lessonCourse:"t3",audience:"students",logFilter:"Hammasi",accent:"#0d9488",enrollStudent:"",enrollCourse:"",
+    this.state={tab:"dashboard",theme:"dark",search:"",userFilter:"Hammasi",modal:null,toast:null,lessonCourse:"t3",audience:"students",logFilter:"Hammasi",logLimit:40,accent:"#0d9488",enrollStudent:"",enrollCourse:"",
       showUserMenu:false,notifTitle:"",notifText:"",notifError:null,notifRev:0,
       notifChPlatform:true,notifChEmail:true,notifChTelegram:false,
       reportRange:"Oy",payFilter:"Hammasi",enrollError:null,payRev:0,studentFilter:"Hammasi",studentRev:0,teacherFilter:"Hammasi",
@@ -2610,14 +2646,133 @@ class Component extends DCLogic {
       })),
       noBlocked:(DB?DB.table("users"):[]).filter(u=>u.status==="blocked").length===0,
 
-      // ===== LOGS =====
-      logFilterChips:["Hammasi","payment","content","enroll","security"].map(f=>({label:f==="Hammasi"?"Hammasi":({payment:"To'lovlar",content:"Kontent",enroll:"Yozilish",security:"Xavfsizlik"}[f]||f),onClick:()=>this.setState({logFilter:f}),border:st.logFilter===f?"rgba(13,148,136,.6)":"var(--border)",bg:st.logFilter===f?"rgba(13,148,136,.16)":"var(--panel)",color:st.logFilter===f?"#ccfbf1":"var(--muted)"})),
-      logRows:(DB?(DB.raw().logs||[]):[]).filter(l=>st.logFilter==="Hammasi"||l.type===st.logFilter).slice(0,40).map(l=>{
-        const tint={payment:["rgba(52,211,153,.14)","#34d399"],content:["rgba(14,165,233,.16)","#a5b4fc"],security:["rgba(251,113,133,.14)","#fb7185"],enroll:["rgba(245,158,11,.14)","#fbbf24"],settings:["rgba(13,148,136,.16)","#2dd4bf"],auth:["rgba(13,148,136,.16)","#2dd4bf"]}[l.type]||["rgba(255,255,255,.06)","#9b98ad"];
-        const ico={payment:"payments",content:"lessons",security:"security",enroll:"student",settings:"settings",auth:"users"}[l.type]||"logs";
-        const roleLabel=l.role==="teacher"?"Teacher":(l.role==="manager"?"Manager":(l.role==="student"?"Student":"Super Admin"));
-        return{...l,tint:tint[0],color:tint[1],iconEl:this.ic(ico,16),role:roleLabel,roleTint:roleMeta(roleLabel).tint,roleColor:roleMeta(roleLabel).color};
-      }),
+      // ===== ACTIVITY LOGS (optimized) =====
+      logKpis:(()=>{
+        const all=DB?(DB.raw().logs||[]):[];
+        const cnt=t=>all.filter(l=>(l.type||"content")===t).length;
+        const f=st.logFilter||"Hammasi";
+        const mk=(key,label,color,value)=>({
+          label,value:String(value),color,
+          onClick:()=>this.setState({logFilter:key,logLimit:40})
+        });
+        return[
+          mk("Hammasi","Jami","#e2e8f0",all.length),
+          mk("payment","To'lov","#34d399",cnt("payment")),
+          mk("content","Kontent","#a5b4fc",cnt("content")),
+          mk("enroll","Yozilish","#fbbf24",cnt("enroll")),
+          mk("auth","Kirish","#2dd4bf",cnt("auth")+cnt("security"))
+        ];
+      })(),
+      logFilterChips:(()=>{
+        const all=DB?(DB.raw().logs||[]):[];
+        const cnt=t=>t==="Hammasi"?all.length:all.filter(l=>(l.type||"content")===t).length;
+        // auth chip includes security for ops clarity
+        const secAuth=all.filter(l=>l.type==="auth"||l.type==="security").length;
+        return[
+          ["Hammasi","Hammasi",cnt("Hammasi")],
+          ["payment","To'lovlar",cnt("payment")],
+          ["content","Kontent",cnt("content")],
+          ["enroll","Yozilish",cnt("enroll")],
+          ["auth","Kirish / Xavfsizlik",secAuth],
+          ["security","Xavfsizlik",cnt("security")]
+        ].map(([k,l,n])=>{
+          const on=(st.logFilter||"Hammasi")===k;
+          return{
+            label:l+(n!=null?" · "+n:""),
+            onClick:()=>this.setState({logFilter:k,logLimit:40}),
+            border:on?"rgba(13,148,136,.55)":"var(--border)",
+            bg:on?"rgba(13,148,136,.16)":"transparent",
+            color:on?"#ccfbf1":"var(--muted)"
+          };
+        });
+      })(),
+      logRows:(()=>{
+        if(!DB) return [];
+        const f=st.logFilter||"Hammasi";
+        const q=(st.search||"").toLowerCase().trim();
+        const limit=st.logLimit||40;
+        let list=(DB.raw().logs||[]).slice();
+        if(f==="auth") list=list.filter(l=>l.type==="auth"||l.type==="security");
+        else if(f!=="Hammasi") list=list.filter(l=>(l.type||"content")===f);
+        if(q){
+          list=list.filter(l=>{
+            const blob=((l.who||"")+" "+(l.action||"")+" "+(l.target||"")+" "+(l.role||"")+" "+(l.type||"")).toLowerCase();
+            return blob.includes(q);
+          });
+        }
+        const typeMeta={
+          payment:{label:"To'lov",color:"#34d399",bg:"rgba(52,211,153,.14)",emoji:"💳",tint:"rgba(52,211,153,.14)"},
+          content:{label:"Kontent",color:"#a5b4fc",bg:"rgba(14,165,233,.16)",emoji:"📚",tint:"rgba(14,165,233,.16)"},
+          enroll:{label:"Yozilish",color:"#fbbf24",bg:"rgba(245,158,11,.14)",emoji:"📝",tint:"rgba(245,158,11,.14)"},
+          security:{label:"Xavfsizlik",color:"#fb7185",bg:"rgba(251,113,133,.14)",emoji:"🔒",tint:"rgba(251,113,133,.14)"},
+          auth:{label:"Kirish",color:"#2dd4bf",bg:"rgba(13,148,136,.16)",emoji:"🔑",tint:"rgba(13,148,136,.16)"},
+          settings:{label:"Sozlama",color:"#94a3b8",bg:"rgba(148,163,184,.14)",emoji:"⚙️",tint:"rgba(148,163,184,.14)"},
+          test:{label:"Test",color:"#c084fc",bg:"rgba(192,132,252,.14)",emoji:"✅",tint:"rgba(192,132,252,.14)"}
+        };
+        return list.slice(0,limit).map(l=>{
+          const t=l.type||"content";
+          const tm=typeMeta[t]||{label:t,color:"#9b98ad",bg:"rgba(255,255,255,.06)",emoji:"📋",tint:"rgba(255,255,255,.06)"};
+          const roleRaw=(l.role||"").toLowerCase();
+          const roleLabel=roleRaw==="teacher"?"Teacher":(roleRaw==="manager"?"Manager":(roleRaw==="student"?"Student":(roleRaw==="superadmin"?"Admin":(l.role||"User"))));
+          const rm=roleMeta(roleLabel==="Admin"?"Super Admin":roleLabel);
+          return{
+            who:l.who||"—",
+            action:l.action||"—",
+            target:l.target||"—",
+            time:l.time||"—",
+            emoji:tm.emoji,
+            tint:tm.tint,
+            typeLabel:tm.label,
+            typeColor:tm.color,
+            typeBg:tm.bg,
+            role:roleLabel,
+            roleTint:rm.tint,
+            roleColor:rm.color
+          };
+        });
+      })(),
+      logResultLabel:(()=>{
+        if(!DB) return "0 ta";
+        const f=st.logFilter||"Hammasi";
+        const q=(st.search||"").toLowerCase().trim();
+        let list=(DB.raw().logs||[]).slice();
+        if(f==="auth") list=list.filter(l=>l.type==="auth"||l.type==="security");
+        else if(f!=="Hammasi") list=list.filter(l=>(l.type||"content")===f);
+        if(q) list=list.filter(l=>((l.who||"")+" "+(l.action||"")+" "+(l.target||"")).toLowerCase().includes(q));
+        const shown=Math.min(list.length,st.logLimit||40);
+        return shown+" / "+list.length+" ta";
+      })(),
+      noLogRows:(()=>{
+        if(!DB) return true;
+        const f=st.logFilter||"Hammasi";
+        const q=(st.search||"").toLowerCase().trim();
+        let list=(DB.raw().logs||[]).slice();
+        if(f==="auth") list=list.filter(l=>l.type==="auth"||l.type==="security");
+        else if(f!=="Hammasi") list=list.filter(l=>(l.type||"content")===f);
+        if(q) list=list.filter(l=>((l.who||"")+" "+(l.action||"")+" "+(l.target||"")).toLowerCase().includes(q));
+        return list.length===0;
+      })(),
+      hasMoreLogs:(()=>{
+        if(!DB) return false;
+        const f=st.logFilter||"Hammasi";
+        const q=(st.search||"").toLowerCase().trim();
+        let list=(DB.raw().logs||[]).slice();
+        if(f==="auth") list=list.filter(l=>l.type==="auth"||l.type==="security");
+        else if(f!=="Hammasi") list=list.filter(l=>(l.type||"content")===f);
+        if(q) list=list.filter(l=>((l.who||"")+" "+(l.action||"")+" "+(l.target||"")).toLowerCase().includes(q));
+        return list.length>(st.logLimit||40);
+      })(),
+      logMoreCount:(()=>{
+        if(!DB) return 0;
+        const f=st.logFilter||"Hammasi";
+        const q=(st.search||"").toLowerCase().trim();
+        let list=(DB.raw().logs||[]).slice();
+        if(f==="auth") list=list.filter(l=>l.type==="auth"||l.type==="security");
+        else if(f!=="Hammasi") list=list.filter(l=>(l.type||"content")===f);
+        if(q) list=list.filter(l=>((l.who||"")+" "+(l.action||"")+" "+(l.target||"")).toLowerCase().includes(q));
+        return Math.max(0, list.length-(st.logLimit||40));
+      })(),
+      loadMoreLogs:()=>this.setState(s=>({logLimit:(s.logLimit||40)+40})),
 
       // ===== SETTINGS =====
       colorSwatches:["#0d9488","#3b82f6","#10b981","#f43f5e"].map(c=>({color:c,ring:st.accent===c?"#fff":"transparent",onClick:()=>{this.setState({accent:c});this.notify("Rang yangilandi");}})),
