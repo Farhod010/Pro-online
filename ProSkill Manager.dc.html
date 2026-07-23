@@ -484,6 +484,9 @@
                   <div style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap">
                     <span onClick="{{ s.onDetail }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:7px 10px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text)">Batafsil</span>
                     <span onClick="{{ s.onEnroll }}" style="cursor:pointer;font-size:11.5px;font-weight:800;padding:7px 10px;border-radius:8px;border:none;background:linear-gradient(135deg,#0d9488,#0ea5e9);color:#fff">+ Kurs</span>
+                    <sc-if value="{{ s.canCert }}" hint-placeholder-val="{{ false }}">
+                      <span onClick="{{ s.onCert }}" style="cursor:pointer;font-size:11.5px;font-weight:800;padding:7px 10px;border-radius:8px;border:1px solid rgba(251,191,36,.35);color:#fbbf24">Sertifikat</span>
+                    </sc-if>
                     <sc-if value="{{ s.isPending }}" hint-placeholder-val="{{ false }}">
                       <span onClick="{{ s.onActivate }}" style="cursor:pointer;font-size:11.5px;font-weight:800;padding:7px 10px;border-radius:8px;border:none;background:rgba(52,211,153,.16);color:#34d399">Faollashtir</span>
                     </sc-if>
@@ -1562,17 +1565,24 @@ class Component extends DCLogic {
     ].join("\n");
     this.ask({
       title:"Student batafsil",
-      msg:msg,
-      confirm: meta&&meta.canCert?"Sertifikat berish":"Yopish",
+      msg:msg+(meta&&meta.canCert?"\n\n(100% tugatgan kurs bor — keyinroq sertifikat berish mumkin)":""),
+      confirm:"Yopish",
       icon:"👤",
-      onConfirm:()=>{
-        if(meta&&meta.canCert&&meta.certCourseId){
-          const r=DB.issueCertificate(u.id, meta.certCourseId);
-          if(r&&r.ok){ this.notify("Sertifikat berildi 🎓"); this.refreshStudents(); }
-          else this.notify((r&&r.error)||"Sertifikat berilmadi");
-        }
-      }
+      onConfirm:()=>{}
     });
+  }
+  issueCertForStudent(u){
+    const DB=window.ProSkillDB;
+    if(!DB||!u) return;
+    const enr=DB.enrollmentsOf(u.id)||[];
+    const done=enr.find(e=>{
+      const pr=DB.progressFor(u.id,e.courseId);
+      return pr>=100;
+    });
+    if(!done){ this.notify("100% tugatgan kurs yo'q"); return; }
+    const r=DB.issueCertificate(u.id, done.courseId);
+    if(r&&r.ok){ this.notify("Sertifikat berildi 🎓"); this.refreshStudents(); }
+    else this.notify((r&&r.error)||"Sertifikat berilmadi");
   }
   deleteItem(name,cb){this.ask({title:"O'chirishni tasdiqlang",msg:'"'+name+'" butunlay o\'chiriladi. Bu amalni qaytarib bo\'lmaydi.',confirm:"O'chirish",danger:true,icon:"🗑",onConfirm:()=>{if(cb)cb();this.notify(name+" o'chirildi");}});}
   refreshPays(){ this.setState(s=>({payRev:(s.payRev||0)+1,enrollError:null})); }
@@ -1868,10 +1878,10 @@ class Component extends DCLogic {
     const navGroups=[
       {title:"ASOSIY",items:[mk("dashboard","Dashboard","dashboard"),mk("reports","Hisobot & Sotuvlar","reports")]},
       {title:"OPERATSIYALAR",items:[mk("payments","To'lovlar & Enroll","payments",pendingPays?String(pendingPays):null),mk("students","Talabalar & Progress","student"),mk("teachers","Ustozlar","teacher")]},
-      {title:"KONTENT",items:[mk("courses","Kurslar","courses"),mk("lessons","Course Review","lessons",pendingCourses?String(pendingCourses):null),mk("reviews","Feedback & Reviews","reviews")]},
+      {title:"KONTENT",items:[mk("courses","Kurslar","courses"),mk("lessons","Course Review","lessons",pendingCourses?String(pendingCourses):null),mk("reviews","Sharhlar","reviews")]},
       {title:"ALOQA",items:[mk("notifications","Bildirishnomalar","notifications")]}
     ];
-    const meta={dashboard:["Operatsion markaz","Manager Dashboard",null],reports:["Tahlil","Hisobot & Sotuvlar",null],teachers:["Operatsiyalar","Ustozlar boshqaruvi","Yangi ustoz"],students:["Operatsiyalar","Talabalar & Progress",null],courses:["Kontent","Kurslar boshqaruvi","Yangi kurs"],lessons:["Kontent","Course Review",null],reviews:["Kontent","Feedback & Reviews",null],payments:["Operatsiyalar","To'lovlar — 3 bosqich",null],notifications:["Aloqa","Bildirishnomalar","Xabar yuborish"]};
+    const meta={dashboard:["Operatsion markaz","Manager Dashboard",null],reports:["Tahlil","Hisobot & Sotuvlar",null],teachers:["Operatsiyalar","Ustozlar boshqaruvi","Yangi ustoz"],students:["Operatsiyalar","Talabalar & Progress",null],courses:["Kontent","Kurslar boshqaruvi","Yangi kurs"],lessons:["Kontent","Course Review",null],reviews:["Kontent","Sharhlar (Feedback)",null],payments:["Operatsiyalar","To'lovlar — 3 bosqich",null],notifications:["Aloqa","Bildirishnomalar","Xabar yuborish"]};
     // student tab title stays
     const m=meta[tab]||["",""];
 
@@ -2332,7 +2342,9 @@ class Component extends DCLogic {
               initial:(u.name||"S").split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase(),
               avatar:avatar,hasAvatar:!!avatar,noAvatar:!avatar,
               isActive:u.status==="active",isPending:u.status==="pending",isBlocked:u.status==="blocked",
+              canCert:!!certCourseId,
               onDetail:()=>this.showStudentDetail(u,{canCert:!!certCourseId,certCourseId:certCourseId}),
+              onCert:()=>this.issueCertForStudent(u),
               onEnroll:()=>this.openEnrollForStudent(u),
               onBlock:()=>this.blockUser(u),
               onActivate:()=>this.activateUser(u)
