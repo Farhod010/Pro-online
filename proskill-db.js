@@ -26,10 +26,10 @@
       { id: "u_admin",   name: "Super Admin",      email: "admin@proskill.uz",   password: "admin",   role: "superadmin", status: "active",  joined: "12 Yan 2025", last: "Hozir" },
       { id: "u_mgr1",    name: "Jasur Toshmatov",  email: "jasur@proskill.uz",   password: "manager", role: "manager",    status: "active",  joined: "14 Mar 2025", last: "1 soat oldin" },
       { id: "u_mgr2",    name: "Kamola Saidova",   email: "kamola@proskill.uz",  password: "manager", role: "manager",    status: "active",  joined: "09 Yan 2025", last: "30 daqiqa oldin" },
-      { id: "u_tch1",    name: "Sardor Aliyev",    email: "sardor@proskill.uz",  password: "teacher", role: "teacher",    status: "active",  joined: "12 Yan 2025", last: "2 soat oldin", bio: "Senior Python & Backend dasturchi, 8 yil tajriba", spec: "Python, Django, Backend" },
-      { id: "u_tch2",    name: "Dilnoza Karimova", email: "dilnoza@proskill.uz", password: "teacher", role: "teacher",    status: "active",  joined: "03 Fev 2025", last: "5 soat oldin", bio: "Frontend mutaxassis, React eksperti", spec: "Frontend, React" },
-      { id: "u_tch3",    name: "Aziza Rahimova",   email: "aziza@proskill.uz",   password: "teacher", role: "teacher",    status: "active",  joined: "18 Yan 2025", last: "Kecha", bio: "Data Science & AI tadqiqotchisi", spec: "Data Science, AI" },
-      { id: "u_tch4",    name: "Madina Yusupova",  email: "madina@proskill.uz",  password: "teacher", role: "teacher",    status: "active",  joined: "22 Fev 2025", last: "3 kun oldin", bio: "Grafik dizayner, Figma trener", spec: "Grafik dizayn" },
+      { id: "u_tch1",    name: "Sardor Aliyev",    email: "sardor@proskill.uz",  password: "teacher", role: "teacher",    status: "active",  joined: "12 Yan 2025", last: "2 soat oldin", bio: "Senior Python & Backend dasturchi, 8 yil tajriba", spec: "Python, Django, Backend", phone: "+998 90 111 22 33", experience: "8 yil", certificates: "AWS, Django Certified", payoutRate: 40 },
+      { id: "u_tch2",    name: "Dilnoza Karimova", email: "dilnoza@proskill.uz", password: "teacher", role: "teacher",    status: "active",  joined: "03 Fev 2025", last: "5 soat oldin", bio: "Frontend mutaxassis, React eksperti", spec: "Frontend, React", phone: "+998 91 222 33 44", experience: "6 yil", certificates: "Meta Frontend", payoutRate: 40 },
+      { id: "u_tch3",    name: "Aziza Rahimova",   email: "aziza@proskill.uz",   password: "teacher", role: "teacher",    status: "active",  joined: "18 Yan 2025", last: "Kecha", bio: "Data Science & AI tadqiqotchisi", spec: "Data Science, AI", phone: "+998 93 333 44 55", experience: "7 yil", certificates: "Google Data Analytics", payoutRate: 45 },
+      { id: "u_tch4",    name: "Madina Yusupova",  email: "madina@proskill.uz",  password: "teacher", role: "teacher",    status: "active",  joined: "22 Fev 2025", last: "3 kun oldin", bio: "Grafik dizayner, Figma trener", spec: "Grafik dizayn", phone: "+998 94 444 55 66", experience: "5 yil", certificates: "Adobe Certified", payoutRate: 35 },
       { id: "u_std1",    name: "Aziz Karimov",     email: "aziz@gmail.com",      password: "student", role: "student",    status: "active",  joined: "02 May 2026", last: "10 daqiqa oldin", phone: "+998 90 123 45 67" },
       { id: "u_std2",    name: "Gulnora Saidova",  email: "gulnora@gmail.com",   password: "student", role: "student",    status: "active",  joined: "05 May 2026", last: "1 soat oldin" },
       { id: "u_std3",    name: "Shoxruh Mirzaev",  email: "shoxruh@gmail.com",   password: "student", role: "student",    status: "pending", joined: "16 Iyun 2026", last: "2 soat oldin" },
@@ -272,7 +272,7 @@
   function updateProfile(id, patch, byUser) {
     var u = byId("users", id);
     if (!u) return { ok: false, error: "Foydalanuvchi topilmadi" };
-    var allowed = { name: 1, bio: 1, spec: 1, phone: 1, avatar: 1, telegram: 1, experience: 1 };
+    var allowed = { name: 1, bio: 1, spec: 1, phone: 1, avatar: 1, telegram: 1, experience: 1, certificates: 1, payoutRate: 1 };
     var clean = {};
     Object.keys(patch || {}).forEach(function (k) {
       if (!allowed[k]) return;
@@ -467,6 +467,91 @@
     log(byUser || "Admin", "superadmin", "Foydalanuvchini o'chirdi", u.name, "security");
     return { ok: true };
   }
+  function addTeacher(row, byUser) {
+    if (!row || !row.name || !String(row.name).trim()) return { ok: false, error: "Ism majburiy" };
+    var email = (row.email || "").trim().toLowerCase();
+    if (!email) return { ok: false, error: "Email majburiy" };
+    if (data.users.some(function (x) { return (x.email || "").toLowerCase() === email; }))
+      return { ok: false, error: "Bu email band" };
+    var u = insert("users", {
+      name: String(row.name).trim(),
+      email: email,
+      password: row.password || "teacher",
+      role: "teacher",
+      status: "active",
+      joined: todayLabel(),
+      last: "Hozir",
+      bio: row.bio || "",
+      spec: row.spec || "",
+      phone: row.phone || "",
+      experience: row.experience || "",
+      certificates: row.certificates || "",
+      avatar: row.avatar || "",
+      payoutRate: Number(row.payoutRate) >= 0 ? Number(row.payoutRate) : 40
+    });
+    log(byUser || "Manager", "manager", "Yangi ustoz qo'shdi", u.name, "security");
+    return { ok: true, user: u };
+  }
+  function updateTeacher(id, patch, byUser) {
+    var u = byId("users", id);
+    if (!u || u.role !== "teacher") return { ok: false, error: "Ustoz topilmadi" };
+    var allowed = ["name", "email", "bio", "spec", "phone", "experience", "certificates", "avatar", "payoutRate", "status", "password"];
+    var p = {};
+    allowed.forEach(function (k) {
+      if (patch && patch[k] !== undefined) p[k] = patch[k];
+    });
+    if (p.email) {
+      var em = String(p.email).toLowerCase();
+      if (data.users.some(function (x) { return x.id !== id && (x.email || "").toLowerCase() === em; }))
+        return { ok: false, error: "Email band" };
+      p.email = em;
+    }
+    if (p.payoutRate !== undefined) p.payoutRate = Number(p.payoutRate) || 0;
+    update("users", id, p);
+    log(byUser || "Manager", "manager", "Ustozni tahrirladi", u.name, "content");
+    return { ok: true, user: byId("users", id) };
+  }
+  function assignCourseTeacher(courseId, teacherId, byUser) {
+    var c = byId("courses", courseId);
+    var t = byId("users", teacherId);
+    if (!c) return { ok: false, error: "Kurs topilmadi" };
+    if (!t || t.role !== "teacher") return { ok: false, error: "Ustoz topilmadi" };
+    update("courses", courseId, { teacherId: teacherId });
+    log(byUser || "Manager", "manager", "Kursni ustozga biriktirdi", c.title + " → " + t.name, "content");
+    return { ok: true, course: byId("courses", courseId) };
+  }
+  function teacherReviews(teacherId) {
+    var courseIds = data.courses.filter(function (c) { return c.teacherId === teacherId; }).map(function (c) { return c.id; });
+    return (data.reviews || []).filter(function (r) { return courseIds.indexOf(r.courseId) >= 0; }).slice().reverse();
+  }
+  function teacherRating(teacherId) {
+    var revs = teacherReviews(teacherId);
+    if (!revs.length) {
+      var pubs = data.courses.filter(function (c) { return c.teacherId === teacherId && c.status === "published" && (c.rating || 0) > 0; });
+      if (!pubs.length) return 0;
+      return Math.round((pubs.reduce(function (s, c) { return s + (c.rating || 0); }, 0) / pubs.length) * 10) / 10;
+    }
+    return Math.round((revs.reduce(function (s, r) { return s + (r.rating || 0); }, 0) / revs.length) * 10) / 10;
+  }
+  function teacherPayouts() {
+    return data.users.filter(function (u) { return u.role === "teacher"; }).map(function (t) {
+      var courseIds = data.courses.filter(function (c) { return c.teacherId === t.id; }).map(function (c) { return c.id; });
+      var revenue = data.payments.filter(function (p) {
+        return p.status === "paid" && courseIds.indexOf(p.courseId) >= 0;
+      }).reduce(function (s, p) { return s + (p.amount || 0); }, 0);
+      var rate = (t.payoutRate !== undefined && t.payoutRate !== null) ? Number(t.payoutRate) : 40;
+      var payout = Math.round(revenue * rate / 100);
+      return {
+        teacherId: t.id,
+        name: t.name,
+        rate: rate,
+        revenue: revenue,
+        payout: payout,
+        courses: courseIds.length,
+        rating: teacherRating(t.id)
+      };
+    }).sort(function (a, b) { return b.payout - a.payout; });
+  }
   // course management
   function setCourseStatus(id, status, byUser, role) {
     var c = byId("courses", id); if (!c) return { ok: false };
@@ -479,10 +564,23 @@
     if (!row || !row.title) return { ok: false, error: "Kurs nomi majburiy" };
     var c = insert("courses", Object.assign({
       rating: 0, status: "draft", featured: false, level: "Boshlang'ich",
-      price: 0, desc: "", comment: "", cat: "Python"
+      price: 0, desc: "", comment: "", cat: "Python", duration: "", teacherId: null
     }, row));
     log(byUser || "Teacher", role || "teacher", "Yangi kurs yaratdi", c.title + " (draft)", "content");
     return { ok: true, course: c };
+  }
+  function updateCourse(id, patch, byUser, role) {
+    var c = byId("courses", id);
+    if (!c) return { ok: false, error: "Kurs topilmadi" };
+    var allowed = ["title", "desc", "price", "cat", "level", "status", "teacherId", "duration", "featured", "comment"];
+    var p = {};
+    allowed.forEach(function (k) {
+      if (patch && patch[k] !== undefined) p[k] = patch[k];
+    });
+    if (p.price !== undefined) p.price = Number(p.price) || 0;
+    update("courses", id, p);
+    log(byUser || "Manager", role || "manager", "Kursni tahrirladi", c.title, "content");
+    return { ok: true, course: byId("courses", id) };
   }
   function addLesson(moduleId, courseId, row, byUser, role) {
     if (!moduleId || !courseId) return { ok: false, error: "Modul yoki kurs tanlanmagan" };
@@ -635,7 +733,9 @@
     askQuestion: askQuestion, answerQuestion: answerQuestion,
     notify: notify, notificationsOf: notificationsOf, markNotifRead: markNotifRead, log: log,
     setUserStatus: setUserStatus, setUserRole: setUserRole, deleteUser: deleteUser,
-    setCourseStatus: setCourseStatus, toggleFeatured: toggleFeatured, addCourse: addCourse, deleteCourse: deleteCourse,
+    addTeacher: addTeacher, updateTeacher: updateTeacher, assignCourseTeacher: assignCourseTeacher,
+    teacherReviews: teacherReviews, teacherRating: teacherRating, teacherPayouts: teacherPayouts,
+    setCourseStatus: setCourseStatus, toggleFeatured: toggleFeatured, addCourse: addCourse, updateCourse: updateCourse, deleteCourse: deleteCourse,
     addModule: addModule, updateModule: updateModule, deleteModule: deleteModule,
     addLesson: addLesson, updateLesson: updateLesson, deleteLesson: deleteLesson,
     analytics: analytics, topCourses: topCourses, money: money

@@ -38,6 +38,15 @@
   @keyframes pop{from{opacity:0;transform:scale(.94)}to{opacity:1;transform:scale(1)}}
   @keyframes spin{to{transform:rotate(360deg)}}
   @keyframes menuIn{from{opacity:0;transform:translateY(-8px) scale(.97)}to{opacity:1;transform:translateY(0) scale(1)}}
+  @media (max-width:980px){
+    .admin-root .mgr-grid{grid-template-columns:1fr !important}
+    .admin-root aside{position:relative !important;height:auto !important}
+  }
+  @media (max-width:720px){
+    .admin-root [style*="grid-template-columns:248px"]{grid-template-columns:1fr !important}
+  }
+  .mgr-form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+  @media (max-width:640px){.mgr-form-grid{grid-template-columns:1fr}}
   .user-chip{cursor:pointer;display:flex;align-items:center;gap:10px;padding:6px 10px 6px 6px;border-radius:14px;border:1px solid transparent;transition:background .15s,border-color .15s}
   .user-chip:hover,.user-chip.open{background:var(--panel);border-color:var(--border)}
   .user-menu-item{cursor:pointer;display:flex;align-items:center;gap:12px;padding:11px 14px;border-radius:11px;font-size:13.5px;font-weight:600;color:var(--text)}
@@ -50,7 +59,7 @@
 <div class="admin-root" data-theme="{{ theme }}" style="min-height:100vh;background:var(--bg);color:var(--text)">
   <div style="position:fixed;inset:0;pointer-events:none;z-index:0;background:radial-gradient(900px 600px at 88% -10%,var(--grad1),transparent 60%),radial-gradient(800px 600px at 0% 12%,var(--grad2),transparent 58%)"></div>
 
-  <div style="position:relative;z-index:1;display:grid;grid-template-columns:248px 1fr;min-height:100vh">
+  <div class="mgr-shell" style="position:relative;z-index:1;display:grid;grid-template-columns:248px 1fr;min-height:100vh">
 
     <!-- ============ SIDEBAR ============ -->
     <aside style="background:var(--sidebar);border-right:1px solid var(--border);backdrop-filter:blur(22px);display:flex;flex-direction:column;position:sticky;top:0;height:100vh">
@@ -299,6 +308,25 @@
               <div style="padding:28px;text-align:center;color:var(--muted2);font-size:13.5px">Bu davrda sotuv yo'q</div>
             </sc-if>
           </div>
+
+          <div style="margin-top:16px;background:var(--panel);border:1px solid var(--border);border-radius:18px;overflow:hidden">
+            <div style="padding:16px 20px;border-bottom:1px solid var(--border)">
+              <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:15px">Ustozlarga to'lov (foiz / maosh)</div>
+              <div style="font-size:12.5px;color:var(--muted2);margin-top:4px">Har bir ustozning paid daromadi × shaxsiy foiz (default 40%)</div>
+            </div>
+            <div style="display:grid;grid-template-columns:1.6fr 0.8fr 1fr 1fr 0.8fr;gap:10px;padding:12px 20px;font-size:11px;font-weight:800;color:var(--muted2);text-transform:uppercase;border-bottom:1px solid var(--border)">
+              <span>Ustoz</span><span>Foiz</span><span>Kurs daromadi</span><span>Ustoz ulushi</span><span>Reyting</span>
+            </div>
+            <sc-for list="{{ teacherPayoutRows }}" as="p" hint-placeholder-count="4">
+              <div style="display:grid;grid-template-columns:1.6fr 0.8fr 1fr 1fr 0.8fr;gap:10px;padding:13px 20px;align-items:center;border-bottom:1px solid var(--line)">
+                <span style="font-size:13.5px;font-weight:700">{{ p.name }}</span>
+                <span style="font-size:13px;color:var(--muted)">{{ p.rate }}%</span>
+                <span style="font-size:13px;font-weight:600">{{ p.revenueLabel }}</span>
+                <span style="font-size:13px;font-weight:800;color:#34d399">{{ p.payoutLabel }}</span>
+                <span style="font-size:13px;color:#ffd479;font-weight:700">★ {{ p.rating }}</span>
+              </div>
+            </sc-for>
+          </div>
         </sc-if>
 
         <!-- ===== USERS ===== -->
@@ -351,7 +379,7 @@
           </div>
         </sc-if>
 
-        <!-- ===== TEACHERS ACTIVITY (full working) ===== -->
+        <!-- ===== TEACHERS MANAGEMENT (full CRUD) ===== -->
         <sc-if value="{{ tabTeachers }}" hint-placeholder-val="{{ false }}">
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:16px">
             <sc-for list="{{ teacherKpis }}" as="k" hint-placeholder-count="4">
@@ -362,73 +390,45 @@
               </div>
             </sc-for>
           </div>
-
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap">
             <span style="font-size:12.5px;color:var(--muted2);font-weight:600">Filter:</span>
             <sc-for list="{{ teacherFilterChips }}" as="f" hint-placeholder-count="4">
               <span onClick="{{ f.onClick }}" style="cursor:pointer;font-size:12.5px;font-weight:700;padding:7px 13px;border-radius:20px;border:1px solid {{ f.border }};background:{{ f.bg }};color:{{ f.color }}">{{ f.label }}</span>
             </sc-for>
-            <span style="margin-left:auto;font-size:12px;color:var(--muted2)">Qidiruv: yuqoridagi maydon</span>
+            <span onClick="{{ openAddTeacher }}" style="cursor:pointer;margin-left:auto;font-size:12.5px;font-weight:800;padding:9px 14px;border-radius:10px;border:none;background:linear-gradient(135deg,#0d9488,#0ea5e9);color:#fff">+ Yangi ustoz</span>
           </div>
-
-          <div style="display:flex;flex-direction:column;gap:12px">
+          <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;overflow:hidden">
+            <div style="display:grid;grid-template-columns:2fr 1.2fr 0.8fr 0.8fr 0.9fr 1.6fr;gap:10px;padding:12px 18px;font-size:10.5px;font-weight:800;color:var(--muted2);text-transform:uppercase;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02)">
+              <span>Ustoz</span><span>Mutaxassislik</span><span>Kurs</span><span>Reyting</span><span>Holat</span><span style="text-align:right">Amallar</span>
+            </div>
             <sc-for list="{{ teacherRows }}" as="t" hint-placeholder-count="4">
-              <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:16px 18px" style-hover="border-color:rgba(13,148,136,.35)">
-                <div style="display:flex;align-items:flex-start;gap:14px;flex-wrap:wrap">
-                  <div style="width:56px;height:56px;border-radius:16px;background:linear-gradient(135deg,#0ea5e9,#818cf8);display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:800;color:#fff;flex:none;overflow:hidden;box-shadow:0 10px 24px rgba(14,165,233,.25)">
+              <div style="display:grid;grid-template-columns:2fr 1.2fr 0.8fr 0.8fr 0.9fr 1.6fr;gap:10px;padding:13px 18px;align-items:center;border-bottom:1px solid var(--line)" style-hover="background:var(--hover)">
+                <div style="display:flex;align-items:center;gap:11px;min-width:0">
+                  <div style="width:40px;height:40px;border-radius:11px;background:linear-gradient(135deg,#0ea5e9,#818cf8);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:800;color:#fff;flex:none;overflow:hidden">
                     <sc-if value="{{ t.hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ t.avatar }}" alt="" style="width:100%;height:100%;object-fit:cover"/></sc-if>
                     <sc-if value="{{ t.noAvatar }}" hint-placeholder-val="{{ true }}"><span>{{ t.initial }}</span></sc-if>
                   </div>
-                  <div style="flex:1;min-width:180px">
-                    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:4px">
-                      <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:16px">{{ t.name }}</div>
-                      <span style="font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;background:{{ t.statusBg }};color:{{ t.statusColor }}">{{ t.statusLabel }}</span>
-                      <sc-if value="{{ t.hasPendingCourses }}" hint-placeholder-val="{{ false }}">
-                        <span style="font-size:11px;font-weight:800;padding:3px 9px;border-radius:20px;background:rgba(251,191,36,.14);color:#fbbf24">{{ t.pendingCourses }} ta tekshiruvda</span>
-                      </sc-if>
-                    </div>
-                    <div style="font-size:12.5px;color:var(--muted2);margin-bottom:6px">{{ t.bio }}</div>
-                    <div style="font-size:12px;color:var(--muted2)">{{ t.email }} · {{ t.spec }}</div>
-                  </div>
-                  <div style="display:grid;grid-template-columns:repeat(4,minmax(72px,1fr));gap:10px;flex:none">
-                    <div style="background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:10px 12px;text-align:center">
-                      <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px">{{ t.courses }}</div>
-                      <div style="font-size:10.5px;color:var(--muted2);font-weight:600">Kurs</div>
-                    </div>
-                    <div style="background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:10px 12px;text-align:center">
-                      <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px">{{ t.studentsLabel }}</div>
-                      <div style="font-size:10.5px;color:var(--muted2);font-weight:600">O'quvchi</div>
-                    </div>
-                    <div style="background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:10px 12px;text-align:center">
-                      <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;color:#ffd479">★ {{ t.rating }}</div>
-                      <div style="font-size:10.5px;color:var(--muted2);font-weight:600">Reyting</div>
-                    </div>
-                    <div style="background:var(--panel2);border:1px solid var(--border);border-radius:12px;padding:10px 12px;text-align:center">
-                      <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:16px;color:#34d399">{{ t.revenue }}</div>
-                      <div style="font-size:10.5px;color:var(--muted2);font-weight:600">Daromad</div>
-                    </div>
+                  <div style="min-width:0">
+                    <div style="font-size:13.5px;font-weight:700">{{ t.name }}</div>
+                    <div style="font-size:11.5px;color:var(--muted2)">{{ t.email }} · {{ t.phone }}</div>
                   </div>
                 </div>
-                <div style="display:flex;align-items:center;gap:8px;margin-top:14px;padding-top:14px;border-top:1px solid var(--border);flex-wrap:wrap">
-                  <span style="font-size:12px;color:var(--muted2);margin-right:auto">{{ t.pubLabel }} · {{ t.lessonsLabel }}</span>
-                  <button onClick="{{ t.onView }}" style="cursor:pointer;border:1px solid var(--border);background:var(--panel);color:var(--text);font-weight:700;font-size:12.5px;padding:9px 14px;border-radius:10px">Batafsil</button>
-                  <sc-if value="{{ t.hasPendingCourses }}" hint-placeholder-val="{{ false }}">
-                    <button onClick="{{ t.onReview }}" style="cursor:pointer;border:none;background:rgba(251,191,36,.16);color:#fbbf24;font-weight:800;font-size:12.5px;padding:9px 14px;border-radius:10px">Course Review →</button>
-                  </sc-if>
-                  <sc-if value="{{ t.isPending }}" hint-placeholder-val="{{ false }}">
-                    <button onClick="{{ t.onApprove }}" style="cursor:pointer;border:none;background:linear-gradient(135deg,#0d9488,#0ea5e9);color:#fff;font-weight:800;font-size:12.5px;padding:9px 14px;border-radius:10px">✓ Tasdiqlash</button>
-                  </sc-if>
-                  <sc-if value="{{ t.isBlocked }}" hint-placeholder-val="{{ false }}">
-                    <button onClick="{{ t.onApprove }}" style="cursor:pointer;border:none;background:rgba(52,211,153,.16);color:#34d399;font-weight:800;font-size:12.5px;padding:9px 14px;border-radius:10px">Faollashtirish</button>
-                  </sc-if>
-                  <sc-if value="{{ t.canBlock }}" hint-placeholder-val="{{ true }}">
-                    <button onClick="{{ t.onBlock }}" style="cursor:pointer;border:1px solid rgba(251,113,133,.3);background:rgba(251,113,133,.1);color:#fb7185;font-weight:700;font-size:12.5px;padding:9px 14px;border-radius:10px">Bloklash</button>
-                  </sc-if>
+                <div style="font-size:12.5px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.spec }}</div>
+                <span style="font-size:13px;font-weight:700">{{ t.courses }}</span>
+                <span style="font-size:13px;font-weight:700;color:#ffd479">★ {{ t.rating }}</span>
+                <span style="font-size:11px;font-weight:800;padding:4px 9px;border-radius:7px;background:{{ t.statusBg }};color:{{ t.statusColor }};justify-self:start">{{ t.statusLabel }}</span>
+                <div style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap">
+                  <span onClick="{{ t.onView }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:7px 10px;border-radius:8px;border:1px solid var(--border)">Batafsil</span>
+                  <span onClick="{{ t.onEdit }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:7px 10px;border-radius:8px;border:1px solid rgba(13,148,136,.35);color:#2dd4bf">Tahrir</span>
+                  <span onClick="{{ t.onAssign }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:7px 10px;border-radius:8px;border:1px solid rgba(251,191,36,.35);color:#fbbf24">+ Kurs</span>
+                  <sc-if value="{{ t.isBlocked }}" hint-placeholder-val="{{ false }}"><span onClick="{{ t.onApprove }}" style="cursor:pointer;font-size:11.5px;font-weight:800;padding:7px 10px;border-radius:8px;background:rgba(52,211,153,.16);color:#34d399">Faol</span></sc-if>
+                  <sc-if value="{{ t.canBlock }}" hint-placeholder-val="{{ true }}"><span onClick="{{ t.onBlock }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:7px 10px;border-radius:8px;border:1px solid rgba(251,113,133,.3);color:#fb7185">Blok</span></sc-if>
+                  <span onClick="{{ t.onDelete }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:7px 10px;border-radius:8px;color:#fb7185">O'chirish</span>
                 </div>
               </div>
             </sc-for>
             <sc-if value="{{ noTeacherRows }}" hint-placeholder-val="{{ false }}">
-              <div style="background:var(--panel);border:1px dashed var(--border);border-radius:16px;padding:40px;text-align:center;color:var(--muted2)">Bu filter bo'yicha ustoz topilmadi</div>
+              <div style="padding:40px;text-align:center;color:var(--muted2)">Ustoz topilmadi</div>
             </sc-if>
           </div>
         </sc-if>
@@ -529,26 +529,44 @@
           </div>
         </sc-if>
 
-        <!-- ===== COURSES ===== -->
+        <!-- ===== COURSES MANAGEMENT (full CRUD) ===== -->
         <sc-if value="{{ tabCourses }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap">
+            <sc-for list="{{ courseFilterChips }}" as="f" hint-placeholder-count="5">
+              <span onClick="{{ f.onClick }}" style="cursor:pointer;font-size:12.5px;font-weight:700;padding:7px 13px;border-radius:20px;border:1px solid {{ f.border }};background:{{ f.bg }};color:{{ f.color }}">{{ f.label }}</span>
+            </sc-for>
+            <span onClick="{{ openAddCourse }}" style="cursor:pointer;margin-left:auto;font-size:12.5px;font-weight:800;padding:9px 14px;border-radius:10px;border:none;background:linear-gradient(135deg,#0d9488,#0ea5e9);color:#fff">+ Yangi kurs</span>
+          </div>
           <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;overflow:hidden">
-            <div style="display:grid;grid-template-columns:2.4fr 1.4fr 1fr 1.1fr 1fr 1.4fr;gap:12px;padding:14px 22px;font-size:11.5px;font-weight:800;color:var(--muted2);text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--border)">
-              <span>Kurs</span><span>Ustoz</span><span>O'quvchilar</span><span>Narx</span><span>Holat</span><span>Amallar</span>
+            <div style="display:grid;grid-template-columns:2.2fr 1.2fr 0.8fr 1fr 1fr 1.6fr;gap:10px;padding:12px 18px;font-size:10.5px;font-weight:800;color:var(--muted2);text-transform:uppercase;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02)">
+              <span>Kurs</span><span>Ustoz</span><span>O'quvchi</span><span>Narx</span><span>Holat</span><span style="text-align:right">Amallar</span>
             </div>
             <sc-for list="{{ courseRows }}" as="c" hint-placeholder-count="8">
-              <div style="display:grid;grid-template-columns:2.4fr 1.4fr 1fr 1.1fr 1fr 1.4fr;gap:12px;padding:13px 22px;align-items:center;border-bottom:1px solid var(--line)">
-                <div style="display:flex;align-items:center;gap:11px;min-width:0"><div style="width:36px;height:36px;border-radius:9px;background:{{ c.grad }};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex:none">{{ c.initial }}</div><div style="min-width:0"><div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.title }}</div><sc-if value="{{ c.featured }}" hint-placeholder-val="{{ false }}"><span style="font-size:10.5px;font-weight:700;color:#fbbf24">★ Featured</span></sc-if></div></div>
+              <div style="display:grid;grid-template-columns:2.2fr 1.2fr 0.8fr 1fr 1fr 1.6fr;gap:10px;padding:13px 18px;align-items:center;border-bottom:1px solid var(--line)" style-hover="background:var(--hover)">
+                <div style="display:flex;align-items:center;gap:11px;min-width:0">
+                  <div style="width:36px;height:36px;border-radius:9px;background:{{ c.grad }};display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:800;color:#fff;flex:none">{{ c.initial }}</div>
+                  <div style="min-width:0">
+                    <div style="font-size:13px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.title }}</div>
+                    <div style="font-size:11px;color:var(--muted2)">{{ c.cat }} · {{ c.duration }}</div>
+                  </div>
+                </div>
                 <span style="font-size:13px;color:var(--muted)">{{ c.teacher }}</span>
                 <span style="font-size:13px;color:var(--muted)">{{ c.studentsLabel }}</span>
                 <span style="font-size:13px;font-weight:600">{{ c.priceLabel }}</span>
                 <span style="font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:7px;background:{{ c.statusTint }};color:{{ c.statusColor }};justify-self:start">{{ c.statusLabel }}</span>
-                <div style="display:flex;gap:6px">
-                  <span onClick="{{ c.onFeature }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:#fbbf24">★</span>
-                  <span onClick="{{ c.onToggle }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:6px 11px;border-radius:8px;border:1px solid var(--border);background:var(--panel);color:var(--text)">{{ c.toggleLabel }}</span>
-                  <span onClick="{{ c.onReview }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:6px 11px;border-radius:8px;border:1px solid rgba(13,148,136,.3);background:rgba(13,148,136,.1);color:#2dd4bf">Review</span>
+                <div style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap">
+                  <span onClick="{{ c.onEdit }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:8px;border:1px solid rgba(13,148,136,.35);color:#2dd4bf">Tahrir</span>
+                  <span onClick="{{ c.onFeature }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:8px;border:1px solid var(--border);color:#fbbf24">★</span>
+                  <span onClick="{{ c.onToggle }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:8px;border:1px solid var(--border)">{{ c.toggleLabel }}</span>
+                  <span onClick="{{ c.onArchive }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:8px;border:1px solid var(--border);color:var(--muted)">Arxiv</span>
+                  <span onClick="{{ c.onReview }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:8px;border:1px solid rgba(13,148,136,.3);color:#2dd4bf">Review</span>
+                  <span onClick="{{ c.onDelete }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:8px;color:#fb7185">O'chirish</span>
                 </div>
               </div>
             </sc-for>
+            <sc-if value="{{ noCourseRows }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:40px;text-align:center;color:var(--muted2)">Kurs topilmadi</div>
+            </sc-if>
           </div>
         </sc-if>
 
@@ -1082,6 +1100,41 @@
     </div>
   </div>
 
+  <!-- ===== CRUD FORM MODAL ===== -->
+  <sc-if value="{{ showMgrForm }}" hint-placeholder-val="{{ false }}">
+    <div onClick="{{ closeMgrForm }}" style="position:fixed;inset:0;z-index:240;background:rgba(4,3,9,.72);backdrop-filter:blur(5px);display:flex;align-items:center;justify-content:center;padding:20px">
+      <div onClick="{{ stopProp }}" style="background:var(--solid);border:1px solid var(--border);border-radius:20px;padding:24px;max-width:640px;width:100%;max-height:90vh;overflow-y:auto;box-shadow:0 30px 70px rgba(0,0,0,.5)">
+        <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:19px;margin-bottom:6px">{{ mgrFormTitle }}</div>
+        <div style="font-size:13px;color:var(--muted2);margin-bottom:16px">{{ mgrFormHint }}</div>
+        <sc-if value="{{ mgrFormError }}" hint-placeholder-val="{{ false }}">
+          <div style="background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.3);border-radius:10px;padding:10px;font-size:13px;color:#fb7185;margin-bottom:12px">{{ mgrFormError }}</div>
+        </sc-if>
+        <div class="mgr-form-grid">
+          <sc-for list="{{ mgrFormFields }}" as="f" hint-placeholder-count="6">
+            <div style="grid-column:{{ f.span }}">
+              <label style="font-size:12px;color:var(--muted);font-weight:700;display:block;margin-bottom:6px">{{ f.label }}</label>
+              <sc-if value="{{ f.isSelect }}" hint-placeholder-val="{{ false }}">
+                <select value="{{ f.value }}" onChange="{{ f.onChange }}" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:13.5px;outline:none">
+                  <sc-for list="{{ f.options }}" as="o" hint-placeholder-count="4"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+                </select>
+              </sc-if>
+              <sc-if value="{{ f.isTextarea }}" hint-placeholder-val="{{ false }}">
+                <textarea rows="3" value="{{ f.value }}" onInput="{{ f.onChange }}" placeholder="{{ f.placeholder }}" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:13.5px;outline:none;resize:vertical"></textarea>
+              </sc-if>
+              <sc-if value="{{ f.isInput }}" hint-placeholder-val="{{ true }}">
+                <input value="{{ f.value }}" onInput="{{ f.onChange }}" placeholder="{{ f.placeholder }}" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:11px 12px;color:var(--text);font-size:13.5px;outline:none"/>
+              </sc-if>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:flex;gap:10px;margin-top:18px">
+          <span onClick="{{ closeMgrForm }}" style="cursor:pointer;flex:1;text-align:center;border:1px solid var(--border);background:var(--panel);color:var(--text);font-weight:700;font-size:14px;padding:12px;border-radius:11px">Bekor</span>
+          <span onClick="{{ saveMgrForm }}" style="cursor:pointer;flex:1;text-align:center;border:none;background:linear-gradient(135deg,#0d9488,#0ea5e9);color:#fff;font-weight:800;font-size:14px;padding:12px;border-radius:11px">Saqlash</span>
+        </div>
+      </div>
+    </div>
+  </sc-if>
+
   <!-- ===== CONFIRM MODAL ===== -->
   <sc-if value="{{ modal }}" hint-placeholder-val="{{ false }}">
     <div onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:250;background:rgba(4,3,9,.65);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:24px">
@@ -1233,10 +1286,11 @@ class Component extends DCLogic {
     this.state={tab:"dashboard",theme:"dark",search:"",userFilter:"Hammasi",modal:null,toast:null,lessonCourse:"t3",audience:"students",accent:"#0d9488",enrollStudent:"",enrollCourse:"",
       showUserMenu:false,notifTitle:"",notifText:"",notifError:null,notifRev:0,
       notifChPlatform:true,notifChEmail:true,notifChTelegram:false,
-      reportRange:"Oy",payFilter:"Hammasi",enrollError:null,payRev:0,studentFilter:"Hammasi",studentRev:0,teacherFilter:"Hammasi",
+      reportRange:"Oy",payFilter:"Hammasi",enrollError:null,payRev:0,studentFilter:"Hammasi",studentRev:0,teacherFilter:"Hammasi",courseFilter:"Hammasi",
       feedbackFilter:"Hammasi",feedbackRev:0,
       reviewFilter:"pending",reviewNote:"",reviewError:null,showReviewPreview:false,reviewRev:0,
       previewTitle:"",previewCourse:"",previewDuration:"",previewMeta:"",previewUrl:"",previewHasUrl:false,
+      showMgrForm:false,mgrFormKind:null,mgrFormId:null,mgrFormError:null,mgrForm:{},
       permissions:{Manager:{users:true,payments:true,courses:false,settings:false},Teacher:{users:false,payments:false,courses:true,settings:false},Student:{users:false,payments:false,courses:false,settings:false}}};
   }
 
@@ -1332,21 +1386,157 @@ class Component extends DCLogic {
     if(!DB||!t||!t.id) return;
     const courses=DB.table("courses").filter(c=>c.teacherId===t.id);
     const pays=(DB.raw().payments||[]).filter(p=>p.status==="paid");
+    const revs=DB.teacherReviews?DB.teacherReviews(t.id):[];
+    const rating=DB.teacherRating?DB.teacherRating(t.id):0;
     const lines=courses.map(c=>{
       const en=(DB.raw().enrollments||[]).filter(e=>e.courseId===c.id).length;
       const rev=pays.filter(p=>p.courseId===c.id).reduce((s,p)=>s+(p.amount||0),0);
       const st=c.status==="published"?"Published":(c.status==="pending"?"Tekshiruvda":c.status);
       return "• "+c.title+" ["+st+"] — "+en+" o'quvchi · "+this.money(rev);
     });
+    const revLines=revs.slice(0,5).map(r=>"• ★"+(r.rating||0)+" · "+DB.courseTitle(r.courseId)+": "+(r.text||"").slice(0,60));
     const msg=[
       t.name+" · "+(t.email||""),
-      (t.spec||t.bio||"Ustoz"),
+      "Tel: "+(t.phone||"—")+" · Tajriba: "+(t.experience||"—"),
+      "Sertifikat: "+(t.certificates||"—"),
+      "Mutaxassislik: "+(t.spec||"—"),
+      (t.bio||""),
+      "Reyting: ★"+(rating||0)+" · Foiz: "+(t.payoutRate!=null?t.payoutRate:40)+"%",
       "Holat: "+(t.status||"active"),
       "",
       "Kurslar ("+courses.length+"):",
-      lines.length?lines.join("\n"):"— kurs yo'q"
+      lines.length?lines.join("\n"):"— kurs yo'q",
+      "",
+      "Baholar ("+revs.length+"):",
+      revLines.length?revLines.join("\n"):"— hali baho yo'q"
     ].join("\n");
     this.ask({title:"Ustoz batafsil",msg:msg,confirm:"Yopish",icon:"🎓",onConfirm:()=>{}});
+  }
+  closeMgrForm(){ this.setState({showMgrForm:false,mgrFormKind:null,mgrFormId:null,mgrFormError:null,mgrForm:{}}); }
+  openAddTeacher(){
+    this.setState({
+      showMgrForm:true,mgrFormKind:"teacher",mgrFormId:null,mgrFormError:null,
+      mgrForm:{name:"",email:"",phone:"",spec:"",experience:"",certificates:"",bio:"",payoutRate:"40"}
+    });
+  }
+  openEditTeacher(t){
+    if(!t) return;
+    this.setState({
+      showMgrForm:true,mgrFormKind:"teacher",mgrFormId:t.id,mgrFormError:null,
+      mgrForm:{
+        name:t.name||"",email:t.email||"",phone:t.phone||"",spec:t.spec||"",
+        experience:t.experience||"",certificates:t.certificates||"",bio:t.bio||"",
+        payoutRate:String(t.payoutRate!=null?t.payoutRate:40)
+      }
+    });
+  }
+  openAssignCourse(t){
+    if(!t) return;
+    this.setState({
+      showMgrForm:true,mgrFormKind:"assign",mgrFormId:t.id,mgrFormError:null,
+      mgrForm:{courseId:""}
+    });
+  }
+  openAddCourse(){
+    this.setState({
+      showMgrForm:true,mgrFormKind:"course",mgrFormId:null,mgrFormError:null,
+      mgrForm:{title:"",cat:"Python",price:"",duration:"",level:"Boshlang'ich",status:"draft",teacherId:"",desc:""}
+    });
+  }
+  openEditCourse(c){
+    if(!c) return;
+    this.setState({
+      showMgrForm:true,mgrFormKind:"course",mgrFormId:c.id,mgrFormError:null,
+      mgrForm:{
+        title:c.title||"",cat:c.cat||"Python",price:String(c.price||0),duration:c.duration||"",
+        level:c.level||"Boshlang'ich",status:c.status||"draft",teacherId:c.teacherId||"",desc:c.desc||""
+      }
+    });
+  }
+  setMgrField(key,val){
+    this.setState(s=>({mgrForm:Object.assign({},s.mgrForm||{},{[key]:val}),mgrFormError:null}));
+  }
+  saveMgrForm(){
+    const DB=window.ProSkillDB;const me=this.meUser();
+    if(!DB){ this.notify("DB yuklanmadi"); return; }
+    const kind=this.state.mgrFormKind;
+    const f=this.state.mgrForm||{};
+    const id=this.state.mgrFormId;
+    if(kind==="teacher"){
+      const payload={
+        name:(f.name||"").trim(),email:(f.email||"").trim(),phone:(f.phone||"").trim(),
+        spec:(f.spec||"").trim(),experience:(f.experience||"").trim(),
+        certificates:(f.certificates||"").trim(),bio:(f.bio||"").trim(),
+        payoutRate:Number(f.payoutRate)||40
+      };
+      let r;
+      if(id) r=DB.updateTeacher(id,payload,me?me.name:"Manager");
+      else r=DB.addTeacher(payload,me?me.name:"Manager");
+      if(!r||!r.ok){ this.setState({mgrFormError:(r&&r.error)||"Saqlanmadi"}); return; }
+      this.closeMgrForm();
+      this.refreshStudents();
+      this.notify(id?"Ustoz yangilandi ✓":"Yangi ustoz qo'shildi ✓");
+      return;
+    }
+    if(kind==="course"){
+      const payload={
+        title:(f.title||"").trim(),
+        cat:f.cat||"Python",
+        price:Number(f.price)||0,
+        duration:(f.duration||"").trim(),
+        level:f.level||"Boshlang'ich",
+        status:f.status||"draft",
+        teacherId:f.teacherId||null,
+        desc:(f.desc||"").trim()
+      };
+      if(!payload.title){ this.setState({mgrFormError:"Kurs nomi majburiy"}); return; }
+      let r;
+      if(id) r=DB.updateCourse(id,payload,me?me.name:"Manager","manager");
+      else r=DB.addCourse(payload,me?me.name:"Manager","manager");
+      if(!r||!r.ok){ this.setState({mgrFormError:(r&&r.error)||"Saqlanmadi"}); return; }
+      this.closeMgrForm();
+      this.setState(s=>({payRev:(s.payRev||0)+1}));
+      this.notify(id?"Kurs yangilandi ✓":"Yangi kurs qo'shildi ✓");
+      return;
+    }
+    if(kind==="assign"){
+      if(!f.courseId){ this.setState({mgrFormError:"Kurs tanlang"}); return; }
+      const r=DB.assignCourseTeacher(f.courseId,id,me?me.name:"Manager");
+      if(!r||!r.ok){ this.setState({mgrFormError:(r&&r.error)||"Biriktirilmadi"}); return; }
+      this.closeMgrForm();
+      this.refreshStudents();
+      this.notify("Kurs ustozga biriktirildi ✓");
+    }
+  }
+  deleteTeacherRow(t){
+    const DB=window.ProSkillDB;const me=this.meUser();
+    if(!DB||!t||!t.id) return;
+    this.ask({
+      title:"Ustozni o'chirish",
+      msg:'"'+t.name+'" o\'chiriladi. Kurslari saqlanib qoladi, lekin ustozsiz qolishi mumkin.',
+      confirm:"O'chirish",danger:true,icon:"🗑",
+      onConfirm:()=>{
+        const r=DB.deleteUser(t.id,me?me.name:"Manager");
+        if(!r||!r.ok){ this.notify((r&&r.error)||"O'chirilmadi"); return; }
+        this.notify(t.name+" o'chirildi");
+        this.refreshStudents();
+      }
+    });
+  }
+  deleteCourseRow(c){
+    const DB=window.ProSkillDB;const me=this.meUser();
+    if(!DB||!c||!c.id) return;
+    this.ask({
+      title:"Kursni o'chirish",
+      msg:'"'+c.title+'" o\'chiriladi.',
+      confirm:"O'chirish",danger:true,icon:"🗑",
+      onConfirm:()=>{
+        const r=DB.deleteCourse(c.id,me?me.name:"Manager","manager");
+        if(!r||!r.ok){ this.notify((r&&r.error)||"O'chirilmadi"); return; }
+        this.notify(c.title+" o'chirildi");
+        this.setState(s=>({payRev:(s.payRev||0)+1}));
+      }
+    });
   }
   showStudentDetail(u, meta){
     const DB=window.ProSkillDB;
@@ -1677,11 +1867,11 @@ class Component extends DCLogic {
     const pendingCourses=DB?(DB.table("courses")||[]).filter(c=>c.status==="pending").length:0;
     const navGroups=[
       {title:"ASOSIY",items:[mk("dashboard","Dashboard","dashboard"),mk("reports","Hisobot & Sotuvlar","reports")]},
-      {title:"OPERATSIYALAR",items:[mk("payments","To'lovlar & Enroll","payments",pendingPays?String(pendingPays):null),mk("students","Talabalar & Progress","student"),mk("teachers","Ustozlar Faoliyati","teacher")]},
-      {title:"KONTENT",items:[mk("courses","Kurslar & Aktivlik","courses"),mk("lessons","Course Review","lessons",pendingCourses?String(pendingCourses):null),mk("reviews","Feedback & Reviews","reviews")]},
+      {title:"OPERATSIYALAR",items:[mk("payments","To'lovlar & Enroll","payments",pendingPays?String(pendingPays):null),mk("students","Talabalar & Progress","student"),mk("teachers","Ustozlar","teacher")]},
+      {title:"KONTENT",items:[mk("courses","Kurslar","courses"),mk("lessons","Course Review","lessons",pendingCourses?String(pendingCourses):null),mk("reviews","Feedback & Reviews","reviews")]},
       {title:"ALOQA",items:[mk("notifications","Bildirishnomalar","notifications")]}
     ];
-    const meta={dashboard:["Operatsion markaz","Manager Dashboard",null],reports:["Tahlil","Hisobot & Sotuvlar",null],teachers:["Operatsiyalar","Ustozlar Faoliyati",null],students:["Operatsiyalar","Talabalar & Progress",null],courses:["Kontent","Kurslar & Aktivlik",null],lessons:["Kontent","Course Review",null],reviews:["Kontent","Feedback & Reviews",null],payments:["Operatsiyalar","To'lovlar — 3 bosqich",null],notifications:["Aloqa","Bildirishnomalar","Xabar yuborish"]};
+    const meta={dashboard:["Operatsion markaz","Manager Dashboard",null],reports:["Tahlil","Hisobot & Sotuvlar",null],teachers:["Operatsiyalar","Ustozlar boshqaruvi","Yangi ustoz"],students:["Operatsiyalar","Talabalar & Progress",null],courses:["Kontent","Kurslar boshqaruvi","Yangi kurs"],lessons:["Kontent","Course Review",null],reviews:["Kontent","Feedback & Reviews",null],payments:["Operatsiyalar","To'lovlar — 3 bosqich",null],notifications:["Aloqa","Bildirishnomalar","Xabar yuborish"]};
     // student tab title stays
     const m=meta[tab]||["",""];
 
@@ -1772,9 +1962,77 @@ class Component extends DCLogic {
       navGroups, crumb:m[0], pageTitle:m[1], pageAction:m[2],
       onPageAction:()=>{
         if(tab==="notifications") this.sendBroadcast();
+        else if(tab==="teachers") this.openAddTeacher();
+        else if(tab==="courses") this.openAddCourse();
         else if(tab==="payments") this.setTab("payments");
         else this.notify((m[2]||"Amal")+" bajarildi");
       },
+      // CRUD form modal
+      showMgrForm:!!st.showMgrForm,
+      mgrFormTitle:st.mgrFormKind==="teacher"?(st.mgrFormId?"Ustozni tahrirlash":"Yangi ustoz"):(st.mgrFormKind==="course"?(st.mgrFormId?"Kursni tahrirlash":"Yangi kurs"):(st.mgrFormKind==="assign"?"Kurs biriktirish":"Forma")),
+      mgrFormHint:st.mgrFormKind==="teacher"?"Ism, email, mutaxassislik, bio va boshqalar":(st.mgrFormKind==="course"?"Nom, narx, holat, ustoz":"Ustozga kurs tanlang"),
+      mgrFormError:st.mgrFormError||null,
+      closeMgrForm:()=>this.closeMgrForm(),
+      saveMgrForm:()=>this.saveMgrForm(),
+      openAddTeacher:()=>this.openAddTeacher(),
+      openAddCourse:()=>this.openAddCourse(),
+      mgrFormFields:(()=>{
+        const f=st.mgrForm||{};
+        const field=(key,label,opts)=>{
+          opts=opts||{};
+          const isSelect=!!opts.options;
+          const isTextarea=!!opts.textarea;
+          return{
+            key,label,
+            value:f[key]!=null?String(f[key]):"",
+            placeholder:opts.placeholder||"",
+            span:opts.full?"1 / -1":"auto",
+            isSelect:isSelect,isTextarea:isTextarea,isInput:!isSelect&&!isTextarea,
+            options:opts.options||[],
+            onChange:(e)=>{
+              const v=e&&e.target?e.target.value:"";
+              this.setMgrField(key,v);
+            }
+          };
+        };
+        if(st.mgrFormKind==="teacher"){
+          return[
+            field("name","Ism Familiya",{placeholder:"Sardor Aliyev"}),
+            field("email","Email",{placeholder:"ustoz@proskill.uz"}),
+            field("phone","Telefon",{placeholder:"+998 90 ..."}),
+            field("spec","Mutaxassislik",{placeholder:"Python, Backend"}),
+            field("experience","Ish tajribasi",{placeholder:"8 yil"}),
+            field("payoutRate","To'lov foizi %",{placeholder:"40"}),
+            field("certificates","Sertifikatlar",{placeholder:"AWS, Django",full:true}),
+            field("bio","Bio / tarjimai hol",{textarea:true,placeholder:"Qisqa bio...",full:true})
+          ];
+        }
+        if(st.mgrFormKind==="course"){
+          const tchOpts=[{value:"",label:"Ustoz tanlanmagan"}].concat(
+            (DB?DB.table("users").filter(u=>u.role==="teacher"&&u.status!=="blocked"):[]).map(u=>({value:u.id,label:u.name}))
+          );
+          const cats=["Python","Frontend","Backend","Grafik dizayn","SMM","Data Science","Mobil dasturlash","Ingliz tili","Kompyuter savodxonligi"].map(c=>({value:c,label:c}));
+          const statuses=[["draft","Draft"],["pending","Tekshiruvda"],["published","Faol (Published)"],["inactive","Nofaol"],["archived","Arxiv"]].map(([v,l])=>({value:v,label:l}));
+          const levels=["Boshlang'ich","O'rta","Professional"].map(l=>({value:l,label:l}));
+          return[
+            field("title","Kurs nomi",{placeholder:"Python asoslari",full:true}),
+            field("cat","Kategoriya",{options:cats}),
+            field("price","Narx (so'm)",{placeholder:"690000"}),
+            field("duration","Davomiylik",{placeholder:"8 hafta"}),
+            field("level","Daraja",{options:levels}),
+            field("status","Holat",{options:statuses}),
+            field("teacherId","Ustoz",{options:tchOpts,full:true}),
+            field("desc","Tavsif",{textarea:true,placeholder:"Kurs haqida...",full:true})
+          ];
+        }
+        if(st.mgrFormKind==="assign"){
+          const opts=[{value:"",label:"Kurs tanlang…"}].concat(
+            (DB?DB.table("courses"):[]).map(c=>({value:c.id,label:c.title+(c.teacherId?" (band)":"")}))
+          );
+          return[field("courseId","Kurs",{options:opts,full:true})];
+        }
+        return [];
+      })(),
       goCourses:()=>this.setTab("courses"), goUsers:()=>this.setTab("students"),
       // tab flags
       tabDashboard:tab==="dashboard",tabReports:tab==="reports",tabUsers:tab==="users",tabManagers:tab==="managers",tabTeachers:tab==="teachers",tabStudents:tab==="students",tabCourses:tab==="courses",tabLessons:tab==="lessons",tabCategories:tab==="categories",tabCerts:tab==="certs",tabReviews:tab==="reviews",tabPayments:tab==="payments",tabNotifications:tab==="notifications",tabSecurity:tab==="security",tabSettings:tab==="settings",
@@ -1961,10 +2219,7 @@ class Component extends DCLogic {
             const pendingCourses=courses.filter(c=>c.status==="pending");
             let students=0;
             courses.forEach(c=>{ students+=(DB.raw().enrollments||[]).filter(e=>e.courseId===c.id).length; });
-            // reyting: faqat published va rating>0
-            const rated=published.filter(c=>(c.rating||0)>0);
-            const avgR=rated.length?(rated.reduce((s,c)=>s+(c.rating||0),0)/rated.length):0;
-            // daromad: real paid to'lovlar
+            const avgR=DB.teacherRating?DB.teacherRating(t.id):0;
             const cids=courses.map(c=>c.id);
             const rev=pays.filter(p=>p.status==="paid"&&cids.indexOf(p.courseId)>=0).reduce((s,p)=>s+(p.amount||0),0);
             const lessons=courses.reduce((s,c)=>s+DB.lessonsOf(c.id).length,0);
@@ -1972,12 +2227,14 @@ class Component extends DCLogic {
             const stt=t.status||"active";
             const statusBg=stt==="active"?"rgba(52,211,153,.12)":(stt==="pending"?"rgba(251,191,36,.14)":"rgba(251,113,133,.12)");
             return{
-              id:t.id,name:t.name,email:t.email||"",
+              id:t.id,name:t.name,email:t.email||"",phone:t.phone||"—",
               bio:t.bio||"ProSkill ustozi",
               spec:t.spec||"Ustoz",
+              experience:t.experience||"",certificates:t.certificates||"",
+              payoutRate:t.payoutRate!=null?t.payoutRate:40,
               courses:courses.length,
               studentsLabel:String(students),
-              rating:avgR?avgR.toFixed(1):"—",
+              rating:avgR?Number(avgR).toFixed(1):"—",
               revenue:(rev/1e6).toFixed(1)+" mln",
               initial:(t.name||"T").split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase(),
               status:stt,statusColor:stColor(stt),statusLabel:stLabel(stt),statusBg:statusBg,
@@ -1994,6 +2251,9 @@ class Component extends DCLogic {
                 this.refreshStudents();
               },
               onView:()=>this.showTeacherDetail(t),
+              onEdit:()=>this.openEditTeacher(t),
+              onAssign:()=>this.openAssignCourse(t),
+              onDelete:()=>this.deleteTeacherRow(t),
               onBlock:()=>this.blockUser(t),
               onReview:()=>{
                 const first=pendingCourses[0]||courses[0];
@@ -2090,42 +2350,83 @@ class Component extends DCLogic {
           .length===0;
       })(),
 
-      // ===== COURSES (DB) =====
+      // ===== COURSES (DB full CRUD) =====
+      courseFilterChips:(()=>{
+        const f=st.courseFilter||"Hammasi";
+        return[["Hammasi","Hammasi"],["published","Faol"],["pending","Tekshiruvda"],["draft","Draft"],["archived","Arxiv"],["inactive","Nofaol"]].map(([k,l])=>{
+          const on=f===k;
+          return{
+            label:l,
+            onClick:()=>this.setState({courseFilter:k}),
+            border:on?"rgba(13,148,136,.55)":"var(--border)",
+            bg:on?"rgba(13,148,136,.16)":"transparent",
+            color:on?"#ccfbf1":"var(--muted)"
+          };
+        });
+      })(),
       courseRows:(()=>{
         if(!DB) return [];
         const q=(st.search||"").toLowerCase();
+        const f=st.courseFilter||"Hammasi";
         return dbCourses.filter(c=>{
+          if(f!=="Hammasi"&&c.status!==f) return false;
           const t=DB.byId("users",c.teacherId);
           const tn=t?t.name:"";
-          return q===""||c.title.toLowerCase().includes(q)||tn.toLowerCase().includes(q);
+          return q===""||(c.title||"").toLowerCase().includes(q)||tn.toLowerCase().includes(q)||(c.cat||"").toLowerCase().includes(q);
         }).map(c=>{
           const pub=c.status==="published";
           const pend=c.status==="pending";
+          const arch=c.status==="archived";
+          const ina=c.status==="inactive";
           const cnt=(DB.raw().enrollments||[]).filter(e=>e.courseId===c.id).length;
           const t=DB.byId("users",c.teacherId);
-          const statusLabel=pub?"Published":(pend?"Tekshiruvda":(c.status==="rejected"?"Rad etilgan":"Draft"));
-          const statusColor=pub?"#34d399":(pend?"#fbbf24":(c.status==="rejected"?"#fb7185":"#9b98ad"));
+          const statusLabel=pub?"Faol":(pend?"Tekshiruvda":(c.status==="rejected"?"Rad":(arch?"Arxiv":(ina?"Nofaol":"Draft"))));
+          const statusColor=pub?"#34d399":(pend?"#fbbf24":(c.status==="rejected"||ina?"#fb7185":(arch?"#94a3b8":"#9b98ad")));
           return{
-            id:c.id,title:c.title,cat:c.cat,teacher:t?t.name:"—",
+            id:c.id,title:c.title,cat:c.cat||"—",teacher:t?t.name:"—",teacherId:c.teacherId||"",
+            duration:c.duration||"—",level:c.level||"",desc:c.desc||"",price:c.price||0,
             studentsLabel:String(cnt),
             priceLabel:c.price===0?"Bepul":this.money(c.price).replace(" so'm",""),
-            statusLabel:statusLabel,statusColor:statusColor,
+            status:c.status,statusLabel:statusLabel,statusColor:statusColor,
             statusTint:pub?"rgba(52,211,153,.14)":(pend?"rgba(251,191,36,.14)":"rgba(255,255,255,.06)"),
-            toggleLabel:pub?"Draft":"Publish",
+            toggleLabel:pub?"Nofaol":"Faollashtir",
             featured:!!c.featured,
             grad:this.grads[c.cat]||"linear-gradient(135deg,#0d9488,#0ea5e9)",
             initial:(c.cat||"K").charAt(0),
-            onFeature:()=>{DB.toggleFeatured(c.id);this.notify(c.featured?"Featured olib tashlandi":"Featured ★");this.forceUpdate();},
+            onEdit:()=>this.openEditCourse(c),
+            onDelete:()=>this.deleteCourseRow(c),
+            onFeature:()=>{DB.toggleFeatured(c.id);this.notify(c.featured?"Featured olib tashlandi":"Featured ★");this.setState(s=>({payRev:(s.payRev||0)+1}));},
             onToggle:()=>{
-              const next=pub?"draft":"published";
+              const next=pub?"inactive":"published";
               DB.setCourseStatus(c.id,next,me?me.name:"manager","manager");
-              this.notify(next==="published"?"Kurs publish qilindi ✓":"Kurs draftga o'tkazildi");
-              this.forceUpdate();
+              this.notify(next==="published"?"Kurs faollashtirildi ✓":"Kurs nofaol");
+              this.setState(s=>({payRev:(s.payRev||0)+1}));
+            },
+            onArchive:()=>{
+              DB.setCourseStatus(c.id,"archived",me?me.name:"manager","manager");
+              this.notify("Kurs arxivlandi");
+              this.setState(s=>({payRev:(s.payRev||0)+1}));
             },
             onReview:()=>this.setState({tab:"lessons",lessonCourse:c.id,reviewNote:c.comment||"",reviewError:null,reviewFilter:c.status==="pending"?"pending":"all"})
           };
         });
       })(),
+      noCourseRows:(()=>{
+        if(!DB) return true;
+        const q=(st.search||"").toLowerCase();
+        const f=st.courseFilter||"Hammasi";
+        return dbCourses.filter(c=>{
+          if(f!=="Hammasi"&&c.status!==f) return false;
+          return !q||(c.title||"").toLowerCase().includes(q);
+        }).length===0;
+      })(),
+      teacherPayoutRows:(DB&&DB.teacherPayouts?DB.teacherPayouts():[]).map(p=>({
+        name:p.name,
+        rate:p.rate,
+        revenueLabel:this.money(p.revenue).replace(" so'm",""),
+        payoutLabel:this.money(p.payout).replace(" so'm",""),
+        rating:p.rating?p.rating.toFixed(1):"—"
+      })),
 
       // ===== COURSE REVIEW (full working) =====
       reviewRev:st.reviewRev||0,
