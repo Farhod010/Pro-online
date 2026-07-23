@@ -1201,20 +1201,6 @@ class Component extends DCLogic {
       {name:"Bobur Aliyev",course:"Data Science",rating:2,text:"Menga juda qiyin tuyuldi, sekinroq tushuntirilsa yaxshi.",status:"hidden"},
       {name:"Dilshod Karimov",course:"SMM va Marketing",rating:5,text:"Marketing bo'yicha eng yaxshi kurs! Rahmat.",status:"visible"}
     ];
-    // Activity logs
-    const L=(who,role,action,target,time,type)=>({who,role,action,target,time,type});
-    this.logs=[
-      L("Super Admin","Super Admin","To'lovni tasdiqladi","#10243 · Grafik dizayn","18 Iyun, 14:30","payment"),
-      L("Jasur Toshmatov","Manager","Studentni kursga qo'shdi","Akmal Y. → Python","18 Iyun, 13:12","enroll"),
-      L("Sardor Aliyev","Teacher","Yangi dars yukladi","Modul 3 · Dars 2","18 Iyun, 11:48","content"),
-      L("Super Admin","Super Admin","Foydalanuvchini blokladi","Bobur Aliyev","17 Iyun, 19:20","security"),
-      L("Kamola Saidova","Manager","To'lovni tasdiqladi","#10241 · Ingliz tili","15 Iyun, 16:15","payment"),
-      L("Super Admin","Super Admin","Kurs narxini o'zgartirdi","Backend: Django","15 Iyun, 10:05","content"),
-      L("Dilnoza K.","Teacher","Kursni publish qildi","Frontend: React","14 Iyun, 09:40","content"),
-      L("Super Admin","Super Admin","Manager rolini berdi","Kamola Saidova","12 Iyun, 15:22","security"),
-      L("Aziza Rahimova","Teacher","Yangi modul qo'shdi","AI asoslari · Modul 4","11 Iyun, 14:10","content"),
-      L("Super Admin","Super Admin","Sozlamani o'zgartirdi","Avtomatik kurs ochilishi","10 Iyun, 08:30","settings")
-    ];
     // Notifications history
     this.notifHistory=[
       {title:"Yangi kurslar chiqdi!",audience:"Barcha foydalanuvchilar",channel:"Platforma + Email",date:"17 Iyun",reach:"18 240"},
@@ -1244,7 +1230,7 @@ class Component extends DCLogic {
       {title:"Yangi to'lov tizimlari",desc:"Payme / Click / Paynet ulanishi",on:false},
       {title:"Texnik ishlar rejimi",desc:"Saytni vaqtincha yopish (Maintenance)",on:false}
     ];
-    this.state={tab:"dashboard",theme:"dark",search:"",userFilter:"Hammasi",modal:null,toast:null,lessonCourse:"t3",audience:"students",logFilter:"Hammasi",logLimit:40,accent:"#0d9488",enrollStudent:"",enrollCourse:"",
+    this.state={tab:"dashboard",theme:"dark",search:"",userFilter:"Hammasi",modal:null,toast:null,lessonCourse:"t3",audience:"students",accent:"#0d9488",enrollStudent:"",enrollCourse:"",
       showUserMenu:false,notifTitle:"",notifText:"",notifError:null,notifRev:0,
       notifChPlatform:true,notifChEmail:true,notifChTelegram:false,
       reportRange:"Oy",payFilter:"Hammasi",enrollError:null,payRev:0,studentFilter:"Hammasi",studentRev:0,teacherFilter:"Hammasi",
@@ -1791,7 +1777,7 @@ class Component extends DCLogic {
       },
       goCourses:()=>this.setTab("courses"), goUsers:()=>this.setTab("students"),
       // tab flags
-      tabDashboard:tab==="dashboard",tabReports:tab==="reports",tabUsers:tab==="users",tabManagers:tab==="managers",tabTeachers:tab==="teachers",tabStudents:tab==="students",tabCourses:tab==="courses",tabLessons:tab==="lessons",tabCategories:tab==="categories",tabCerts:tab==="certs",tabReviews:tab==="reviews",tabPayments:tab==="payments",tabNotifications:tab==="notifications",tabSecurity:tab==="security",tabLogs:tab==="logs",tabSettings:tab==="settings",
+      tabDashboard:tab==="dashboard",tabReports:tab==="reports",tabUsers:tab==="users",tabManagers:tab==="managers",tabTeachers:tab==="teachers",tabStudents:tab==="students",tabCourses:tab==="courses",tabLessons:tab==="lessons",tabCategories:tab==="categories",tabCerts:tab==="certs",tabReviews:tab==="reviews",tabPayments:tab==="payments",tabNotifications:tab==="notifications",tabSecurity:tab==="security",tabSettings:tab==="settings",
       kpis, revenueChart, paymentDonut, topCourses, recentUsers,
       // modal
       modal:st.modal, modalTitle:st.modal?st.modal.title:"", modalMsg:st.modal?st.modal.msg:"", modalConfirm:st.modal?st.modal.confirm:"", modalIcon:st.modal?st.modal.icon:"", modalTint:st.modal&&st.modal.danger?"rgba(251,113,133,.16)":"rgba(13,148,136,.16)", modalBtn:st.modal&&st.modal.danger?"linear-gradient(135deg,#f43f5e,#fb7185)":"linear-gradient(135deg,#0d9488,#0ea5e9)",
