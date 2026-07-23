@@ -946,32 +946,63 @@
           </div>
         </sc-if>
 
-        <!-- ===== NOTIFICATIONS ===== -->
+        <!-- ===== NOTIFICATIONS (full working) ===== -->
         <sc-if value="{{ tabNotifications }}" hint-placeholder-val="{{ false }}">
           <div style="display:grid;grid-template-columns:1fr 1.2fr;gap:16px;align-items:start">
             <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:22px">
-              <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:16px;margin-bottom:16px">Yangi xabar yuborish</div>
+              <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:16px;margin-bottom:4px">Yangi xabar yuborish</div>
+              <div style="font-size:12.5px;color:var(--muted2);margin-bottom:14px">Qabul qiluvchilar: <b style="color:var(--text)">{{ notifAudienceHint }}</b></div>
+
               <label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:7px">Qabul qiluvchilar</label>
               <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:16px">
-                <sc-for list="{{ audienceChips }}" as="a" hint-placeholder-count="4"><span onClick="{{ a.onClick }}" style="cursor:pointer;font-size:12.5px;font-weight:600;padding:8px 13px;border-radius:9px;border:1px solid {{ a.border }};background:{{ a.bg }};color:{{ a.color }}">{{ a.label }}</span></sc-for>
+                <sc-for list="{{ audienceChips }}" as="a" hint-placeholder-count="4">
+                  <span onClick="{{ a.onClick }}" style="cursor:pointer;user-select:none;font-size:12.5px;font-weight:600;padding:8px 13px;border-radius:9px;border:1px solid {{ a.border }};background:{{ a.bg }};color:{{ a.color }}">{{ a.label }}</span>
+                </sc-for>
               </div>
+
               <label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:7px">Sarlavha</label>
               <input value="{{ notifTitle }}" onInput="{{ onNotifTitle }}" placeholder="Xabar sarlavhasi" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-size:13.5px;outline:none;margin-bottom:13px" />
+
               <label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:7px">Matn</label>
               <textarea rows="3" value="{{ notifText }}" onInput="{{ onNotifText }}" placeholder="Xabar matni..." style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:11px 13px;color:var(--text);font-size:13.5px;outline:none;resize:vertical;margin-bottom:14px"></textarea>
-              <div style="display:flex;gap:10px;margin-bottom:16px">
-                <sc-for list="{{ channelChips }}" as="c" hint-placeholder-count="3"><label style="display:flex;align-items:center;gap:7px;font-size:13px;color:var(--text);cursor:pointer"><input type="checkbox" checked="{{ c.checked }}" style="accent-color:#0d9488;width:15px;height:15px" /> {{ c.label }}</label></sc-for>
+
+              <label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:7px">Kanal</label>
+              <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:14px">
+                <sc-for list="{{ channelChips }}" as="c" hint-placeholder-count="3">
+                  <span onClick="{{ c.onClick }}" style="cursor:pointer;user-select:none;font-size:12.5px;font-weight:700;padding:8px 12px;border-radius:9px;border:1px solid {{ c.border }};background:{{ c.bg }};color:{{ c.color }}">{{ c.mark }} {{ c.label }}</span>
+                </sc-for>
               </div>
-              <button onClick="{{ sendNotif }}" style="cursor:pointer;width:100%;border:none;background:linear-gradient(135deg,#0d9488,#0ea5e9);color:#fff;font-weight:700;font-size:14px;padding:13px;border-radius:11px">Xabar yuborish</button>
+
+              <sc-if value="{{ notifError }}" hint-placeholder-val="{{ false }}">
+                <div style="background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.3);border-radius:10px;padding:10px 12px;font-size:13px;color:#fb7185;margin-bottom:12px">{{ notifError }}</div>
+              </sc-if>
+
+              <div onClick="{{ sendNotif }}" style="cursor:pointer;user-select:none;text-align:center;width:100%;border:none;background:linear-gradient(135deg,#0d9488,#0ea5e9);color:#fff;font-weight:700;font-size:14px;padding:13px;border-radius:11px;box-shadow:0 10px 22px rgba(13,148,136,.28)">Xabar yuborish</div>
+              <div style="margin-top:10px;font-size:12px;color:var(--muted2);line-height:1.4">Platforma — ilovada bildirishnoma. Email/Telegram demo rejimda belgilangan deb hisoblanadi.</div>
             </div>
+
             <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;overflow:hidden">
-              <div style="padding:16px 20px;font-family:'Plus Jakarta Sans';font-weight:700;font-size:15px;border-bottom:1px solid var(--border)">Yuborilgan xabarlar</div>
+              <div style="padding:16px 20px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--border)">
+                <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:15px">Yuborilgan xabarlar</div>
+                <span style="font-size:12px;color:var(--muted2)">{{ notifCountLabel }}</span>
+              </div>
               <sc-for list="{{ notifRows }}" as="n" hint-placeholder-count="4">
                 <div style="padding:15px 20px;border-bottom:1px solid var(--line)">
-                  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px"><span style="font-size:14px;font-weight:700">{{ n.title }}</span><span style="font-size:11.5px;color:var(--muted2)">{{ n.date }}</span></div>
-                  <div style="display:flex;gap:14px;font-size:12px;color:var(--muted)"><span>👥 {{ n.audience }}</span><span>📡 {{ n.channel }}</span><span style="color:#34d399">✓ {{ n.reach }} kishi</span></div>
+                  <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:12px;margin-bottom:6px">
+                    <span style="font-size:14px;font-weight:700">{{ n.title }}</span>
+                    <span style="font-size:11.5px;color:var(--muted2);flex:none">{{ n.date }}</span>
+                  </div>
+                  <div style="font-size:12.5px;color:var(--muted);margin-bottom:8px;line-height:1.45">{{ n.text }}</div>
+                  <div style="display:flex;flex-wrap:wrap;gap:10px;font-size:12px;color:var(--muted)">
+                    <span>👥 {{ n.audience }}</span>
+                    <span>📡 {{ n.channel }}</span>
+                    <span style="color:#34d399;font-weight:700">✓ {{ n.reach }}</span>
+                  </div>
                 </div>
               </sc-for>
+              <sc-if value="{{ noNotifRows }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:36px;text-align:center;color:var(--muted2);font-size:13.5px">Hali xabar yuborilmagan — chapdan yuboring</div>
+              </sc-if>
             </div>
           </div>
         </sc-if>
@@ -1231,7 +1262,9 @@ class Component extends DCLogic {
       {title:"Texnik ishlar rejimi",desc:"Saytni vaqtincha yopish (Maintenance)",on:false}
     ];
     this.state={tab:"dashboard",theme:"dark",search:"",userFilter:"Hammasi",modal:null,toast:null,lessonCourse:"t3",audience:"students",logFilter:"Hammasi",accent:"#0d9488",enrollStudent:"",enrollCourse:"",
-      showUserMenu:false,notifTitle:"",notifText:"",reportRange:"Oy",payFilter:"Hammasi",enrollError:null,payRev:0,studentFilter:"Hammasi",studentRev:0,teacherFilter:"Hammasi",
+      showUserMenu:false,notifTitle:"",notifText:"",notifError:null,notifRev:0,
+      notifChPlatform:true,notifChEmail:true,notifChTelegram:false,
+      reportRange:"Oy",payFilter:"Hammasi",enrollError:null,payRev:0,studentFilter:"Hammasi",studentRev:0,teacherFilter:"Hammasi",
       feedbackFilter:"Hammasi",feedbackRev:0,
       reviewFilter:"pending",reviewNote:"",reviewError:null,showReviewPreview:false,reviewRev:0,
       previewTitle:"",previewCourse:"",previewDuration:"",previewMeta:"",previewUrl:"",previewHasUrl:false,
@@ -1592,13 +1625,11 @@ class Component extends DCLogic {
       showReviewPreview:false
     });
   }
-  sendBroadcast(){
-    const DB=window.ProSkillDB;const me=this.meUser();
-    if(!DB) return;
-    const title=(this.state.notifTitle||"").trim()||"ProSkill xabari";
-    const text=(this.state.notifText||"").trim()||"Yangi bildirishnoma";
+  notifAudienceUsers(){
+    const DB=window.ProSkillDB;
+    if(!DB) return [];
     const aud=this.state.audience||"students";
-    let users=DB.table("users");
+    let users=DB.table("users").filter(u=>u.status!=="blocked");
     if(aud==="students") users=users.filter(u=>u.role==="student");
     else if(aud==="teachers") users=users.filter(u=>u.role==="teacher");
     else if(aud==="enrolled"){
@@ -1607,12 +1638,60 @@ class Component extends DCLogic {
     } else if(aud==="pending"){
       const ids={}; (DB.raw().payments||[]).filter(p=>p.status==="pending").forEach(p=>{ ids[p.studentId]=1; });
       users=users.filter(u=>ids[u.id]);
+    } else if(aud==="all"){
+      users=users.filter(u=>u.role==="student"||u.role==="teacher");
     }
-    users.forEach(u=>DB.notify(u.id,title,text));
-    DB.log(me?me.name:"Manager","manager","Xabar yubordi",title+" → "+users.length+" kishi","content");
-    this.setState({notifTitle:"",notifText:""});
-    this.notify("Xabar "+users.length+" ta foydalanuvchiga yuborildi ✓");
-    this.forceUpdate();
+    return users;
+  }
+  notifChannelLabel(){
+    const ch=[];
+    if(this.state.notifChPlatform!==false) ch.push("Platforma");
+    if(this.state.notifChEmail) ch.push("Email");
+    if(this.state.notifChTelegram) ch.push("Telegram");
+    return ch.length?ch.join(" + "):"Platforma";
+  }
+  sendBroadcast(){
+    try{
+      const DB=window.ProSkillDB;const me=this.meUser();
+      if(!DB){ this.notify("DB yuklanmadi"); return; }
+      const title=(this.state.notifTitle||"").trim();
+      const text=(this.state.notifText||"").trim();
+      if(!title){ this.setState({notifError:"Sarlavha yozing"}); this.notify("Sarlavha yozing"); return; }
+      if(!text){ this.setState({notifError:"Xabar matnini yozing"}); this.notify("Xabar matnini yozing"); return; }
+      const usePlat=this.state.notifChPlatform!==false;
+      const useEmail=!!this.state.notifChEmail;
+      const useTg=!!this.state.notifChTelegram;
+      if(!usePlat&&!useEmail&&!useTg){
+        this.setState({notifError:"Kamida 1 ta kanal tanlang"});
+        this.notify("Kanal tanlang");
+        return;
+      }
+      const users=this.notifAudienceUsers();
+      if(!users.length){
+        this.setState({notifError:"Bu auditoriyada foydalanuvchi yo'q"});
+        this.notify("Qabul qiluvchi topilmadi");
+        return;
+      }
+      const channel=this.notifChannelLabel();
+      // Platforma = real in-app notification
+      if(usePlat){
+        users.forEach(u=>DB.notify(u.id,title,text));
+      } else {
+        // still store a copy so history works, tagged as external channel
+        users.forEach(u=>DB.notify(u.id,title+" ["+channel+"]",text));
+      }
+      const audLabel=({students:"Studentlar",teachers:"Teacherlar",enrolled:"Yozilganlar",pending:"To'lov kutayotganlar",all:"Hammasi"}[this.state.audience||"students"])||"Auditoriya";
+      DB.log(me?me.name:"Manager","manager","Xabar yubordi",title+" → "+users.length+" kishi ("+audLabel+", "+channel+")","content");
+      this.setState({
+        notifTitle:"",
+        notifText:"",
+        notifError:null,
+        notifRev:(this.state.notifRev||0)+1
+      });
+      this.notify("Xabar "+users.length+" kishiga yuborildi ("+channel+") ✓");
+    }catch(e){
+      this.notify("Xabar xato: "+(e&&e.message?e.message:e));
+    }
   }
 
   renderVals(){
@@ -1727,7 +1806,12 @@ class Component extends DCLogic {
       logout:()=>this.logout(),
       goPayments:()=>this.setTab("payments"), goStudents:()=>this.setTab("students"),
       hasPendingPays:pendN>0,
-      navGroups, crumb:m[0], pageTitle:m[1], pageAction:m[2], onPageAction:()=>{ if(tab==="payments") this.setTab("payments"); else this.notify((m[2]||"Amal")+" bajarildi"); },
+      navGroups, crumb:m[0], pageTitle:m[1], pageAction:m[2],
+      onPageAction:()=>{
+        if(tab==="notifications") this.sendBroadcast();
+        else if(tab==="payments") this.setTab("payments");
+        else this.notify((m[2]||"Amal")+" bajarildi");
+      },
       goCourses:()=>this.setTab("courses"), goUsers:()=>this.setTab("students"),
       // tab flags
       tabDashboard:tab==="dashboard",tabReports:tab==="reports",tabUsers:tab==="users",tabManagers:tab==="managers",tabTeachers:tab==="teachers",tabStudents:tab==="students",tabCourses:tab==="courses",tabLessons:tab==="lessons",tabCategories:tab==="categories",tabCerts:tab==="certs",tabReviews:tab==="reviews",tabPayments:tab==="payments",tabNotifications:tab==="notifications",tabSecurity:tab==="security",tabLogs:tab==="logs",tabSettings:tab==="settings",
@@ -2427,16 +2511,81 @@ class Component extends DCLogic {
         }).length===0;
       })(),
 
-      // ===== NOTIFICATIONS =====
-      audienceChips:[["students","Barcha studentlar"],["teachers","Barcha teacherlar"],["enrolled","Kursga yozilganlar"],["pending","To'lov kutayotganlar"]].map(([k,l])=>({label:l,onClick:()=>this.setState({audience:k}),border:st.audience===k?"rgba(13,148,136,.6)":"var(--border)",bg:st.audience===k?"rgba(13,148,136,.16)":"var(--panel)",color:st.audience===k?"#ccfbf1":"var(--muted)"})),
-      channelChips:[{label:"Platforma",checked:true},{label:"Email",checked:true},{label:"Telegram",checked:false}],
-      notifTitle:st.notifTitle||"", notifText:st.notifText||"",
-      onNotifTitle:(e)=>this.setState({notifTitle:e.target.value}),
-      onNotifText:(e)=>this.setState({notifText:e.target.value}),
+      // ===== NOTIFICATIONS (full working) =====
+      notifRev:st.notifRev||0,
+      notifError:st.notifError||null,
+      notifTitle:st.notifTitle||"",
+      notifText:st.notifText||"",
+      onNotifTitle:(e)=>this.setState({notifTitle:e&&e.target?e.target.value:"",notifError:null}),
+      onNotifText:(e)=>this.setState({notifText:e&&e.target?e.target.value:"",notifError:null}),
       sendNotif:()=>this.sendBroadcast(),
-      notifRows:(DB?(DB.raw().notifications||[]):[]).slice().reverse().slice(0,8).map(n=>({
-        title:n.title,audience:DB.userName(n.userId),channel:"Platforma",date:n.date,reach:n.read?"o'qilgan":"yangi"
-      })),
+      notifAudienceHint:(()=>{
+        const n=this.notifAudienceUsers().length;
+        const map={students:"Barcha studentlar",teachers:"Barcha teacherlar",enrolled:"Kursga yozilganlar",pending:"To'lov kutayotganlar",all:"Student + teacher"};
+        return (map[st.audience||"students"]||"Auditoriya")+" · "+n+" kishi";
+      })(),
+      audienceChips:[["students","Barcha studentlar"],["teachers","Barcha teacherlar"],["enrolled","Kursga yozilganlar"],["pending","To'lov kutayotganlar"]].map(([k,l])=>{
+        const on=(st.audience||"students")===k;
+        return{
+          label:l,
+          onClick:()=>this.setState({audience:k,notifError:null}),
+          border:on?"rgba(13,148,136,.6)":"var(--border)",
+          bg:on?"rgba(13,148,136,.16)":"var(--panel)",
+          color:on?"#ccfbf1":"var(--muted)"
+        };
+      }),
+      channelChips:(()=>{
+        const items=[
+          ["platform","Platforma",st.notifChPlatform!==false],
+          ["email","Email",!!st.notifChEmail],
+          ["telegram","Telegram",!!st.notifChTelegram]
+        ];
+        return items.map(([k,l,on])=>({
+          label:l,
+          mark:on?"✓":"○",
+          onClick:()=>{
+            if(k==="platform") this.setState({notifChPlatform:!on,notifError:null});
+            else if(k==="email") this.setState({notifChEmail:!on,notifError:null});
+            else this.setState({notifChTelegram:!on,notifError:null});
+          },
+          border:on?"rgba(13,148,136,.55)":"var(--border)",
+          bg:on?"rgba(13,148,136,.16)":"transparent",
+          color:on?"#ccfbf1":"var(--muted)"
+        }));
+      })(),
+      notifRows:(()=>{
+        if(!DB) return [];
+        const list=(DB.raw().notifications||[]).slice().reverse();
+        const groups=[];
+        const map={};
+        list.forEach(n=>{
+          const key=(n.title||"")+"||"+(n.text||"")+"||"+(n.date||"");
+          if(!map[key]){
+            map[key]={title:n.title||"Xabar",text:n.text||"",date:n.date||"",count:0,read:0,names:[]};
+            groups.push(map[key]);
+          }
+          map[key].count+=1;
+          if(n.read) map[key].read+=1;
+          const nm=DB.userName(n.userId);
+          if(map[key].names.length<3 && nm && map[key].names.indexOf(nm)<0) map[key].names.push(nm);
+        });
+        return groups.slice(0,12).map(g=>{
+          const names=g.names.join(", ")+(g.count>g.names.length?" +":"");
+          return{
+            title:g.title,
+            text:g.text.length>90?g.text.slice(0,88)+"…":g.text,
+            date:g.date,
+            audience:names||(g.count+" kishi"),
+            channel:"Platforma",
+            reach:g.count+" kishi"+(g.read?(" · "+g.read+" o'qilgan"):" · yangi")
+          };
+        });
+      })(),
+      notifCountLabel:(()=>{
+        const n=DB?(DB.raw().notifications||[]).length:0;
+        return n+" ta yozuv";
+      })(),
+      noNotifRows:!(DB&&(DB.raw().notifications||[]).length),
       // ===== MANUAL ENROLLER =====
       enrollStudent:st.enrollStudent||"", enrollCourse:st.enrollCourse||"", enrollError:st.enrollError||null,
       payRev:st.payRev||0,
