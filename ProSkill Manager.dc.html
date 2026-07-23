@@ -1049,59 +1049,6 @@
           </div>
         </sc-if>
 
-        <!-- ===== ACTIVITY LOGS (optimized) ===== -->
-        <sc-if value="{{ tabLogs }}" hint-placeholder-val="{{ false }}">
-          <div style="display:grid;grid-template-columns:repeat(5,1fr);gap:12px;margin-bottom:16px">
-            <sc-for list="{{ logKpis }}" as="k" hint-placeholder-count="5">
-              <div onClick="{{ k.onClick }}" style="cursor:pointer;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px 16px;border-left:3px solid {{ k.color }}" style-hover="background:var(--hover)">
-                <div style="font-size:11px;color:var(--muted2);font-weight:700;text-transform:uppercase;letter-spacing:.3px">{{ k.label }}</div>
-                <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:22px;color:{{ k.color }};margin-top:4px">{{ k.value }}</div>
-              </div>
-            </sc-for>
-          </div>
-
-          <div style="display:flex;align-items:center;gap:8px;margin-bottom:14px;flex-wrap:wrap">
-            <span style="font-size:12.5px;color:var(--muted2);font-weight:600">Filter:</span>
-            <sc-for list="{{ logFilterChips }}" as="f" hint-placeholder-count="6">
-              <span onClick="{{ f.onClick }}" style="cursor:pointer;user-select:none;font-size:12.5px;font-weight:700;padding:8px 14px;border-radius:20px;border:1px solid {{ f.border }};background:{{ f.bg }};color:{{ f.color }}">{{ f.label }}</span>
-            </sc-for>
-            <span style="margin-left:auto;font-size:12px;color:var(--muted2)">{{ logResultLabel }} · qidiruv yuqorida</span>
-          </div>
-
-          <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;overflow:hidden">
-            <div style="display:grid;grid-template-columns:44px 1.6fr 1.4fr 100px 90px 120px;gap:10px;padding:12px 20px;font-size:10.5px;font-weight:800;color:var(--muted2);text-transform:uppercase;letter-spacing:.35px;border-bottom:1px solid var(--border);background:rgba(255,255,255,.02)">
-              <span></span><span>Harakat</span><span>Ob'ekt</span><span>Tur</span><span>Rol</span><span style="text-align:right">Vaqt</span>
-            </div>
-            <sc-for list="{{ logRows }}" as="l" hint-placeholder-count="10">
-              <div style="display:grid;grid-template-columns:44px 1.6fr 1.4fr 100px 90px 120px;gap:10px;padding:13px 20px;align-items:center;border-bottom:1px solid var(--line)" style-hover="background:var(--hover)">
-                <div style="width:36px;height:36px;border-radius:10px;background:{{ l.tint }};display:flex;align-items:center;justify-content:center;font-size:15px;flex:none">{{ l.emoji }}</div>
-                <div style="min-width:0">
-                  <div style="font-size:13.5px;font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ l.who }}</div>
-                  <div style="font-size:12.5px;color:var(--muted);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ l.action }}</div>
-                </div>
-                <div style="font-size:12.5px;color:var(--muted2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis" title="{{ l.target }}">{{ l.target }}</div>
-                <span style="font-size:11px;font-weight:800;padding:4px 8px;border-radius:7px;background:{{ l.typeBg }};color:{{ l.typeColor }};justify-self:start">{{ l.typeLabel }}</span>
-                <span style="font-size:11px;font-weight:700;padding:4px 8px;border-radius:7px;background:{{ l.roleTint }};color:{{ l.roleColor }};justify-self:start">{{ l.role }}</span>
-                <span style="font-size:12px;color:var(--muted2);text-align:right;white-space:nowrap">{{ l.time }}</span>
-              </div>
-            </sc-for>
-            <sc-if value="{{ noLogRows }}" hint-placeholder-val="{{ false }}">
-              <div style="padding:40px;text-align:center;color:var(--muted2);font-size:14px">
-                <div style="font-weight:700;margin-bottom:6px">Bu filterda log yo'q</div>
-                <div style="font-size:13px">Boshqa filter tanlang yoki qidiruvni tozalang</div>
-              </div>
-            </sc-if>
-            <sc-if value="{{ hasMoreLogs }}" hint-placeholder-val="{{ false }}">
-              <div style="padding:14px;text-align:center;border-top:1px solid var(--border)">
-                <span onClick="{{ loadMoreLogs }}" style="cursor:pointer;user-select:none;font-size:13px;font-weight:700;padding:10px 18px;border-radius:10px;border:1px solid var(--border);background:var(--panel);color:var(--text)">Yana ko'rsatish ({{ logMoreCount }})</span>
-              </div>
-            </sc-if>
-          </div>
-          <div style="margin-top:12px;font-size:12px;color:var(--muted2);line-height:1.45">
-            Activity Logs — platformadagi barcha muhim harakatlar jurnali. To'lov, kontent, yozilish, kirish va xavfsizlik amallarini shu yerda kuzatasiz.
-          </div>
-        </sc-if>
-
         <!-- ===== SETTINGS ===== -->
         <sc-if value="{{ tabSettings }}" hint-placeholder-val="{{ false }}">
           <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;align-items:start">
@@ -1746,15 +1693,9 @@ class Component extends DCLogic {
       {title:"ASOSIY",items:[mk("dashboard","Dashboard","dashboard"),mk("reports","Hisobot & Sotuvlar","reports")]},
       {title:"OPERATSIYALAR",items:[mk("payments","To'lovlar & Enroll","payments",pendingPays?String(pendingPays):null),mk("students","Talabalar & Progress","student"),mk("teachers","Ustozlar Faoliyati","teacher")]},
       {title:"KONTENT",items:[mk("courses","Kurslar & Aktivlik","courses"),mk("lessons","Course Review","lessons",pendingCourses?String(pendingCourses):null),mk("reviews","Feedback & Reviews","reviews")]},
-      {title:"ALOQA",items:[mk("notifications","Bildirishnomalar","notifications"),mk("logs","Activity Logs","logs")]}
+      {title:"ALOQA",items:[mk("notifications","Bildirishnomalar","notifications")]}
     ];
-    const _navUnused=[
-      {title:"FOYDALANUVCHILAR",items:[mk("users","Foydalanuvchilar","users"),mk("managers","Managerlar","manager"),mk("teachers","Teacherlar","teacher"),mk("students","Studentlar","student")]},
-      {title:"KONTENT",items:[mk("courses","Kurslar","courses"),mk("lessons","Modul & Darslar","lessons"),mk("categories","Kategoriyalar","categories"),mk("certs","Sertifikatlar","certs"),mk("reviews","Sharhlar","reviews")]},
-      {title:"MOLIYA",items:[mk("payments","To'lovlar","payments","2")]},
-      {title:"TIZIM",items:[mk("notifications","Bildirishnomalar","notifications"),mk("security","Xavfsizlik","security"),mk("logs","Activity Logs","logs"),mk("settings","Sozlamalar","settings")]}
-    ];
-    const meta={dashboard:["Operatsion markaz","Manager Dashboard",null],reports:["Tahlil","Hisobot & Sotuvlar",null],teachers:["Operatsiyalar","Ustozlar Faoliyati",null],students:["Operatsiyalar","Talabalar & Progress",null],courses:["Kontent","Kurslar & Aktivlik",null],lessons:["Kontent","Course Review",null],reviews:["Kontent","Feedback & Reviews",null],payments:["Operatsiyalar","To'lovlar — 3 bosqich",null],notifications:["Aloqa","Bildirishnomalar","Xabar yuborish"],logs:["Aloqa","Activity Logs",null]};
+    const meta={dashboard:["Operatsion markaz","Manager Dashboard",null],reports:["Tahlil","Hisobot & Sotuvlar",null],teachers:["Operatsiyalar","Ustozlar Faoliyati",null],students:["Operatsiyalar","Talabalar & Progress",null],courses:["Kontent","Kurslar & Aktivlik",null],lessons:["Kontent","Course Review",null],reviews:["Kontent","Feedback & Reviews",null],payments:["Operatsiyalar","To'lovlar — 3 bosqich",null],notifications:["Aloqa","Bildirishnomalar","Xabar yuborish"]};
     // student tab title stays
     const m=meta[tab]||["",""];
 
@@ -2645,134 +2586,6 @@ class Component extends DCLogic {
         onUnblock:()=>this.activateUser(u)
       })),
       noBlocked:(DB?DB.table("users"):[]).filter(u=>u.status==="blocked").length===0,
-
-      // ===== ACTIVITY LOGS (optimized) =====
-      logKpis:(()=>{
-        const all=DB?(DB.raw().logs||[]):[];
-        const cnt=t=>all.filter(l=>(l.type||"content")===t).length;
-        const f=st.logFilter||"Hammasi";
-        const mk=(key,label,color,value)=>({
-          label,value:String(value),color,
-          onClick:()=>this.setState({logFilter:key,logLimit:40})
-        });
-        return[
-          mk("Hammasi","Jami","#e2e8f0",all.length),
-          mk("payment","To'lov","#34d399",cnt("payment")),
-          mk("content","Kontent","#a5b4fc",cnt("content")),
-          mk("enroll","Yozilish","#fbbf24",cnt("enroll")),
-          mk("auth","Kirish","#2dd4bf",cnt("auth")+cnt("security"))
-        ];
-      })(),
-      logFilterChips:(()=>{
-        const all=DB?(DB.raw().logs||[]):[];
-        const cnt=t=>t==="Hammasi"?all.length:all.filter(l=>(l.type||"content")===t).length;
-        // auth chip includes security for ops clarity
-        const secAuth=all.filter(l=>l.type==="auth"||l.type==="security").length;
-        return[
-          ["Hammasi","Hammasi",cnt("Hammasi")],
-          ["payment","To'lovlar",cnt("payment")],
-          ["content","Kontent",cnt("content")],
-          ["enroll","Yozilish",cnt("enroll")],
-          ["auth","Kirish / Xavfsizlik",secAuth],
-          ["security","Xavfsizlik",cnt("security")]
-        ].map(([k,l,n])=>{
-          const on=(st.logFilter||"Hammasi")===k;
-          return{
-            label:l+(n!=null?" · "+n:""),
-            onClick:()=>this.setState({logFilter:k,logLimit:40}),
-            border:on?"rgba(13,148,136,.55)":"var(--border)",
-            bg:on?"rgba(13,148,136,.16)":"transparent",
-            color:on?"#ccfbf1":"var(--muted)"
-          };
-        });
-      })(),
-      logRows:(()=>{
-        if(!DB) return [];
-        const f=st.logFilter||"Hammasi";
-        const q=(st.search||"").toLowerCase().trim();
-        const limit=st.logLimit||40;
-        let list=(DB.raw().logs||[]).slice();
-        if(f==="auth") list=list.filter(l=>l.type==="auth"||l.type==="security");
-        else if(f!=="Hammasi") list=list.filter(l=>(l.type||"content")===f);
-        if(q){
-          list=list.filter(l=>{
-            const blob=((l.who||"")+" "+(l.action||"")+" "+(l.target||"")+" "+(l.role||"")+" "+(l.type||"")).toLowerCase();
-            return blob.includes(q);
-          });
-        }
-        const typeMeta={
-          payment:{label:"To'lov",color:"#34d399",bg:"rgba(52,211,153,.14)",emoji:"💳",tint:"rgba(52,211,153,.14)"},
-          content:{label:"Kontent",color:"#a5b4fc",bg:"rgba(14,165,233,.16)",emoji:"📚",tint:"rgba(14,165,233,.16)"},
-          enroll:{label:"Yozilish",color:"#fbbf24",bg:"rgba(245,158,11,.14)",emoji:"📝",tint:"rgba(245,158,11,.14)"},
-          security:{label:"Xavfsizlik",color:"#fb7185",bg:"rgba(251,113,133,.14)",emoji:"🔒",tint:"rgba(251,113,133,.14)"},
-          auth:{label:"Kirish",color:"#2dd4bf",bg:"rgba(13,148,136,.16)",emoji:"🔑",tint:"rgba(13,148,136,.16)"},
-          settings:{label:"Sozlama",color:"#94a3b8",bg:"rgba(148,163,184,.14)",emoji:"⚙️",tint:"rgba(148,163,184,.14)"},
-          test:{label:"Test",color:"#c084fc",bg:"rgba(192,132,252,.14)",emoji:"✅",tint:"rgba(192,132,252,.14)"}
-        };
-        return list.slice(0,limit).map(l=>{
-          const t=l.type||"content";
-          const tm=typeMeta[t]||{label:t,color:"#9b98ad",bg:"rgba(255,255,255,.06)",emoji:"📋",tint:"rgba(255,255,255,.06)"};
-          const roleRaw=(l.role||"").toLowerCase();
-          const roleLabel=roleRaw==="teacher"?"Teacher":(roleRaw==="manager"?"Manager":(roleRaw==="student"?"Student":(roleRaw==="superadmin"?"Admin":(l.role||"User"))));
-          const rm=roleMeta(roleLabel==="Admin"?"Super Admin":roleLabel);
-          return{
-            who:l.who||"—",
-            action:l.action||"—",
-            target:l.target||"—",
-            time:l.time||"—",
-            emoji:tm.emoji,
-            tint:tm.tint,
-            typeLabel:tm.label,
-            typeColor:tm.color,
-            typeBg:tm.bg,
-            role:roleLabel,
-            roleTint:rm.tint,
-            roleColor:rm.color
-          };
-        });
-      })(),
-      logResultLabel:(()=>{
-        if(!DB) return "0 ta";
-        const f=st.logFilter||"Hammasi";
-        const q=(st.search||"").toLowerCase().trim();
-        let list=(DB.raw().logs||[]).slice();
-        if(f==="auth") list=list.filter(l=>l.type==="auth"||l.type==="security");
-        else if(f!=="Hammasi") list=list.filter(l=>(l.type||"content")===f);
-        if(q) list=list.filter(l=>((l.who||"")+" "+(l.action||"")+" "+(l.target||"")).toLowerCase().includes(q));
-        const shown=Math.min(list.length,st.logLimit||40);
-        return shown+" / "+list.length+" ta";
-      })(),
-      noLogRows:(()=>{
-        if(!DB) return true;
-        const f=st.logFilter||"Hammasi";
-        const q=(st.search||"").toLowerCase().trim();
-        let list=(DB.raw().logs||[]).slice();
-        if(f==="auth") list=list.filter(l=>l.type==="auth"||l.type==="security");
-        else if(f!=="Hammasi") list=list.filter(l=>(l.type||"content")===f);
-        if(q) list=list.filter(l=>((l.who||"")+" "+(l.action||"")+" "+(l.target||"")).toLowerCase().includes(q));
-        return list.length===0;
-      })(),
-      hasMoreLogs:(()=>{
-        if(!DB) return false;
-        const f=st.logFilter||"Hammasi";
-        const q=(st.search||"").toLowerCase().trim();
-        let list=(DB.raw().logs||[]).slice();
-        if(f==="auth") list=list.filter(l=>l.type==="auth"||l.type==="security");
-        else if(f!=="Hammasi") list=list.filter(l=>(l.type||"content")===f);
-        if(q) list=list.filter(l=>((l.who||"")+" "+(l.action||"")+" "+(l.target||"")).toLowerCase().includes(q));
-        return list.length>(st.logLimit||40);
-      })(),
-      logMoreCount:(()=>{
-        if(!DB) return 0;
-        const f=st.logFilter||"Hammasi";
-        const q=(st.search||"").toLowerCase().trim();
-        let list=(DB.raw().logs||[]).slice();
-        if(f==="auth") list=list.filter(l=>l.type==="auth"||l.type==="security");
-        else if(f!=="Hammasi") list=list.filter(l=>(l.type||"content")===f);
-        if(q) list=list.filter(l=>((l.who||"")+" "+(l.action||"")+" "+(l.target||"")).toLowerCase().includes(q));
-        return Math.max(0, list.length-(st.logLimit||40));
-      })(),
-      loadMoreLogs:()=>this.setState(s=>({logLimit:(s.logLimit||40)+40})),
 
       // ===== SETTINGS =====
       colorSwatches:["#0d9488","#3b82f6","#10b981","#f43f5e"].map(c=>({color:c,ring:st.accent===c?"#fff":"transparent",onClick:()=>{this.setState({accent:c});this.notify("Rang yangilandi");}})),
