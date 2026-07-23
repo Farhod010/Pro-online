@@ -146,6 +146,17 @@
           { q: "Exception qanday ushlanadi?", options: ["try/except", "if/else", "for/in", "with/as"], correct: 0 },
           { q: "Modul qanday import qilinadi?", options: ["include x", "import x", "use x", "require x"], correct: 1 }
         ] },
+      { id: "tst_5", courseId: "t2", moduleRef: "Modul 2", title: "Django ORM — Test 1", passPercent: 65, active: true,
+        questions: [
+          { q: "Model maydoni qaysi klassdan meros oladi?", options: ["models.Model", "django.View", "forms.Form", "http.Request"], correct: 0 },
+          { q: "Migration buyrug'i?", options: ["makemigrations", "migrate-all", "syncdb-force", "db-push"], correct: 0 },
+          { q: "filter() nima qaytaradi?", options: ["Bitta obyekt", "QuerySet", "JSON", "None"], correct: 1 }
+        ] },
+      { id: "tst_6", courseId: "t2", moduleRef: "Modul 3", title: "REST API — Yakuniy", passPercent: 70, active: false,
+        questions: [
+          { q: "DRF nima?", options: ["Django REST Framework", "Data Runtime File", "Docker Run Flag", "DB Row Format"], correct: 0 },
+          { q: "GET so'rov nima uchun?", options: ["O'chirish", "O'qish", "Yozish", "Yangilash"], correct: 1 }
+        ] },
       { id: "tst_4", courseId: "c4", moduleRef: "Modul 1", title: "Dizayn asoslari — Test", passPercent: 60, active: true,
         questions: [
           { q: "Figma nima uchun ishlatiladi?", options: ["Video montaj", "UI/UX dizayn", "Dasturlash", "Hisob-kitob"], correct: 1 },
@@ -155,7 +166,24 @@
     var testResults = [
       { id: uid("res"), studentId: "u_std1", testId: "tst_1", score: 85, correct: 4, wrong: 1, percentage: 85, passed: true, date: "10 May 2026" },
       { id: uid("res"), studentId: "u_std1", testId: "tst_2", score: 72, correct: 2, wrong: 1, percentage: 72, passed: true, date: "18 May 2026" },
+      { id: uid("res"), studentId: "u_std4", testId: "tst_1", score: 80, correct: 4, wrong: 1, percentage: 80, passed: true, date: "12 May 2026" },
+      { id: uid("res"), studentId: "u_std4", testId: "tst_2", score: 68, correct: 2, wrong: 1, percentage: 68, passed: false, date: "20 May 2026" },
+      { id: uid("res"), studentId: "u_std1", testId: "tst_5", score: 71, correct: 2, wrong: 1, percentage: 71, passed: true, date: "01 Iyun 2026" },
       { id: uid("res"), studentId: "u_std1", testId: "tst_4", score: 90, correct: 2, wrong: 0, percentage: 90, passed: true, date: "08 Iyun 2026" }
+    ];
+    // homework / topshiriqlar
+    var assignments = [
+      { id: "asg_1", courseId: "t1", teacherId: "u_tch1", title: "Mini loyiha: CRUD ilova", desc: "Oddiy CRUD ilova yozing" },
+      { id: "asg_2", courseId: "t2", teacherId: "u_tch1", title: "REST API yaratish", desc: "DRF bilan 3 endpoint" }
+    ];
+    var assignmentSubs = [
+      { id: uid("asub"), assignmentId: "asg_1", studentId: "u_std1", text: "GitHub link: github.com/aziz/crud", status: "graded", score: 92, date: "15 May 2026" },
+      { id: uid("asub"), assignmentId: "asg_1", studentId: "u_std4", text: "Loyiha tayyor, PDF yuborildi", status: "graded", score: 88, date: "16 May 2026" },
+      { id: uid("asub"), assignmentId: "asg_1", studentId: "u_std2", text: "Hali tugallanmagan versiya", status: "pending", score: 0, date: "18 May 2026" },
+      { id: uid("asub"), assignmentId: "asg_1", studentId: "u_std5", text: "CRUD + validation qo'shdim", status: "pending", score: 0, date: "19 May 2026" },
+      { id: uid("asub"), assignmentId: "asg_2", studentId: "u_std1", text: "3 ta endpoint ishlayapti", status: "graded", score: 90, date: "20 May 2026" },
+      { id: uid("asub"), assignmentId: "asg_2", studentId: "u_std4", text: "Serializer xatosi bor", status: "pending", score: 0, date: "21 May 2026" },
+      { id: uid("asub"), assignmentId: "asg_2", studentId: "u_std5", text: "JWT qo'shdim", status: "pending", score: 0, date: "22 May 2026" }
     ];
 
     var certificates = [
@@ -199,6 +227,7 @@
     return {
       users: users, categories: categories, courses: courses, modules: modules, lessons: lessons,
       enrollments: enrollments, progress: progress, payments: payments, tests: tests, testResults: testResults,
+      assignments: assignments, assignmentSubs: assignmentSubs,
       certificates: certificates, reviews: reviews, questions: questions, comments: [],
       notifications: notifications, logs: logs, settings: settings
     };
@@ -212,6 +241,10 @@
       if (r) {
         var d = JSON.parse(r);
         if (!d.comments) d.comments = [];
+        if (!d.assignments) d.assignments = [];
+        if (!d.assignmentSubs) d.assignmentSubs = [];
+        if (!d.tests) d.tests = [];
+        if (!d.testResults) d.testResults = [];
         return d;
       }
     } catch (e) {}
@@ -221,6 +254,10 @@
   }
   data = load();
   if (!data.comments) data.comments = [];
+  if (!data.assignments) data.assignments = [];
+  if (!data.assignmentSubs) data.assignmentSubs = [];
+  if (!data.tests) data.tests = [];
+  if (!data.testResults) data.testResults = [];
   function save() { try { localStorage.setItem(DB_KEY, JSON.stringify(data)); } catch (e) {} }
   function reset() { data = seed(); save(); try { localStorage.removeItem(SESSION_KEY); } catch (e) {} }
 
@@ -397,6 +434,104 @@
     return { ok: true, result: res };
   }
   function testResultFor(studentId, testId) { return data.testResults.filter(function (r) { return r.studentId === studentId && r.testId === testId; })[0] || null; }
+  function testsOfCourse(courseId) { return data.tests.filter(function (t) { return t.courseId === courseId; }); }
+  function testsOfTeacher(teacherId) {
+    var ids = {};
+    data.courses.filter(function (c) { return c.teacherId === teacherId; }).forEach(function (c) { ids[c.id] = 1; });
+    return data.tests.filter(function (t) { return ids[t.courseId]; });
+  }
+  function addTest(row, byUser) {
+    if (!row || !row.courseId) return { ok: false, error: "Kurs tanlanmagan" };
+    if (!row.title || !String(row.title).trim()) return { ok: false, error: "Test nomi majburiy" };
+    var qs = row.questions;
+    if (!qs || !qs.length) {
+      qs = [
+        { q: "Namuna savol 1?", options: ["A", "B", "C", "D"], correct: 0 },
+        { q: "Namuna savol 2?", options: ["A", "B", "C", "D"], correct: 1 }
+      ];
+    }
+    var t = insert("tests", {
+      courseId: row.courseId,
+      moduleRef: row.moduleRef || "Modul 1",
+      title: String(row.title).trim(),
+      passPercent: Number(row.passPercent) || 60,
+      active: row.active !== false,
+      questions: qs
+    });
+    log(byUser || "Teacher", "teacher", "Yangi test yaratdi", t.title, "content");
+    return { ok: true, test: t };
+  }
+  function updateTest(id, patch, byUser) {
+    var t = byId("tests", id);
+    if (!t) return { ok: false, error: "Test topilmadi" };
+    var allowed = ["title", "moduleRef", "passPercent", "active", "questions", "courseId"];
+    var p = {};
+    allowed.forEach(function (k) { if (patch && patch[k] !== undefined) p[k] = patch[k]; });
+    if (p.passPercent !== undefined) p.passPercent = Number(p.passPercent) || 60;
+    update("tests", id, p);
+    log(byUser || "Teacher", "teacher", "Testni tahrirladi", t.title, "content");
+    return { ok: true, test: byId("tests", id) };
+  }
+  function toggleTestActive(id, byUser) {
+    var t = byId("tests", id);
+    if (!t) return { ok: false, error: "Test topilmadi" };
+    t.active = !t.active; save();
+    log(byUser || "Teacher", "teacher", t.active ? "Testni faollashtirdi" : "Testni o'chirdi", t.title, "content");
+    return { ok: true, test: t };
+  }
+  function testStats(testId) {
+    var res = data.testResults.filter(function (r) { return r.testId === testId; });
+    if (!res.length) return { attempts: 0, avg: 0 };
+    var avg = Math.round(res.reduce(function (s, r) { return s + (r.percentage || r.score || 0); }, 0) / res.length);
+    return { attempts: res.length, avg: avg };
+  }
+  function resultsOfTest(testId) {
+    return data.testResults.filter(function (r) { return r.testId === testId; }).slice().reverse();
+  }
+  function assignmentsOfTeacher(teacherId) {
+    return (data.assignments || []).filter(function (a) { return a.teacherId === teacherId; });
+  }
+  function assignmentStats(assignmentId) {
+    var subs = (data.assignmentSubs || []).filter(function (s) { return s.assignmentId === assignmentId; });
+    var graded = subs.filter(function (s) { return s.status === "graded"; }).length;
+    var pending = subs.filter(function (s) { return s.status === "pending"; }).length;
+    return { submitted: subs.length, graded: graded, pending: pending, subs: subs };
+  }
+  function addAssignment(row, byUser) {
+    if (!row || !row.courseId || !row.title) return { ok: false, error: "Kurs va nom majburiy" };
+    var c = byId("courses", row.courseId);
+    var a = insert("assignments", {
+      courseId: row.courseId,
+      teacherId: row.teacherId || (c ? c.teacherId : null),
+      title: String(row.title).trim(),
+      desc: row.desc || ""
+    });
+    log(byUser || "Teacher", "teacher", "Topshiriq yaratdi", a.title, "content");
+    return { ok: true, assignment: a };
+  }
+  function gradeAssignmentSub(subId, score, byUser) {
+    var s = byId("assignmentSubs", subId);
+    if (!s) return { ok: false, error: "Topshiriq topilmadi" };
+    s.status = "graded";
+    s.score = Number(score) || 0;
+    save();
+    notify(s.studentId, "Topshiriq baholandi", "Sizning topshirig'ingiz baholandi: " + s.score + " ball");
+    log(byUser || "Teacher", "teacher", "Topshiriqni baholadi", userName(s.studentId) + " · " + s.score, "content");
+    return { ok: true, sub: s };
+  }
+  function gradeAllPending(assignmentId, defaultScore, byUser) {
+    var score = Number(defaultScore);
+    if (!(score >= 0)) score = 80;
+    var list = (data.assignmentSubs || []).filter(function (s) { return s.assignmentId === assignmentId && s.status === "pending"; });
+    list.forEach(function (s) {
+      s.status = "graded";
+      s.score = score;
+      notify(s.studentId, "Topshiriq baholandi", "Sizning topshirig'ingiz baholandi: " + score + " ball");
+    });
+    save();
+    log(byUser || "Teacher", "teacher", "Topshiriqlarni baholadi", list.length + " ta · " + score + " ball", "content");
+    return { ok: true, count: list.length };
+  }
   function issueCertificate(studentId, courseId) {
     if (progressFor(studentId, courseId) < 100) return { ok: false, error: "Kurs hali 100% tugatilmagan" };
     var existing = data.certificates.filter(function (c) { return c.studentId === studentId && c.courseId === courseId; })[0];
@@ -728,7 +863,12 @@
     userName: userName, userAvatar: userAvatar, updateProfile: updateProfile, courseTitle: courseTitle, lessonsOf: lessonsOf, modulesOf: modulesOf,
     isEnrolled: isEnrolled, enrollmentsOf: enrollmentsOf, isDone: isDone, progressFor: progressFor, progressCount: progressCount,
     enrollFree: enrollFree, requestPayment: requestPayment, approvePayment: approvePayment, rejectPayment: rejectPayment, manualEnroll: manualEnroll,
-    completeLesson: completeLesson, submitTest: submitTest, testResultFor: testResultFor, issueCertificate: issueCertificate,
+    completeLesson: completeLesson, submitTest: submitTest, testResultFor: testResultFor,
+    testsOfCourse: testsOfCourse, testsOfTeacher: testsOfTeacher, addTest: addTest, updateTest: updateTest, toggleTestActive: toggleTestActive,
+    testStats: testStats, resultsOfTest: resultsOfTest,
+    assignmentsOfTeacher: assignmentsOfTeacher, assignmentStats: assignmentStats, addAssignment: addAssignment,
+    gradeAssignmentSub: gradeAssignmentSub, gradeAllPending: gradeAllPending,
+    issueCertificate: issueCertificate,
     addReview: addReview, addLessonComment: addLessonComment, commentsOfLesson: commentsOfLesson,
     askQuestion: askQuestion, answerQuestion: answerQuestion,
     notify: notify, notificationsOf: notificationsOf, markNotifRead: markNotifRead, log: log,

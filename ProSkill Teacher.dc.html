@@ -699,24 +699,38 @@
           </div>
         </sc-if>
 
-        <!-- ===== TESTS & ASSIGNMENTS ===== -->
+        <!-- ===== TESTS & ASSIGNMENTS (full working) ===== -->
         <sc-if value="{{ tabTests }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">
+            <span style="font-size:12.5px;color:var(--muted2)">{{ testCountLabel }}</span>
+            <span onClick="{{ openAddTest }}" style="cursor:pointer;margin-left:auto;font-size:12.5px;font-weight:800;padding:9px 14px;border-radius:10px;border:none;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff">+ Yangi test</span>
+          </div>
           <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;overflow:hidden;margin-bottom:18px">
-            <div style="display:grid;grid-template-columns:2.2fr 1.6fr 0.9fr 0.9fr 1fr 1.1fr;gap:12px;padding:14px 22px;font-size:11.5px;font-weight:800;color:var(--muted2);text-transform:uppercase;letter-spacing:.4px;border-bottom:1px solid var(--border)">
-              <span>Test</span><span>Kurs</span><span>Savollar</span><span>O'tish</span><span>O'rtacha</span><span>Holat</span>
+            <div style="display:grid;grid-template-columns:2fr 1.4fr 0.7fr 0.7fr 0.8fr 0.9fr 1.5fr;gap:10px;padding:14px 18px;font-size:11px;font-weight:800;color:var(--muted2);text-transform:uppercase;letter-spacing:.35px;border-bottom:1px solid var(--border)">
+              <span>Test</span><span>Kurs</span><span>Savol</span><span>O'tish</span><span>O'rtacha</span><span>Holat</span><span style="text-align:right">Amal</span>
             </div>
             <sc-for list="{{ testRows }}" as="t" hint-placeholder-count="4">
-              <div style="display:grid;grid-template-columns:2.2fr 1.6fr 0.9fr 0.9fr 1fr 1.1fr;gap:12px;padding:13px 22px;align-items:center;border-bottom:1px solid var(--line)">
+              <div style="display:grid;grid-template-columns:2fr 1.4fr 0.7fr 0.7fr 0.8fr 0.9fr 1.5fr;gap:10px;padding:13px 18px;align-items:center;border-bottom:1px solid var(--line)">
                 <div><div style="font-size:13.5px;font-weight:600">{{ t.title }}</div><div style="font-size:11.5px;color:var(--muted2)">{{ t.linked }} · {{ t.attempts }} urinish</div></div>
-                <span style="font-size:13px;color:var(--muted)">{{ t.course }}</span>
+                <span style="font-size:13px;color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ t.course }}</span>
                 <span style="font-size:13px;font-weight:600">{{ t.questions }}</span>
                 <span style="font-size:13px;color:var(--muted)">{{ t.pass }}%</span>
                 <span style="font-size:13px;font-weight:700;color:{{ t.avgColor }}">{{ t.avgLabel }}</span>
                 <span style="font-size:11.5px;font-weight:700;color:{{ t.statusColor }}">● {{ t.statusLabel }}</span>
+                <div style="display:flex;gap:6px;justify-content:flex-end;flex-wrap:wrap">
+                  <span onClick="{{ t.onResults }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:8px;border:1px solid var(--border)">Natijalar</span>
+                  <span onClick="{{ t.onToggle }}" style="cursor:pointer;font-size:11.5px;font-weight:700;padding:6px 10px;border-radius:8px;border:1px solid var(--border);color:{{ t.statusColor }}">{{ t.toggleLabel }}</span>
+                </div>
               </div>
             </sc-for>
+            <sc-if value="{{ noTestRows }}" hint-placeholder-val="{{ false }}">
+              <div style="padding:32px;text-align:center;color:var(--muted2)">Hali test yo'q — «+ Yangi test» bosing</div>
+            </sc-if>
           </div>
-          <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:16px;margin-bottom:13px">Topshiriqlar</div>
+          <div style="display:flex;align-items:center;margin-bottom:13px;gap:10px">
+            <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:16px">Topshiriqlar</div>
+            <span onClick="{{ openAddAssignment }}" style="cursor:pointer;margin-left:auto;font-size:12.5px;font-weight:700;padding:8px 12px;border-radius:9px;border:1px solid var(--border);color:var(--text)">+ Topshiriq</span>
+          </div>
           <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:14px">
             <sc-for list="{{ assignmentCards }}" as="a" hint-placeholder-count="2">
               <div style="background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px">
@@ -727,9 +741,37 @@
                   <div><div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:19px;color:#34d399">{{ a.graded }}</div><div style="font-size:11.5px;color:var(--muted2)">Baholangan</div></div>
                   <div><div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:19px;color:#fbbf24">{{ a.pending }}</div><div style="font-size:11.5px;color:var(--muted2)">Kutilmoqda</div></div>
                 </div>
-                <button onClick="{{ a.onGrade }}" style="cursor:pointer;width:100%;border:1px solid var(--border);background:var(--panel);color:var(--text);font-weight:600;font-size:13px;padding:10px;border-radius:10px">Javoblarni baholash</button>
+                <div onClick="{{ a.onGrade }}" style="cursor:pointer;text-align:center;width:100%;border:1px solid var(--border);background:var(--panel);color:var(--text);font-weight:600;font-size:13px;padding:10px;border-radius:10px">Javoblarni baholash</div>
               </div>
             </sc-for>
+          </div>
+          <sc-if value="{{ noAssignmentCards }}" hint-placeholder-val="{{ false }}">
+            <div style="padding:28px;text-align:center;color:var(--muted2);border:1px dashed var(--border);border-radius:16px">Topshiriq yo'q</div>
+          </sc-if>
+        </sc-if>
+
+        <!-- Test create modal -->
+        <sc-if value="{{ showTestForm }}" hint-placeholder-val="{{ false }}">
+          <div onClick="{{ closeTestForm }}" style="position:fixed;inset:0;z-index:200;background:rgba(4,3,9,.7);display:flex;align-items:center;justify-content:center;padding:20px">
+            <div onClick="{{ stopProp }}" style="background:var(--solid);border:1px solid var(--border);border-radius:18px;padding:22px;max-width:480px;width:100%">
+              <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;margin-bottom:12px">Yangi test</div>
+              <sc-if value="{{ testFormError }}" hint-placeholder-val="{{ false }}"><div style="color:#fb7185;font-size:13px;margin-bottom:10px">{{ testFormError }}</div></sc-if>
+              <label style="font-size:12px;color:var(--muted);font-weight:700;display:block;margin-bottom:6px">Kurs</label>
+              <select value="{{ testCourseId }}" onChange="{{ onTestCourse }}" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:11px;color:var(--text);margin-bottom:10px">
+                <option value="">Kurs tanlang…</option>
+                <sc-for list="{{ testCourseOptions }}" as="o" hint-placeholder-count="3"><option value="{{ o.value }}">{{ o.label }}</option></sc-for>
+              </select>
+              <label style="font-size:12px;color:var(--muted);font-weight:700;display:block;margin-bottom:6px">Test nomi</label>
+              <input value="{{ testTitle }}" onInput="{{ onTestTitle }}" placeholder="Masalan: Modul 1 test" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:11px;color:var(--text);margin-bottom:10px"/>
+              <label style="font-size:12px;color:var(--muted);font-weight:700;display:block;margin-bottom:6px">Modul</label>
+              <input value="{{ testModuleRef }}" onInput="{{ onTestModule }}" placeholder="Modul 1" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:11px;color:var(--text);margin-bottom:10px"/>
+              <label style="font-size:12px;color:var(--muted);font-weight:700;display:block;margin-bottom:6px">O'tish foizi</label>
+              <input value="{{ testPass }}" onInput="{{ onTestPass }}" placeholder="60" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:10px;padding:11px;color:var(--text);margin-bottom:14px"/>
+              <div style="display:flex;gap:10px">
+                <span onClick="{{ closeTestForm }}" style="cursor:pointer;flex:1;text-align:center;padding:12px;border-radius:10px;border:1px solid var(--border)">Bekor</span>
+                <span onClick="{{ saveTestForm }}" style="cursor:pointer;flex:1;text-align:center;padding:12px;border-radius:10px;border:none;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-weight:800">Saqlash</span>
+              </div>
+            </div>
           </div>
         </sc-if>
 
@@ -841,7 +883,7 @@
       <div style="background:var(--solid);border:1px solid var(--border);border-radius:20px;padding:26px;max-width:400px;width:100%;animation:pop .25s ease both;box-shadow:0 30px 70px rgba(0,0,0,.5)">
         <div style="width:46px;height:46px;border-radius:13px;background:{{ modalTint }};display:flex;align-items:center;justify-content:center;font-size:22px;margin-bottom:16px">{{ modalIcon }}</div>
         <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:19px;margin-bottom:8px">{{ modalTitle }}</div>
-        <p style="font-size:14px;color:var(--muted);line-height:1.55;margin-bottom:24px">{{ modalMsg }}</p>
+        <p style="font-size:14px;color:var(--muted);line-height:1.55;margin-bottom:24px;white-space:pre-wrap">{{ modalMsg }}</p>
         <div style="display:flex;gap:11px">
           <button onClick="{{ closeModal }}" style="cursor:pointer;flex:1;border:1px solid var(--border);background:var(--panel);color:var(--text);font-weight:700;font-size:14px;padding:12px;border-radius:11px">Bekor qilish</button>
           <button onClick="{{ confirmModal }}" style="cursor:pointer;flex:1;border:none;background:{{ modalBtn }};color:#fff;font-weight:700;font-size:14px;padding:12px;border-radius:11px">{{ modalConfirm }}</button>
@@ -1174,6 +1216,7 @@ class Component extends DCLogic {
       {id:"—",student:"Akmal Yusupov",course:"Python — Professionalgacha",date:"Tayyorlanmoqda",ready:false}
     ];
     this.state={tab:"dashboard",theme:"dark",search:"",userFilter:"Hammasi",modal:null,toast:null,lessonCourse:"t1",builderCourse:"t1",courseFilter:"Hammasi",qaFilter:"Hammasi",audience:"all",logFilter:"Hammasi",accent:"#6366f1",
+      showTestForm:false,testCourseId:"",testTitle:"",testModuleRef:"Modul 1",testPass:"60",testFormError:null,testRev:0,
       showUserMenu:false,
       profName:"",profSpec:"",profPhone:"",profBio:"",profExp:"8",profTelegram:"",profAvatar:"",
       showCourseForm:false,newCourseTitle:"",newCourseCat:"Python",newCourseLevel:"Boshlang'ich",newCoursePrice:"690000",newCourseDesc:"",courseFormError:null,
@@ -1281,7 +1324,103 @@ class Component extends DCLogic {
     this.setState({showCourseForm:true,courseFormError:null,newCourseTitle:"",newCourseCat:"Python",newCourseLevel:"Boshlang'ich",newCoursePrice:"690000",newCourseDesc:""});
   }
   closeCourseForm(){ this.setState({showCourseForm:false,courseFormError:null}); }
-  stopProp(e){ if(e&&e.stopPropagation)e.stopPropagation(); }
+  stopProp(e){ if(e&&e.stopPropagation)e.stopPropagation(); if(e&&e.preventDefault)e.preventDefault(); }
+  openAddTest(){
+    const DB=window.ProSkillDB;const me=DB&&DB.currentUser();
+    const courses=DB&&me?DB.table("courses").filter(c=>c.teacherId===me.id):[];
+    this.setState({
+      showTestForm:true,testFormError:null,
+      testCourseId:courses[0]?courses[0].id:"",
+      testTitle:"",testModuleRef:"Modul 1",testPass:"60"
+    });
+  }
+  closeTestForm(){ this.setState({showTestForm:false,testFormError:null}); }
+  saveTestForm(){
+    const DB=window.ProSkillDB;const me=DB&&DB.currentUser();
+    if(!DB||!me){ this.notify("Avval kiring"); return; }
+    const st=this.state;
+    if(!st.testCourseId){ this.setState({testFormError:"Kurs tanlang"}); return; }
+    if(!(st.testTitle||"").trim()){ this.setState({testFormError:"Test nomini yozing"}); return; }
+    const r=DB.addTest({
+      courseId:st.testCourseId,
+      title:(st.testTitle||"").trim(),
+      moduleRef:(st.testModuleRef||"Modul 1").trim(),
+      passPercent:Number(st.testPass)||60,
+      active:true
+    }, me.name);
+    if(!r||!r.ok){ this.setState({testFormError:(r&&r.error)||"Saqlanmadi"}); return; }
+    this.setState({showTestForm:false,testTitle:"",testFormError:null,testRev:(st.testRev||0)+1});
+    this.notify("Test qo'shildi ✓");
+  }
+  toggleTest(t){
+    const DB=window.ProSkillDB;const me=DB&&DB.currentUser();
+    if(!DB||!t||!t.id) return;
+    const r=DB.toggleTestActive(t.id, me?me.name:"Teacher");
+    if(!r||!r.ok){ this.notify((r&&r.error)||"O'zgarmadi"); return; }
+    this.setState(s=>({testRev:(s.testRev||0)+1}));
+    this.notify(r.test&&r.test.active?"Test faollashtirildi ✓":"Test o'chirildi");
+  }
+  showTestResults(t){
+    const DB=window.ProSkillDB;
+    if(!DB||!t||!t.id) return;
+    const res=DB.resultsOfTest?DB.resultsOfTest(t.id):[];
+    const lines=res.map(r=>{
+      const name=DB.userName(r.studentId);
+      return "• "+name+" — "+(r.percentage||r.score||0)+"% "+(r.passed?"✓":"✗")+" ("+(r.date||"")+")";
+    });
+    const msg=[
+      t.title||"Test",
+      "Urinishlar: "+res.length,
+      "",
+      lines.length?lines.join("\n"):"Hali hech kim topshirmagan"
+    ].join("\n");
+    this.ask({title:"Test natijalari",msg:msg,confirm:"Yopish",icon:"📊",onConfirm:()=>{}});
+  }
+  openAddAssignment(){
+    const DB=window.ProSkillDB;const me=DB&&DB.currentUser();
+    if(!DB||!me){ this.notify("Avval kiring"); return; }
+    const courses=DB.table("courses").filter(c=>c.teacherId===me.id);
+    if(!courses.length){ this.notify("Avval kurs yarating"); return; }
+    const title="Topshiriq "+(new Date().toLocaleDateString());
+    this.ask({
+      title:"Yangi topshiriq",
+      msg:'"'+courses[0].title+'" uchun topshiriq yaratiladi: '+title,
+      confirm:"Yaratish",icon:"📝",
+      onConfirm:()=>{
+        const r=DB.addAssignment({courseId:courses[0].id,teacherId:me.id,title:title,desc:"Uyga vazifa"}, me.name);
+        if(!r||!r.ok){ this.notify((r&&r.error)||"Yaratilmadi"); return; }
+        this.setState(s=>({testRev:(s.testRev||0)+1}));
+        this.notify("Topshiriq qo'shildi ✓");
+      }
+    });
+  }
+  gradeAssignment(a){
+    const DB=window.ProSkillDB;const me=DB&&DB.currentUser();
+    if(!DB||!a||!a.id) return;
+    const stt=DB.assignmentStats(a.id);
+    const pending=(stt.subs||[]).filter(s=>s.status==="pending");
+    if(!pending.length){
+      const graded=(stt.subs||[]).filter(s=>s.status==="graded");
+      const lines=graded.map(s=>"• "+DB.userName(s.studentId)+" — "+(s.score||0)+" ball");
+      this.ask({
+        title:"Topshiriq natijalari",
+        msg:(a.title||"")+"\n\nKutilayotgan javob yo'q.\n\nBaholangan:\n"+(lines.length?lines.join("\n"):"—"),
+        confirm:"Yopish",icon:"✓",onConfirm:()=>{}
+      });
+      return;
+    }
+    const preview=pending.slice(0,6).map(s=>"• "+DB.userName(s.studentId)+": "+(s.text||"").slice(0,40)).join("\n");
+    this.ask({
+      title:"Javoblarni baholash",
+      msg:pending.length+" ta kutilayotgan javob 80 ball bilan baholanadi:\n\n"+preview,
+      confirm:"Baholash",icon:"✓",
+      onConfirm:()=>{
+        const r=DB.gradeAllPending(a.id,80,me?me.name:"Teacher");
+        this.setState(s=>({testRev:(s.testRev||0)+1}));
+        this.notify((r&&r.count?r.count:0)+" ta javob baholandi ✓");
+      }
+    });
+  }
 
   openAddModule(){
     const DB=window.ProSkillDB;const me=DB&&DB.currentUser();
@@ -1646,7 +1785,7 @@ class Component extends DCLogic {
       goLessonsFromMenu:()=>this.goLessonsFromMenu(),
       logout:()=>this.logout(),
       navGroups, crumb:m[0], pageTitle:m[1], pageAction:m[2],
-      onPageAction:()=>{if(st.tab==="mycourses")this.openCourseForm();else if(st.tab==="tests")this.notify("Yangi test (demo)");else this.notify((m[2]||"")+" qo'shish (demo)");},
+      onPageAction:()=>{if(st.tab==="mycourses")this.openCourseForm();else if(st.tab==="tests")this.openAddTest();else this.notify((m[2]||"")+" qo'shish (demo)");},
       goCourses:()=>this.setTab("mycourses"), goUsers:()=>this.setTab("students"),
       // tab flags
       tabDashboard:tab==="dashboard",tabLessons:tab==="lessons",tabCerts:tab==="certs",tabReviews:tab==="reviews",tabStudents:tab==="students",
@@ -1829,8 +1968,84 @@ class Component extends DCLogic {
       submitModule:()=>this.submitModule(),
 
       // ===== TESTS & ASSIGNMENTS =====
-      testRows:this.myTests.map(t=>({...t,statusLabel:t.active?"Aktiv":"Noaktiv",statusColor:t.active?"#34d399":"#9b98ad",avgLabel:t.avg>0?t.avg+"%":"—",avgColor:t.avg>=75?"#34d399":(t.avg>0?"#fbbf24":"#9b98ad")})),
-      assignmentCards:this.myAssignments.map(a=>({...a,onGrade:()=>this.notify('"'+a.title+'" — '+a.pending+" javob baholanmoqda (demo)")})),
+      // ===== TESTS & ASSIGNMENTS (live DB) =====
+      testRev:st.testRev||0,
+      openAddTest:()=>this.openAddTest(),
+      openAddAssignment:()=>this.openAddAssignment(),
+      showTestForm:!!st.showTestForm,
+      closeTestForm:()=>this.closeTestForm(),
+      saveTestForm:()=>this.saveTestForm(),
+      testCourseId:st.testCourseId||"",
+      testTitle:st.testTitle||"",
+      testModuleRef:st.testModuleRef||"Modul 1",
+      testPass:st.testPass||"60",
+      testFormError:st.testFormError||null,
+      onTestCourse:(e)=>this.setState({testCourseId:e&&e.target?e.target.value:"",testFormError:null}),
+      onTestTitle:(e)=>this.setState({testTitle:e&&e.target?e.target.value:"",testFormError:null}),
+      onTestModule:(e)=>this.setState({testModuleRef:e&&e.target?e.target.value:"",testFormError:null}),
+      onTestPass:(e)=>this.setState({testPass:e&&e.target?e.target.value:"",testFormError:null}),
+      testCourseOptions:(()=>{
+        if(!DB||!me) return [];
+        return DB.table("courses").filter(c=>c.teacherId===me.id).map(c=>({value:c.id,label:c.title}));
+      })(),
+      testCountLabel:(()=>{
+        if(!DB||!me) return "0 ta test";
+        return (DB.testsOfTeacher?DB.testsOfTeacher(me.id):[]).length+" ta test";
+      })(),
+      testRows:(()=>{
+        if(!DB||!me) return [];
+        void st.testRev;
+        const list=DB.testsOfTeacher?DB.testsOfTeacher(me.id):(DB.table("tests")||[]).filter(t=>{
+          const c=DB.byId("courses",t.courseId); return c&&c.teacherId===me.id;
+        });
+        return list.map(t=>{
+          const stats=DB.testStats?DB.testStats(t.id):{attempts:0,avg:0};
+          const avg=stats.avg||0;
+          return{
+            id:t.id,
+            title:t.title,
+            linked:t.moduleRef||"Modul",
+            attempts:String(stats.attempts||0),
+            course:DB.courseTitle(t.courseId),
+            questions:String((t.questions||[]).length),
+            pass:t.passPercent||60,
+            avgLabel:avg>0?avg+"%":"—",
+            avgColor:avg>=75?"#34d399":(avg>0?"#fbbf24":"#9b98ad"),
+            statusLabel:t.active?"Aktiv":"Noaktiv",
+            statusColor:t.active?"#34d399":"#9b98ad",
+            toggleLabel:t.active?"O'chirish":"Yoqish",
+            onToggle:()=>this.toggleTest(t),
+            onResults:()=>this.showTestResults(t)
+          };
+        });
+      })(),
+      noTestRows:(()=>{
+        if(!DB||!me) return true;
+        const list=DB.testsOfTeacher?DB.testsOfTeacher(me.id):[];
+        return list.length===0;
+      })(),
+      assignmentCards:(()=>{
+        if(!DB||!me) return [];
+        void st.testRev;
+        const list=DB.assignmentsOfTeacher?DB.assignmentsOfTeacher(me.id):(DB.raw().assignments||[]).filter(a=>a.teacherId===me.id);
+        return list.map(a=>{
+          const stt=DB.assignmentStats?DB.assignmentStats(a.id):{submitted:0,graded:0,pending:0};
+          return{
+            id:a.id,
+            title:a.title,
+            course:DB.courseTitle(a.courseId),
+            submitted:String(stt.submitted||0),
+            graded:String(stt.graded||0),
+            pending:String(stt.pending||0),
+            onGrade:()=>this.gradeAssignment(a)
+          };
+        });
+      })(),
+      noAssignmentCards:(()=>{
+        if(!DB||!me) return true;
+        const list=DB.assignmentsOfTeacher?DB.assignmentsOfTeacher(me.id):[];
+        return list.length===0;
+      })(),
 
       // ===== STUDENT PROGRESS =====
       progressChips, progressRows, noProgressRows:progressRows.length===0,
