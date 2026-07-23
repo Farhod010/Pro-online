@@ -224,12 +224,78 @@
       maintenance: false
     };
 
+    // Filial / bo'lim / guruh / xona (CRM)
+    var branches = [
+      { id: "br1", name: "Chilonzor filiali", address: "Toshkent, Chilonzor 9", phone: "+998 71 200 00 01", manager: "Jasur Toshmatov", active: true },
+      { id: "br2", name: "Yunusobod filiali", address: "Toshkent, Yunusobod 12", phone: "+998 71 200 00 02", manager: "Kamola Saidova", active: true },
+      { id: "br3", name: "Samarqand filiali", address: "Samarqand, Registon ko'chasi", phone: "+998 66 200 00 03", manager: "—", active: true }
+    ];
+    var groups = [
+      { id: "gr1", branchId: "br1", name: "Python A1", courseId: "t1", teacherId: "u_tch1", room: "A-101", schedule: "Du/Chor/Ju 18:00", capacity: 18, students: 12, status: "active" },
+      { id: "gr2", branchId: "br1", name: "Frontend B1", courseId: "c2", teacherId: "u_tch2", room: "A-102", schedule: "Se/Pay 17:00", capacity: 16, students: 14, status: "active" },
+      { id: "gr3", branchId: "br2", name: "Backend Pro", courseId: "t2", teacherId: "u_tch1", room: "B-201", schedule: "Du/Ju 19:00", capacity: 14, students: 9, status: "active" },
+      { id: "gr4", branchId: "br2", name: "SMM Start", courseId: "c5", teacherId: "u_tch4", room: "B-105", schedule: "Shanba 10:00", capacity: 20, students: 11, status: "active" },
+      { id: "gr5", branchId: "br3", name: "Dizayn 01", courseId: "c4", teacherId: "u_tch4", room: "C-01", schedule: "Se/Pay 16:00", capacity: 12, students: 7, status: "draft" }
+    ];
+    var rooms = [
+      { id: "rm1", branchId: "br1", name: "A-101", seats: 20, type: "Kompyuter" },
+      { id: "rm2", branchId: "br1", name: "A-102", seats: 18, type: "Kompyuter" },
+      { id: "rm3", branchId: "br2", name: "B-201", seats: 16, type: "Laboratoriya" },
+      { id: "rm4", branchId: "br2", name: "B-105", seats: 22, type: "Seminar" },
+      { id: "rm5", branchId: "br3", name: "C-01", seats: 14, type: "Dizayn" }
+    ];
+    // Leadlar (potensial mijozlar)
+    var leads = [
+      { id: "ld1", name: "Javlon Rahimov", phone: "+998 90 111 22 11", source: "Instagram", stage: "new", interest: "Python", note: "Bepul dars so'radi", managerId: "u_mgr1", lastContact: "22 Iyul 2026", createdAt: "20 Iyul 2026" },
+      { id: "ld2", name: "Malika Yusupova", phone: "+998 91 333 44 22", source: "Sayt", stage: "contacted", interest: "Frontend", note: "Demo darsga keladi", managerId: "u_mgr1", lastContact: "21 Iyul 2026", createdAt: "18 Iyul 2026" },
+      { id: "ld3", name: "Sardor Bekmurodov", phone: "+998 93 555 66 33", source: "Telegram", stage: "trial", interest: "Backend", note: "Trial darsda", managerId: "u_mgr2", lastContact: "23 Iyul 2026", createdAt: "15 Iyul 2026" },
+      { id: "ld4", name: "Nilufar Karimova", phone: "+998 94 777 88 44", source: "Tavsiya", stage: "negotiation", interest: "SMM", note: "Narx so'radi", managerId: "u_mgr2", lastContact: "19 Iyul 2026", createdAt: "10 Iyul 2026" },
+      { id: "ld5", name: "Akbar Toirov", phone: "+998 95 999 00 55", source: "Instagram", stage: "lost", interest: "Mobil", note: "Boshqa markazga ketdi", managerId: "u_mgr1", lastContact: "12 Iyul 2026", createdAt: "05 Iyul 2026" },
+      { id: "ld6", name: "Dilnoza Alimova", phone: "+998 97 222 33 66", source: "Sayt", stage: "won", interest: "Python", note: "Ro'yxatdan o'tdi", managerId: "u_mgr1", lastContact: "16 Iyul 2026", createdAt: "01 Iyul 2026" }
+    ];
+    // Qarzdorlar
+    var debts = [
+      { id: "db1", studentId: "u_std2", courseId: "c2", amount: 450000, dueDate: "10 Iyul 2026", status: "overdue", note: "2-to'lov kechikdi", reminders: 1 },
+      { id: "db2", studentId: "u_std4", courseId: "c4", amount: 295000, dueDate: "25 Iyul 2026", status: "due", note: "Yarim to'lov qoldi", reminders: 0 },
+      { id: "db3", studentId: "u_std5", courseId: "c5", amount: 180000, dueDate: "01 Avgust 2026", status: "due", note: "Keyingi oy", reminders: 0 },
+      { id: "db4", studentId: "u_std3", courseId: "t1", amount: 690000, dueDate: "05 Iyul 2026", status: "overdue", note: "To'liq to'lov kutilmoqda", reminders: 2 }
+    ];
+    // Vazifalar (boshqarish)
+    var tasks = [
+      { id: "tk1", title: "Leadlarni qayta chaqirish", assignee: "Jasur Toshmatov", due: "24 Iyul", priority: "high", status: "open", section: "leads" },
+      { id: "tk2", title: "Qarzdorlarga eslatma", assignee: "Kamola Saidova", due: "23 Iyul", priority: "high", status: "open", section: "debts" },
+      { id: "tk3", title: "Yangi guruh ochish — Python", assignee: "Sardor Aliyev", due: "30 Iyul", priority: "medium", status: "open", section: "groups" },
+      { id: "tk4", title: "Hisobotni Super Admin'ga yuborish", assignee: "Jasur Toshmatov", due: "28 Iyul", priority: "low", status: "done", section: "reports" }
+    ];
+    // Xarajatlar (hisobot)
+    var expenses = [
+      { id: "ex1", title: "Ijara — Chilonzor", amount: 12000000, category: "Ijara", date: "01 Iyul 2026", branchId: "br1" },
+      { id: "ex2", title: "Ustozlar maoshi", amount: 28000000, category: "Maosh", date: "05 Iyul 2026", branchId: "br1" },
+      { id: "ex3", title: "Marketing (Instagram)", amount: 3500000, category: "Marketing", date: "10 Iyul 2026", branchId: null },
+      { id: "ex4", title: "Kommunal", amount: 1800000, category: "Kommunal", date: "12 Iyul 2026", branchId: "br2" }
+    ];
+
+    // Xodim maosh / grafik (teachers + managers)
+    users.forEach(function (u) {
+      if (u.role === "teacher") {
+        if (u.salary == null) u.salary = (u.payoutRate || 40) * 150000;
+        if (!u.schedule) u.schedule = "Du–Ju 14:00–20:00";
+        if (!u.position) u.position = "O'qituvchi";
+      }
+      if (u.role === "manager") {
+        if (u.salary == null) u.salary = 8000000;
+        if (!u.schedule) u.schedule = "Du–Shan 09:00–18:00";
+        if (!u.position) u.position = "Manager";
+      }
+    });
+
     return {
       users: users, categories: categories, courses: courses, modules: modules, lessons: lessons,
       enrollments: enrollments, progress: progress, payments: payments, tests: tests, testResults: testResults,
       assignments: assignments, assignmentSubs: assignmentSubs,
       certificates: certificates, reviews: reviews, questions: questions, comments: [],
-      notifications: notifications, logs: logs, settings: settings
+      notifications: notifications, logs: logs, settings: settings,
+      branches: branches, groups: groups, rooms: rooms, leads: leads, debts: debts, tasks: tasks, expenses: expenses
     };
   }
 
@@ -240,26 +306,95 @@
       var r = localStorage.getItem(DB_KEY);
       if (r) {
         var d = JSON.parse(r);
-        if (!d.comments) d.comments = [];
-        if (!d.assignments) d.assignments = [];
-        if (!d.assignmentSubs) d.assignmentSubs = [];
-        if (!d.tests) d.tests = [];
-        if (!d.testResults) d.testResults = [];
-        return d;
+        return ensureCrmTables(d);
       }
     } catch (e) {}
     var s = seed();
     try { localStorage.setItem(DB_KEY, JSON.stringify(s)); } catch (e) {}
     return s;
   }
-  data = load();
-  if (!data.comments) data.comments = [];
-  if (!data.assignments) data.assignments = [];
-  if (!data.assignmentSubs) data.assignmentSubs = [];
-  if (!data.tests) data.tests = [];
-  if (!data.testResults) data.testResults = [];
+  function ensureCrmTables(d) {
+    if (!d) return d;
+    if (!d.comments) d.comments = [];
+    if (!d.assignments) d.assignments = [];
+    if (!d.assignmentSubs) d.assignmentSubs = [];
+    if (!d.tests) d.tests = [];
+    if (!d.testResults) d.testResults = [];
+    if (!d.courses) d.courses = [];
+    if (!d.modules) d.modules = [];
+    if (!d.lessons) d.lessons = [];
+    if (!d.enrollments) d.enrollments = [];
+    if (!d.users) d.users = [];
+    if (!d.branches || !d.branches.length) {
+      d.branches = [
+        { id: "br1", name: "Chilonzor filiali", address: "Toshkent, Chilonzor 9", phone: "+998 71 200 00 01", manager: "Jasur Toshmatov", active: true },
+        { id: "br2", name: "Yunusobod filiali", address: "Toshkent, Yunusobod 12", phone: "+998 71 200 00 02", manager: "Kamola Saidova", active: true }
+      ];
+    }
+    if (!d.groups) d.groups = [];
+    if (!d.rooms) d.rooms = [];
+    if (!d.leads) d.leads = [];
+    if (!d.debts) d.debts = [];
+    if (!d.tasks) d.tasks = [];
+    if (!d.expenses) d.expenses = [];
+    // bir marta demo CRM to'ldirish (bo'sh bo'lsa)
+    if (!d._crmSeeded) {
+      if (!d.leads.length) {
+        d.leads = [
+          { id: "ld1", name: "Javlon Rahimov", phone: "+998 90 111 22 11", source: "Instagram", stage: "new", interest: "Python", note: "Bepul dars so'radi", managerId: "u_mgr1", lastContact: todayLabel(), createdAt: todayLabel() },
+          { id: "ld2", name: "Malika Yusupova", phone: "+998 91 333 44 22", source: "Sayt", stage: "contacted", interest: "Frontend", note: "Demo darsga keladi", managerId: "u_mgr1", lastContact: todayLabel(), createdAt: todayLabel() },
+          { id: "ld3", name: "Sardor Bekmurodov", phone: "+998 93 555 66 33", source: "Telegram", stage: "trial", interest: "Backend", note: "Trial darsda", managerId: "u_mgr2", lastContact: todayLabel(), createdAt: todayLabel() }
+        ];
+      }
+      if (!d.groups.length) {
+        d.groups = [
+          { id: "gr1", branchId: "br1", name: "Python A1", courseId: "t1", teacherId: "u_tch1", room: "A-101", schedule: "Du/Chor/Ju 18:00", capacity: 18, students: 12, status: "active" },
+          { id: "gr2", branchId: "br1", name: "Frontend B1", courseId: "c2", teacherId: "u_tch2", room: "A-102", schedule: "Se/Pay 17:00", capacity: 16, students: 14, status: "active" }
+        ];
+      }
+      if (!d.debts.length) {
+        d.debts = [
+          { id: "db1", studentId: "u_std2", courseId: "c2", amount: 450000, dueDate: todayLabel(), status: "overdue", note: "2-to'lov kechikdi", reminders: 1 },
+          { id: "db2", studentId: "u_std4", courseId: "c4", amount: 295000, dueDate: todayLabel(), status: "due", note: "Yarim to'lov qoldi", reminders: 0 }
+        ];
+      }
+      if (!d.tasks.length) {
+        d.tasks = [
+          { id: "tk1", title: "Leadlarni qayta chaqirish", assignee: "Manager", due: todayLabel(), priority: "high", status: "open", section: "leads" },
+          { id: "tk2", title: "Qarzdorlarga eslatma", assignee: "Manager", due: todayLabel(), priority: "high", status: "open", section: "debts" }
+        ];
+      }
+      if (!d.expenses.length) {
+        d.expenses = [
+          { id: "ex1", title: "Ijara", amount: 12000000, category: "Ijara", date: todayLabel(), branchId: "br1" },
+          { id: "ex2", title: "Marketing", amount: 3500000, category: "Marketing", date: todayLabel(), branchId: null }
+        ];
+      }
+      if (!d.rooms.length) {
+        d.rooms = [
+          { id: "rm1", branchId: "br1", name: "A-101", seats: 20, type: "Kompyuter" },
+          { id: "rm2", branchId: "br2", name: "B-201", seats: 16, type: "Laboratoriya" }
+        ];
+      }
+      d._crmSeeded = true;
+    }
+    return d;
+  }
   function save() { try { localStorage.setItem(DB_KEY, JSON.stringify(data)); } catch (e) {} }
+  data = ensureCrmTables(load());
+  try { save(); } catch (e) {}
   function reset() { data = seed(); save(); try { localStorage.removeItem(SESSION_KEY); } catch (e) {} }
+  /** Boshqa tab (ustoz/manager) yozgan o'zgarishlarni xotiraga qayta yuklash */
+  function reloadFromStorage() {
+    try {
+      var r = localStorage.getItem(DB_KEY);
+      if (!r) return false;
+      var d = JSON.parse(r);
+      if (!d || typeof d !== "object") return false;
+      data = ensureCrmTables(d);
+      return true;
+    } catch (e) { return false; }
+  }
 
   // ---------- SESSION / AUTH ----------
   function session() { try { var r = localStorage.getItem(SESSION_KEY); return r ? JSON.parse(r) : null; } catch (e) { return null; } }
@@ -690,8 +825,15 @@
   // course management
   function setCourseStatus(id, status, byUser, role) {
     var c = byId("courses", id); if (!c) return { ok: false };
+    var prev = c.status;
     c.status = status; save();
     log(byUser || "Admin", role || "superadmin", "Kurs holatini o'zgartirdi", c.title + " → " + status, "content");
+    // Publish bo'lganda yozilgan o'quvchilarga xabar
+    if (status === "published" && prev !== "published") {
+      (data.enrollments || []).filter(function (e) { return e.courseId === id; }).forEach(function (e) {
+        notify(e.studentId, "Kurs ochildi", '"' + c.title + '" kursi o\'quvchilar uchun ochildi. Darslarni ko\'ring!');
+      });
+    }
     return { ok: true };
   }
   function toggleFeatured(id) { var c = byId("courses", id); if (c) { c.featured = !c.featured; save(); } return { ok: true }; }
@@ -858,7 +1000,7 @@
   // ---------- EXPORT ----------
   window.ProSkillDB = {
     raw: function () { return data; },
-    table: table, byId: byId, insert: insert, update: update, remove: remove, save: save, reset: reset,
+    table: table, byId: byId, insert: insert, update: update, remove: remove, save: save, reset: reset, reloadFromStorage: reloadFromStorage,
     session: session, currentUser: currentUser, login: login, loginAs: loginAs, register: register, logout: logout,
     userName: userName, userAvatar: userAvatar, updateProfile: updateProfile, courseTitle: courseTitle, lessonsOf: lessonsOf, modulesOf: modulesOf,
     isEnrolled: isEnrolled, enrollmentsOf: enrollmentsOf, isDone: isDone, progressFor: progressFor, progressCount: progressCount,
@@ -878,6 +1020,130 @@
     setCourseStatus: setCourseStatus, toggleFeatured: toggleFeatured, addCourse: addCourse, updateCourse: updateCourse, deleteCourse: deleteCourse,
     addModule: addModule, updateModule: updateModule, deleteModule: deleteModule,
     addLesson: addLesson, updateLesson: updateLesson, deleteLesson: deleteLesson,
-    analytics: analytics, topCourses: topCourses, money: money
+    analytics: analytics, topCourses: topCourses, money: money,
+    // CRM helpers
+    addLead: function (row, byUser) {
+      if (!row || !row.name) return { ok: false, error: "Ism majburiy" };
+      var l = insert("leads", {
+        name: String(row.name).trim(),
+        phone: row.phone || "",
+        source: row.source || "Sayt",
+        stage: row.stage || "new",
+        interest: row.interest || "",
+        note: row.note || "",
+        managerId: row.managerId || null,
+        lastContact: todayLabel(),
+        createdAt: todayLabel()
+      });
+      log(byUser || "Manager", "manager", "Yangi lead qo'shdi", l.name, "crm");
+      return { ok: true, lead: l };
+    },
+    updateLead: function (id, patch, byUser) {
+      var l = byId("leads", id); if (!l) return { ok: false, error: "Lead topilmadi" };
+      update("leads", id, patch || {});
+      log(byUser || "Manager", "manager", "Lead yangilandi", l.name, "crm");
+      return { ok: true, lead: byId("leads", id) };
+    },
+    convertLead: function (id, byUser) {
+      var l = byId("leads", id); if (!l) return { ok: false, error: "Lead topilmadi" };
+      update("leads", id, { stage: "won", lastContact: todayLabel() });
+      log(byUser || "Manager", "manager", "Lead konversiya", l.name, "crm");
+      return { ok: true };
+    },
+    addDebt: function (row, byUser) {
+      if (!row || !row.studentId || !row.amount) return { ok: false, error: "Student va summa majburiy" };
+      var d = insert("debts", {
+        studentId: row.studentId,
+        courseId: row.courseId || null,
+        amount: Number(row.amount) || 0,
+        dueDate: row.dueDate || todayLabel(),
+        status: row.status || "due",
+        note: row.note || "",
+        reminders: 0
+      });
+      log(byUser || "Manager", "manager", "Qarz yozdi", userName(row.studentId) + " · " + money(d.amount), "crm");
+      return { ok: true, debt: d };
+    },
+    remindDebt: function (id, byUser) {
+      var d = byId("debts", id); if (!d) return { ok: false, error: "Qarz topilmadi" };
+      d.reminders = (d.reminders || 0) + 1;
+      d.status = d.status === "paid" ? "paid" : "overdue";
+      save();
+      if (d.studentId) notify(d.studentId, "To'lov eslatmasi", "Qarzdorlik: " + money(d.amount) + ". Iltimos, to'lovni amalga oshiring.");
+      log(byUser || "Manager", "manager", "Qarz eslatmasi", userName(d.studentId), "crm");
+      return { ok: true };
+    },
+    payDebt: function (id, byUser) {
+      var d = byId("debts", id); if (!d) return { ok: false, error: "Qarz topilmadi" };
+      d.status = "paid"; save();
+      log(byUser || "Manager", "manager", "Qarz yopildi", userName(d.studentId), "crm");
+      return { ok: true };
+    },
+    addBranch: function (row, byUser) {
+      if (!row || !row.name) return { ok: false, error: "Filial nomi majburiy" };
+      var b = insert("branches", {
+        name: String(row.name).trim(),
+        address: row.address || "",
+        phone: row.phone || "",
+        manager: row.manager || "",
+        active: row.active !== false
+      });
+      log(byUser || "Manager", "manager", "Filial qo'shdi", b.name, "crm");
+      return { ok: true, branch: b };
+    },
+    addGroup: function (row, byUser) {
+      if (!row || !row.name) return { ok: false, error: "Guruh nomi majburiy" };
+      var g = insert("groups", {
+        branchId: row.branchId || null,
+        name: String(row.name).trim(),
+        courseId: row.courseId || null,
+        teacherId: row.teacherId || null,
+        room: row.room || "",
+        schedule: row.schedule || "",
+        capacity: Number(row.capacity) || 15,
+        students: Number(row.students) || 0,
+        status: row.status || "active"
+      });
+      log(byUser || "Manager", "manager", "Guruh ochdi", g.name, "crm");
+      return { ok: true, group: g };
+    },
+    addTask: function (row, byUser) {
+      if (!row || !row.title) return { ok: false, error: "Vazifa nomi majburiy" };
+      var t = insert("tasks", {
+        title: String(row.title).trim(),
+        assignee: row.assignee || "Manager",
+        due: row.due || todayLabel(),
+        priority: row.priority || "medium",
+        status: row.status || "open",
+        section: row.section || "general"
+      });
+      log(byUser || "Manager", "manager", "Vazifa qo'shdi", t.title, "crm");
+      return { ok: true, task: t };
+    },
+    toggleTask: function (id) {
+      var t = byId("tasks", id); if (!t) return { ok: false };
+      t.status = t.status === "done" ? "open" : "done";
+      save();
+      return { ok: true, task: t };
+    },
+    crmStats: function () {
+      var leads = data.leads || [];
+      var debts = data.debts || [];
+      var groups = data.groups || [];
+      var tasks = data.tasks || [];
+      var exp = (data.expenses || []).reduce(function (s, e) { return s + (e.amount || 0); }, 0);
+      var income = (data.payments || []).filter(function (p) { return p.status === "paid"; }).reduce(function (s, p) { return s + (p.amount || 0); }, 0);
+      return {
+        leadsTotal: leads.length,
+        leadsNew: leads.filter(function (l) { return l.stage === "new" || l.stage === "contacted"; }).length,
+        debtsTotal: debts.filter(function (d) { return d.status !== "paid"; }).length,
+        debtsSum: debts.filter(function (d) { return d.status !== "paid"; }).reduce(function (s, d) { return s + (d.amount || 0); }, 0),
+        activeGroups: groups.filter(function (g) { return g.status === "active"; }).length,
+        openTasks: tasks.filter(function (t) { return t.status !== "done"; }).length,
+        income: income,
+        expenses: exp,
+        profit: income - exp
+      };
+    }
   };
 })();

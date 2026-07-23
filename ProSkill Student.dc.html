@@ -544,39 +544,54 @@
         <sc-if value="{{ tabLessons }}" hint-placeholder-val="{{ false }}">
           <div style="display:grid;grid-template-columns:1fr 320px;gap:16px;align-items:start">
             <div>
-              <!-- VIDEO PLAYER -->
+              <!-- VIDEO PLAYER — ustoz qo'ygan YouTube / video URL shu yerda ijro etiladi -->
               <div style="position:relative;border-radius:18px;overflow:hidden;background:#0b1220;aspect-ratio:16/9;display:flex;align-items:center;justify-content:center">
                 <sc-if value="{{ showVideoEmbed }}" hint-placeholder-val="{{ false }}">
-                  <iframe src="{{ videoEmbedUrl }}" title="Dars videosi" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0"></iframe>
+                  <iframe key="{{ videoEmbedKey }}" src="{{ videoEmbedUrl }}" title="Dars videosi" frameborder="0" referrerpolicy="strict-origin-when-cross-origin" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen style="position:absolute;inset:0;width:100%;height:100%;border:0;z-index:1"></iframe>
                 </sc-if>
                 <sc-if value="{{ showVideoFile }}" hint-placeholder-val="{{ false }}">
-                  <video src="{{ videoFileUrl }}" controls autoplay style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000"></video>
+                  <video key="{{ videoFileKey }}" src="{{ videoFileUrl }}" controls autoplay playsinline style="position:absolute;inset:0;width:100%;height:100%;object-fit:contain;background:#000;z-index:1"></video>
                 </sc-if>
                 <sc-if value="{{ showPlayOverlay }}" hint-placeholder-val="{{ true }}">
-                  <div style="position:absolute;inset:0;background:{{ playerGrad }};opacity:.38"></div>
-                  <div onClick="{{ startLesson }}" style="position:relative;text-align:center;cursor:pointer;z-index:2">
+                  <div style="position:absolute;inset:0;background:{{ playerGrad }};opacity:.42;z-index:2"></div>
+                  <div onClick="{{ startLesson }}" style="position:relative;text-align:center;cursor:pointer;z-index:3">
                     <div style="width:86px;height:86px;border-radius:50%;background:rgba(255,255,255,.95);display:flex;align-items:center;justify-content:center;color:#0d2a1e;font-size:30px;margin:0 auto 12px;box-shadow:0 16px 44px rgba(0,0,0,.45);transition:transform .15s" style-hover="transform:scale(1.06)">▶</div>
                     <div style="font-size:15px;color:#fff;font-weight:800;margin-bottom:4px">Darsni boshlash</div>
-                    <div style="font-size:13px;color:rgba(255,255,255,.78);font-weight:600">HD · {{ currentLessonDuration }}</div>
+                    <div style="font-size:13px;color:rgba(255,255,255,.78);font-weight:600">{{ videoTypeLabel }} · {{ currentLessonDuration }}</div>
                   </div>
                 </sc-if>
                 <sc-if value="{{ showPlayingDemo }}" hint-placeholder-val="{{ false }}">
-                  <div style="position:absolute;inset:0;background:linear-gradient(145deg,#0f2744,#0b3d2e 55%,#10241c)"></div>
-                  <div style="position:relative;z-index:2;text-align:center;padding:20px">
-                    <div style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.12);border:2px solid rgba(110,231,183,.5);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:26px">⏸</div>
-                    <div style="font-size:16px;font-weight:800;color:#fff;margin-bottom:6px">Dars o'ynatilmoqda</div>
+                  <div style="position:absolute;inset:0;background:linear-gradient(145deg,#0f2744,#0b3d2e 55%,#10241c);z-index:2"></div>
+                  <div style="position:relative;z-index:3;text-align:center;padding:20px">
+                    <div style="width:72px;height:72px;border-radius:50%;background:rgba(255,255,255,.12);border:2px solid rgba(110,231,183,.5);display:flex;align-items:center;justify-content:center;margin:0 auto 14px;font-size:26px">▶</div>
+                    <div style="font-size:16px;font-weight:800;color:#fff;margin-bottom:6px">Tashqi video havolasi</div>
                     <div style="font-size:13px;color:rgba(255,255,255,.75);margin-bottom:16px">{{ currentLessonTitle }} · {{ currentLessonDuration }}</div>
-                    <div style="height:6px;border-radius:6px;background:rgba(255,255,255,.15);overflow:hidden;max-width:280px;margin:0 auto 14px"><div style="height:100%;width:{{ playProgress }}%;background:linear-gradient(90deg,#10b981,#22c55e)"></div></div>
+                    <a href="{{ externalVideoUrl }}" target="_blank" rel="noopener" style="display:inline-block;margin-bottom:14px;font-size:14px;font-weight:800;color:#6ee7b7;text-decoration:underline">Videoni ochish ↗</a>
                     <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
                       <button onClick="{{ stopLesson }}" style="cursor:pointer;border:1px solid rgba(255,255,255,.2);background:rgba(255,255,255,.08);color:#fff;font-weight:700;font-size:13px;padding:10px 16px;border-radius:10px">To'xtatish</button>
                       <sc-if value="{{ canMarkComplete }}" hint-placeholder-val="{{ true }}"><button onClick="{{ markCurrentComplete }}" style="cursor:pointer;border:none;background:linear-gradient(135deg,#10b981,#22c55e);color:#fff;font-weight:700;font-size:13px;padding:10px 16px;border-radius:10px">✓ Darsni tugatdim</button></sc-if>
                     </div>
                   </div>
                 </sc-if>
+                <sc-if value="{{ showNoVideo }}" hint-placeholder-val="{{ false }}">
+                  <div style="position:absolute;inset:0;display:flex;align-items:center;justify-content:center;flex-direction:column;gap:10px;z-index:2;padding:24px;text-align:center">
+                    <div style="font-size:40px;opacity:.5">🎬</div>
+                    <div style="font-size:15px;font-weight:700;color:rgba(255,255,255,.9)">Ustoz hali video qo'shmagan</div>
+                    <div style="font-size:13px;color:rgba(255,255,255,.55)">Teacher panelida darsga YouTube yoki video URL qo'ying</div>
+                  </div>
+                </sc-if>
                 <sc-if value="{{ lessonPlaying }}" hint-placeholder-val="{{ false }}">
-                  <div style="position:absolute;top:12px;left:12px;z-index:3;font-size:11px;font-weight:800;padding:5px 10px;border-radius:8px;background:rgba(16,185,129,.9);color:#fff">● LIVE</div>
+                  <div style="position:absolute;top:12px;left:12px;z-index:4;font-size:11px;font-weight:800;padding:5px 10px;border-radius:8px;background:rgba(16,185,129,.9);color:#fff;pointer-events:none">● LIVE</div>
                 </sc-if>
               </div>
+              <sc-if value="{{ hasVideoUrl }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:8px;font-size:12px;color:var(--muted2);display:flex;align-items:center;gap:8px;flex-wrap:wrap">
+                  <span>Video manba: {{ videoSourceLabel }}</span>
+                  <sc-if value="{{ showOpenExternal }}" hint-placeholder-val="{{ false }}">
+                    <a href="{{ externalVideoUrl }}" target="_blank" rel="noopener" style="color:#10b981;font-weight:700">YouTube'da ochish ↗</a>
+                  </sc-if>
+                </div>
+              </sc-if>
 
               <div style="display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin:20px 0 6px;flex-wrap:wrap">
                 <div><div style="font-size:12.5px;color:#6ee7b7;font-weight:700;margin-bottom:6px">{{ playerCourseTitle }}</div><h2 style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:22px;letter-spacing:-.5px">{{ currentLessonTitle }}</h2></div>
@@ -1327,7 +1342,7 @@ class Component extends DCLogic {
     // ===== DB-backed: current student =====
     this.studentName="O'quvchi";
     this.state={tab:"dashboard",theme:"light",search:"",modal:null,toast:null,lessonCourse:null,currentLesson:null,completed:{},catFilter:"Hammasi",payFilter:"Hammasi",qaFilter:"Hammasi",accent:"#3b82f6",
-      lessonPlaying:false,playProgress:12,lessonComment:"",lessonRating:5,lessonCommentError:null,
+      lessonPlaying:false,playProgress:12,lessonComment:"",lessonRating:5,lessonCommentError:null,contentRev:0,
       profName:"",profPhone:"",profBio:"",profTelegram:""};
     this.sync();
     this.state.completed=Object.assign({},this.completedSet);
@@ -1339,6 +1354,27 @@ class Component extends DCLogic {
     const s=DB?DB.session():null;
     if(!s||s.role!=="student"){ try{window.location.href="ProSkill IT Academy.dc.html";}catch(e){} return; }
     this.syncProfileForm();
+    this.refresh();
+    // Ustoz/manager boshqa tabda yozsa — localStorage dan qayta yuklab yangilash
+    this._onFocus=()=>{ try{ this.refresh(); }catch(e){} };
+    this._onVis=()=>{ try{ if(document.visibilityState==="visible") this.refresh(); }catch(e){} };
+    this._onStorage=(e)=>{
+      try{
+        if(e&&e.key&&e.key!=="proskill_db_v1") return;
+        this.refresh();
+      }catch(err){}
+    };
+    try{ window.addEventListener("focus", this._onFocus); }catch(e){}
+    try{ document.addEventListener("visibilitychange", this._onVis); }catch(e){}
+    try{ window.addEventListener("storage", this._onStorage); }catch(e){}
+    // har 4 soniyada soft sync (ustoz yangi modul/video qo'shsa ko'rinsin)
+    this._poll=setInterval(()=>{ try{ if(document.visibilityState==="visible") this.refresh(); }catch(e){} },4000);
+  }
+  componentWillUnmount(){
+    try{ if(this._onFocus) window.removeEventListener("focus", this._onFocus); }catch(e){}
+    try{ if(this._onVis) document.removeEventListener("visibilitychange", this._onVis); }catch(e){}
+    try{ if(this._onStorage) window.removeEventListener("storage", this._onStorage); }catch(e){}
+    try{ if(this._poll) clearInterval(this._poll); }catch(e){}
   }
   syncProfileForm(){
     const me=this.me||(window.ProSkillDB&&window.ProSkillDB.currentUser());
@@ -1407,28 +1443,40 @@ class Component extends DCLogic {
 
   sync(){
     const DB=window.ProSkillDB; if(!DB) return;
+    // Boshqa tabdagi ustoz/manager o'zgarishlarini o'qish
+    try{ if(typeof DB.reloadFromStorage==="function") DB.reloadFromStorage(); }catch(e){}
     const me=DB.currentUser();
     this.me=me;
     this.studentName=me?me.name:"O'quvchi";
     const sid=me?me.id:null;
-    // catalog: published courses
-    this.catalog=DB.table("courses").filter(c=>c.status==="published").map(c=>{
+    // all courses index (enrolled + catalog)
+    this.courseById={};
+    (DB.table("courses")||[]).forEach(c=>{
       const t=DB.byId("users",c.teacherId);
-      const ls=DB.lessonsOf(c.id);
+      const ls=DB.lessonsOf(c.id)||[];
+      const freeN=ls.filter(l=>l.free).length;
       const imgs=(this.previewByCat&&this.previewByCat[c.cat])||this.fallbackImgs||[];
-      return {
-        id:c.id,title:c.title,cat:c.cat,teacher:t?t.name:"—",price:c.price,rating:c.rating,
-        lessons:ls.length,level:c.level,
+      this.courseById[c.id]={
+        id:c.id,title:c.title,cat:c.cat||"—",teacher:t?t.name:"—",price:c.price||0,rating:c.rating||0,
+        lessons:ls.length,freeLessons:freeN,level:c.level||"",status:c.status||"draft",
+        desc:c.desc||"",
         grad:this.grads[c.cat]||"linear-gradient(135deg,#10b981,#22c55e)",
-        initial:c.cat.charAt(0),
+        initial:(c.cat||"K").charAt(0),
         teacherInitial:(t?t.name:"P").split(" ").map(w=>w[0]).join("").slice(0,2),
         img1:imgs[0],img2:imgs[1],img3:imgs[2]
       };
     });
-    // modulesByCourse using DB lesson ids as keys
+    // catalog: published courses (ustoz publish qilgan yoki manager ochgan)
+    this.catalog=(DB.table("courses")||[]).filter(c=>c.status==="published").map(c=>this.courseById[c.id]).filter(Boolean);
+    // modulesByCourse using DB lesson ids as keys — ustoz yangi dars/video qo'shsa shu yerga tushadi
     this.modulesByCourse={};
-    DB.table("courses").forEach(c=>{
-      this.modulesByCourse[c.id]=DB.modulesOf(c.id).map(m=>({title:m.title,lessons:DB.table("lessons").filter(l=>l.moduleId===m.id).sort((a,b)=>a.order-b.order).map(l=>({key:l.id,title:l.title,duration:l.duration,free:!!l.free,videoUrl:l.videoUrl||""}))}));
+    (DB.table("courses")||[]).forEach(c=>{
+      this.modulesByCourse[c.id]=DB.modulesOf(c.id).map(m=>({
+        title:m.title,
+        lessons:DB.table("lessons").filter(l=>l.moduleId===m.id).sort((a,b)=>(a.order||0)-(b.order||0)).map(l=>({
+          key:l.id,title:l.title,duration:l.duration||"0:00",free:!!l.free,videoUrl:l.videoUrl||""
+        }))
+      }));
     });
     // enrolled + progress (from DB)
     this.completedSet={};
@@ -1470,7 +1518,25 @@ class Component extends DCLogic {
     // reviews (mine)
     this.myReviews=DB.raw().reviews.filter(r=>r.studentId===sid).map(r=>({course:DB.courseTitle(r.courseId),rating:r.rating,text:r.text,date:r.date}));
   }
-  refresh(){ this.sync(); this.setState({completed:Object.assign({},this.completedSet)}); }
+  contentFingerprint(){
+    try{
+      const DB=window.ProSkillDB; if(!DB) return "";
+      const d=DB.raw()||{};
+      const courses=(d.courses||[]).map(c=>c.id+":"+c.status+":"+(c.title||"")).join("|");
+      const mods=(d.modules||[]).map(m=>m.id+":"+(m.title||"")).join("|");
+      const less=(d.lessons||[]).map(l=>l.id+":"+(l.title||"")+":"+(l.videoUrl||"")+":"+(l.free?"1":"0")).join("|");
+      const enr=(d.enrollments||[]).filter(e=>this.me&&e.studentId===this.me.id).map(e=>e.courseId).join("|");
+      const prog=(d.progress||[]).filter(p=>this.me&&p.studentId===this.me.id).length;
+      return courses+"#"+mods+"#"+less+"#"+enr+"#"+prog+"#"+(d.tests||[]).length;
+    }catch(e){ return String(Date.now()); }
+  }
+  refresh(force){
+    this.sync();
+    const fp=this.contentFingerprint();
+    if(!force && fp===this._lastFp) return;
+    this._lastFp=fp;
+    this.setState({completed:Object.assign({},this.completedSet||{}), contentRev:(this.state.contentRev||0)+1});
+  }
   bootClose(){
   }
 
@@ -1505,7 +1571,12 @@ class Component extends DCLogic {
   }
 
   money(n){return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g," ")+" so'm";}
-  setTab(t){this.setState({tab:t,search:""});try{window.scrollTo(0,0);}catch(e){}}
+  setTab(t){
+    // har bo'limga o'tganda yangi kurs/modul/video tortib olinadi
+    this.sync();
+    this.setState({tab:t,search:"",completed:Object.assign({},this.completedSet||{}),contentRev:(this.state.contentRev||0)+1});
+    try{window.scrollTo(0,0);}catch(e){}
+  }
   toggleTheme(){this.setState(s=>({theme:s.theme==="dark"?"light":"dark"}));}
   setSearch(e){this.setState({search:e.target.value});}
   setUserFilter(f){this.setState({userFilter:f});}
@@ -1524,15 +1595,22 @@ class Component extends DCLogic {
   buyCourse(c){if(this.isEnrolled(c.id)){this.notify("Siz allaqachon bu kursga yozilgansiz");return;}this.ask({title:"Kursni sotib olish",msg:'"'+c.title+'" — '+this.money(c.price)+". To'lov yuborilgandan keyin status 'pending' bo'ladi. Manager tasdiqlagach kurs ochiladi.",confirm:"To'lov yuborish",icon:"💳",onConfirm:()=>{const DB=this.DB();DB.requestPayment(this.me.id,c.id,"Payme");this.refresh();this.notify("To'lov yuborildi ⏳ Manager tasdig'ini kuting");this.setState({tab:"payments"});}});}
   retryPayment(p){const DB=this.DB();const co=DB.table("courses").filter(x=>DB.courseTitle(x.id)===p.course)[0];if(co){DB.requestPayment(this.me.id,co.id,p.method);this.refresh();this.notify("To'lov qayta yuborildi ⏳");}}
   openCourse(id){
+    this.sync();
     const mods=this.modulesByCourse[id]||[];
     const first=mods[0]&&mods[0].lessons[0]?mods[0].lessons[0].key:null;
-    this.setState({tab:"lessons",lessonCourse:id,currentLesson:first,lessonPlaying:false,playProgress:12,lessonComment:"",lessonCommentError:null});
+    this.setState({tab:"lessons",lessonCourse:id,currentLesson:first,lessonPlaying:false,playProgress:12,lessonComment:"",lessonCommentError:null,completed:Object.assign({},this.completedSet||{}),contentRev:(this.state.contentRev||0)+1});
     try{window.scrollTo(0,0);}catch(e){}
   }
-  continueCourse(e){this.setState({tab:"lessons",lessonCourse:e.id,currentLesson:e.lastKey,lessonPlaying:false,playProgress:12,lessonComment:"",lessonCommentError:null});try{window.scrollTo(0,0);}catch(err){}}
+  continueCourse(e){
+    this.sync();
+    const enr=this.enrolled.find(x=>x.id===e.id)||e;
+    this.setState({tab:"lessons",lessonCourse:enr.id,currentLesson:enr.lastKey,lessonPlaying:false,playProgress:12,lessonComment:"",lessonCommentError:null,completed:Object.assign({},this.completedSet||{}),contentRev:(this.state.contentRev||0)+1});
+    try{window.scrollTo(0,0);}catch(err){}
+  }
   openLesson(courseId,key,locked){
-    if(locked){ this.notify("🔒 Bu dars bloklangan. Avval kursni oching."); return; }
-    this.setState({tab:"lessons",lessonCourse:courseId,currentLesson:key,lessonPlaying:false,playProgress:12,lessonComment:"",lessonCommentError:null});
+    if(locked){ this.notify("Bu dars bloklangan. Avval kursni oching."); return; }
+    this.sync();
+    this.setState({tab:"lessons",lessonCourse:courseId,currentLesson:key,lessonPlaying:false,playProgress:12,lessonComment:"",lessonCommentError:null,completed:Object.assign({},this.completedSet||{}),contentRev:(this.state.contentRev||0)+1});
   }
   startLesson(){
     const key=this.state.currentLesson;
@@ -1541,18 +1619,34 @@ class Component extends DCLogic {
     const mods=this.modulesByCourse[this.state.lessonCourse]||[];
     let les=null; mods.forEach(m=>m.lessons.forEach(l=>{ if(l.key===key) les=l; }));
     if(les&&!owned&&!les.free){ this.notify("🔒 Bu dars bloklangan"); return; }
-    this.setState({lessonPlaying:true,playProgress:18});
+    const url=les&&les.videoUrl?String(les.videoUrl).trim():"";
+    const yt=this.youtubeVideoId(url);
+    const isFile=this.isDirectVideo(url);
+    // YouTube/iframe uchun progress timer ISHLATILMAYDI — setState iframe ni qayta yuklab Error 153 beradi
     clearInterval(this._playTimer);
-    this._playTimer=setInterval(()=>{
-      this.setState(s=>{
-        const next=Math.min(96,(s.playProgress||10)+Math.floor(Math.random()*7)+2);
-        return {playProgress:next};
-      });
-    },1400);
-    this.notify("Dars boshlandi ▶");
+    this._playTimer=null;
+    if(!yt&&!isFile&&url){
+      // tashqi link — yangi tabda ochish mumkin
+      this.setState({lessonPlaying:true,playProgress:20});
+      this.notify("Tashqi video havolasi — pastdagi tugmadan oching");
+      return;
+    }
+    if(!url){
+      this.setState({lessonPlaying:true,playProgress:18});
+      this.notify("Bu darsda video yo'q — materialni o'qing yoki keyingi darsga o'ting");
+      return;
+    }
+    // YouTube yoki mp4 — barqaror player (faqat bir marta setState)
+    this.setState({
+      lessonPlaying:true,
+      playProgress:yt?5:18,
+      activeVideoKey:(les&&les.key?les.key:"")+"|"+url+"|"+Date.now()
+    });
+    this.notify(yt?"YouTube video ijro etilmoqda ▶":"Video ijro etilmoqda ▶");
   }
   stopLesson(){
     clearInterval(this._playTimer);
+    this._playTimer=null;
     this.setState({lessonPlaying:false,playProgress:12});
   }
   markComplete(key){
@@ -1560,19 +1654,44 @@ class Component extends DCLogic {
     if(!this.me||!key) return;
     DB.completeLesson(this.me.id,key);
     clearInterval(this._playTimer);
+    this._playTimer=null;
     this.setState({playProgress:100,lessonPlaying:false});
-    this.refresh();
+    this.refresh(true);
     this.notify("Dars tugatildi ✓ Progress saqlandi");
   }
-  youtubeEmbed(url){
+  youtubeVideoId(url){
     if(!url) return null;
     const s=String(url).trim();
+    if(!s) return null;
     let id=null;
-    const m1=s.match(/[?&]v=([A-Za-z0-9_-]{6,})/);
-    const m2=s.match(/youtu\.be\/([A-Za-z0-9_-]{6,})/);
-    const m3=s.match(/youtube\.com\/embed\/([A-Za-z0-9_-]{6,})/);
-    if(m1) id=m1[1]; else if(m2) id=m2[1]; else if(m3) id=m3[1];
-    return id?("https://www.youtube.com/embed/"+id+"?rel=0&modestbranding=1&autoplay=1"):null;
+    // youtu.be/ID
+    let m=s.match(/youtu\.be\/([A-Za-z0-9_-]{6,})/i);
+    if(m) id=m[1];
+    // youtube.com/watch?v=ID  (hamda &t=... bilan)
+    if(!id){ m=s.match(/[?&]v=([A-Za-z0-9_-]{6,})/i); if(m) id=m[1]; }
+    // youtube.com/embed/ID yoki youtube-nocookie.com/embed/ID
+    if(!id){ m=s.match(/youtube(?:-nocookie)?\.com\/embed\/([A-Za-z0-9_-]{6,})/i); if(m) id=m[1]; }
+    // youtube.com/shorts/ID
+    if(!id){ m=s.match(/youtube\.com\/shorts\/([A-Za-z0-9_-]{6,})/i); if(m) id=m[1]; }
+    // youtube.com/live/ID
+    if(!id){ m=s.match(/youtube\.com\/live\/([A-Za-z0-9_-]{6,})/i); if(m) id=m[1]; }
+    // faqat ID berilgan bo'lsa
+    if(!id && /^[A-Za-z0-9_-]{11}$/.test(s)) id=s;
+    return id||null;
+  }
+  youtubeEmbed(url, autoplay){
+    const id=this.youtubeVideoId(url);
+    if(!id) return null;
+    // Error 153 oldini olish: nocookie + origin + referrer-friendly params
+    let origin="";
+    try{ origin=encodeURIComponent(window.location.origin||"http://127.0.0.1:8000"); }catch(e){ origin=encodeURIComponent("http://127.0.0.1:8000"); }
+    const ap=autoplay?"1":"0";
+    // youtube-nocookie + playsinline — localhost embed uchun barqarorroq
+    return "https://www.youtube-nocookie.com/embed/"+id
+      +"?rel=0&modestbranding=1&playsinline=1&enablejsapi=1"
+      +"&autoplay="+ap
+      +"&origin="+origin
+      +"&widget_referrer="+origin;
   }
   isDirectVideo(url){
     return !!url && /\.(mp4|webm|ogg)(\?|$)/i.test(String(url));
@@ -1673,8 +1792,9 @@ class Component extends DCLogic {
     ];
     const kpis=kpiDef.map(([label,value,ico,color,trend,trendColor])=>({label,value,iconEl:this.ic(ico),color,tint:color+"22",trend,trendColor}));
 
-    const catName=id=>(this.catalog.find(c=>c.id===id)||{}).title||"Kurs";
-    const catObj=id=>this.catalog.find(c=>c.id===id)||{};
+    void st.contentRev;
+    const catName=id=>(this.courseById&&this.courseById[id]?this.courseById[id].title:(this.catalog.find(c=>c.id===id)||{}).title)||"Kurs";
+    const catObj=id=>(this.courseById&&this.courseById[id])||this.catalog.find(c=>c.id===id)||{};
 
     // ===== Dashboard: continue learning =====
     const contE=this.enrolled.filter(e=>e.progress<100).sort((a,b)=>b.progress-a.progress)[0]||this.enrolled[0];
@@ -1793,21 +1913,31 @@ class Component extends DCLogic {
     const nextL=flat[curIdx+1];
     const playerGroups=pmods.map(m=>({title:m.title,lessons:m.lessons.map(l=>{const locked=!owned&&!l.free;const done=!!st.completed[l.key];const cur=l.key===st.currentLesson;return{...l,onPlay:()=>this.openLesson(st.lessonCourse,l.key,locked),rowBg:cur?"rgba(16,185,129,.14)":"transparent",titleColor:cur?"var(--text)":(locked?"var(--muted2)":"var(--text)"),icon:done?"✓":(locked?"🔒":"▶"),iconBg:done?"rgba(52,211,153,.16)":(cur?"rgba(16,185,129,.25)":"var(--panel2)"),iconColor:done?"#6ee7b7":(cur?"#6ee7b7":"var(--muted)")};})}));
     const playerCourseOptions=this.enrolled.map(e=>{const c=catObj(e.id);return{id:e.id,title:c.title,selected:e.id===st.lessonCourse};});
-    // video resolve
+    // video resolve — ustoz darsga qo'ygan videoUrl (YouTube / mp4)
     const rawVideo=(curObj&&curObj.videoUrl)?String(curObj.videoUrl).trim():"";
-    const ytEmbed=this.youtubeEmbed(rawVideo);
+    const ytId=this.youtubeVideoId(rawVideo);
+    const ytEmbed=this.youtubeEmbed(rawVideo, true);
     const isFile=this.isDirectVideo(rawVideo);
+    const hasVideoUrl=!!rawVideo;
     const lessonPlaying=!!st.lessonPlaying;
+    // YouTube: o'ynashda iframe; URL bo'lmasa — "video yo'q"
     const showVideoEmbed=lessonPlaying&&!!ytEmbed;
-    const showVideoFile=lessonPlaying&&!ytEmbed&&(isFile||!rawVideo); // no url -> demo mp4
-    const demoMp4="https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4";
-    const videoFileUrl=isFile?rawVideo:demoMp4;
+    const showVideoFile=lessonPlaying&&!ytEmbed&&isFile;
+    const showNoVideo=lessonPlaying&&!ytEmbed&&!isFile&&!rawVideo;
+    const showPlayingDemo=lessonPlaying&&!ytEmbed&&!isFile&&!!rawVideo;
+    const videoFileUrl=isFile?rawVideo:"";
     const showPlayOverlay=!lessonPlaying;
-    const showPlayingDemo=lessonPlaying&&!ytEmbed&&!isFile&&!!rawVideo; // external non-youtube link
-    // if playing external link that's not yt/mp4 - open overlay demo + link
     const showStartBtn=!lessonPlaying;
+    const videoEmbedKey=(st.activeVideoKey||"")||((curObj&&curObj.key)||"v")+"-yt";
+    const videoFileKey=(st.activeVideoKey||"")||((curObj&&curObj.key)||"v")+"-file";
+    const videoTypeLabel=ytId?"YouTube":(isFile?"Video fayl":(rawVideo?"Tashqi link":"Video yo'q"));
+    const videoSourceLabel=ytId?("YouTube · "+ytId):(isFile?"MP4/WebM":(rawVideo?rawVideo.slice(0,48)+"…":"—"));
+    const externalVideoUrl=rawVideo||"#";
+    const showOpenExternal=!!(ytId||rawVideo);
     const lessonDesc=curObj
-      ?('Bu darsda «'+curObj.title+'» mavzusi bo\'yicha amaliy misollar va tushuntirishlar berilgan. "Darsni boshlash" tugmasini bosing, ko\'rib bo\'lgach "Darsni tugatdim" — progressingiz saqlanadi.')
+      ?(rawVideo
+        ?('«'+curObj.title+'» — ustoz video qo\'ygan. "Darsni boshlash" → video shu yerda o\'ynaydi. Tugatgach "Darsni tugatdim".')
+        :('«'+curObj.title+'» — hozircha video URL yo\'q. Ustoz Teacher paneldan darsga YouTube link qo\'shishi mumkin.'))
       :"Dars tanlang.";
     // comments for current lesson
     const DB=this.DB();
@@ -1861,9 +1991,12 @@ class Component extends DCLogic {
       playerGroups, playerCourseOptions,
       onSelectPlayerCourse:e=>this.selectPlayerCourse(e.target.value),
       playerProgress:this.progressFor(st.lessonCourse), playerDone:pe?pe.done:0, playerTotal:pe?pe.total:flat.length,
-      // start / play
+      // start / play — ustoz videoUrl shu yerda
       lessonPlaying, showPlayOverlay, showVideoEmbed, showVideoFile, showPlayingDemo, showStartBtn,
-      videoEmbedUrl:ytEmbed||"", videoFileUrl:videoFileUrl,
+      showNoVideo:!!showNoVideo, hasVideoUrl:!!hasVideoUrl, showOpenExternal:!!showOpenExternal,
+      videoEmbedUrl:ytEmbed||"", videoFileUrl:videoFileUrl||"",
+      videoEmbedKey:String(videoEmbedKey), videoFileKey:String(videoFileKey),
+      videoTypeLabel, videoSourceLabel, externalVideoUrl,
       playProgress:Math.min(100,st.playProgress||12),
       startLesson:()=>this.startLesson(), stopLesson:()=>this.stopLesson(),
       lessonDesc,

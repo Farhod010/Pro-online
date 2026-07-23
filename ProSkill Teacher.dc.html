@@ -663,6 +663,7 @@
                   <sc-if value="{{ c.hasComment }}" hint-placeholder-val="{{ false }}"><div style="background:rgba(251,113,133,.08);border:1px solid rgba(251,113,133,.22);border-radius:10px;padding:9px 11px;margin-bottom:12px;font-size:12px;color:#fb9aa8;line-height:1.4">⚠ Manager: {{ c.comment }}</div></sc-if>
                   <div style="display:flex;gap:8px;flex-wrap:wrap">
                     <button onClick="{{ c.onEdit }}" style="cursor:pointer;flex:1;border:1px solid var(--border);background:var(--panel);color:var(--text);font-weight:600;font-size:13px;padding:10px;border-radius:10px">Tahrirlash</button>
+                    <sc-if value="{{ c.canPublish }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onPublish }}" style="cursor:pointer;border:none;background:linear-gradient(135deg,#10b981,#22c55e);color:#fff;font-weight:700;font-size:13px;padding:10px 14px;border-radius:10px;white-space:nowrap">O'quvchilarga ochish</button></sc-if>
                     <sc-if value="{{ c.canSubmit }}" hint-placeholder-val="{{ false }}"><button onClick="{{ c.onSubmit }}" style="cursor:pointer;border:none;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-weight:700;font-size:13px;padding:10px 14px;border-radius:10px;white-space:nowrap">Tekshiruvga</button></sc-if>
                     <button onClick="{{ c.onDelete }}" style="cursor:pointer;border:1px solid rgba(251,113,133,.35);background:rgba(251,113,133,.1);color:#fb7185;font-weight:700;font-size:13px;padding:10px 12px;border-radius:10px" title="O'chirish">🗑</button>
                   </div>
@@ -900,7 +901,7 @@
           <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:20px">+ Yangi kurs</div>
           <span onClick="{{ closeCourseForm }}" style="cursor:pointer;width:34px;height:34px;border-radius:10px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--muted);font-size:16px">✕</span>
         </div>
-        <p style="font-size:13.5px;color:var(--muted);margin-bottom:20px;line-height:1.45">Kurs draft sifatida saqlanadi. Keyin «Tekshiruvga» yuborishingiz mumkin.</p>
+        <p style="font-size:13.5px;color:var(--muted);margin-bottom:20px;line-height:1.45">Bepul kurs darhol o'quvchilarga ochiladi. Pullik kurs draft bo'ladi — «O'quvchilarga ochish» yoki «Tekshiruvga» bosing.</p>
 
         <label style="font-size:12.5px;color:var(--muted);font-weight:600;display:block;margin-bottom:6px">Kurs nomi *</label>
         <input value="{{ newCourseTitle }}" onInput="{{ onNewTitle }}" placeholder="Masalan: Python — 0 dan Professionalgacha" style="width:100%;background:var(--input);border:1px solid var(--border);border-radius:11px;padding:12px 14px;color:var(--text);font-size:14px;outline:none;margin-bottom:14px" />
@@ -924,7 +925,7 @@
 
         <div style="display:flex;gap:10px;margin-top:8px">
           <button onClick="{{ closeCourseForm }}" style="cursor:pointer;flex:1;border:1px solid var(--border);background:var(--panel);color:var(--text);font-weight:700;font-size:14px;padding:13px;border-radius:12px">Bekor qilish</button>
-          <button onClick="{{ submitNewCourse }}" style="cursor:pointer;flex:1.2;border:none;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-weight:800;font-size:14px;padding:13px;border-radius:12px;box-shadow:0 10px 24px rgba(99,102,241,.35)">Yaratish (draft)</button>
+          <button onClick="{{ submitNewCourse }}" style="cursor:pointer;flex:1.2;border:none;background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;font-weight:800;font-size:14px;padding:13px;border-radius:12px;box-shadow:0 10px 24px rgba(99,102,241,.35)">Yaratish</button>
         </div>
       </div>
     </div>
@@ -1449,10 +1450,18 @@ class Component extends DCLogic {
       if(!cid){ this.setState({moduleFormError:"Kurs tanlanmagan"}); return; }
       const r=DB.addModule(cid,title,me.name,"teacher");
       if(!r||!r.ok){ this.setState({moduleFormError:(r&&r.error)||"Yaratilmadi"}); return; }
-      // boshlang'ich 1 dars
-      DB.insert("lessons",{moduleId:r.module.id,courseId:cid,title:"Yangi dars",duration:"10:00",free:false,order:0});
+      // boshlang'ich 1 dars (video keyin tahrirda qo'shiladi)
+      DB.insert("lessons",{moduleId:r.module.id,courseId:cid,title:"Yangi dars",duration:"10:00",free:false,order:0,videoUrl:""});
       this.setState({showModuleForm:false,editModuleId:null,moduleTitle:"",moduleFormError:null});
-      this.notify('"'+title+'" qo\'shildi ✓');
+      const co=DB.byId("courses",cid);
+      if(co&&co.status==="published"){
+        (DB.raw().enrollments||[]).filter(e=>e.courseId===cid).forEach(e=>{
+          DB.notify(e.studentId,"Yangi modul",'"'+co.title+'" — yangi modul: '+title);
+        });
+        this.notify('"'+title+'" qo\'shildi — yozilgan o\'quvchilar ko\'radi ✓');
+      } else {
+        this.notify('"'+title+'" qo\'shildi. Kursni «O\'quvchilarga ochish» qiling');
+      }
     }
     this.forceUpdate();
   }
@@ -1509,7 +1518,15 @@ class Component extends DCLogic {
       const r=DB.addLesson(moduleId,courseId,{title:title,duration:duration,free:free,videoUrl:videoUrl},me.name,"teacher");
       if(!r||!r.ok){ this.setState({lessonFormError:(r&&r.error)||"Yaratilmadi"}); return; }
       this.closeLessonForm();
-      this.notify('"'+title+'" qo\'shildi ✓');
+      const co=DB.byId("courses",courseId);
+      if(co&&co.status==="published"){
+        (DB.raw().enrollments||[]).filter(e=>e.courseId===courseId).forEach(e=>{
+          DB.notify(e.studentId,"Yangi video dars",'"'+co.title+'" — yangi dars: '+title);
+        });
+        this.notify('"'+title+'" qo\'shildi — yozilgan o\'quvchilar ko\'radi ✓');
+      } else {
+        this.notify('"'+title+'" qo\'shildi. Kursni publish qiling — o\'quvchi ko\'radi');
+      }
     }
     this.forceUpdate();
   }
@@ -1554,19 +1571,29 @@ class Component extends DCLogic {
     // Daraja formadan olib tashlangan — default Boshlang'ich
     const level="Boshlang'ich";
     const desc=(st.newCourseDesc||"").trim()||(title+" — yangi kurs.");
+    // Bepul kurs — darhol o'quvchilarga ochiladi; pullik — draft (keyin publish/tekshiruv)
+    const status=price===0?"published":"draft";
     const r=DB.addCourse({
       title:title, cat:cat, teacherId:me.id, price:price, rating:0,
-      level:level, status:"draft", featured:false, desc:desc, comment:""
+      level:level, status:status, featured:false, desc:desc, comment:""
     }, me.name, "teacher");
     if(!r||!r.ok){ this.setState({courseFormError:(r&&r.error)||"Kurs yaratilmadi"}); return; }
-    // Boshlang'ich modul + 3 dars
+    // Boshlang'ich modul + 3 dars (1-dars bepul preview)
     const c=r.course;
     const mod=DB.insert("modules",{courseId:c.id, title:"Modul 1 — Kirish va asoslar", order:0});
     ["Kursga kirish va tanishuv","Ish muhitini sozlash","Birinchi dastur"].forEach(function(lt,li){
-      DB.insert("lessons",{moduleId:mod.id, courseId:c.id, title:lt, duration:(8+li)+":00", free:li===0, order:li});
+      DB.insert("lessons",{
+        moduleId:mod.id, courseId:c.id, title:lt,
+        duration:(8+li)+":00", free:li===0, order:li,
+        videoUrl: li===0 ? "https://www.youtube.com/watch?v=rfscVS0vtbw" : ""
+      });
     });
     this.setState({showCourseForm:false,courseFormError:null,tab:"mycourses",lessonCourse:c.id});
-    this.notify('"'+title+'" draft sifatida yaratildi ✓');
+    if(status==="published"){
+      this.notify('"'+title+'" o\'quvchilar katalogida ochildi ✓');
+    } else {
+      this.notify('"'+title+'" draft. «O\'quvchilarga ochish» yoki tekshiruvga yuboring');
+    }
     this.forceUpdate();
   }
 
@@ -1921,8 +1948,17 @@ class Component extends DCLogic {
             priceLabel:c.price===0?"Bepul":this.money(c.price).replace(" so'm",""),
             statusLabel:mm[0],statusColor:mm[1],statusTint:mm[2],hasComment:!!c.comment,
             canSubmit:c.status==="draft"||c.status==="rejected",
+            canPublish:c.status==="draft"||c.status==="rejected"||c.status==="pending",
+            isPublished:c.status==="published",
             onEdit:()=>this.setState({tab:"modules",lessonCourse:c.id}),
             onSubmit:()=>{DB.setCourseStatus(c.id,"pending",me.name,"teacher");this.notify('"'+c.title+'" tekshiruvga yuborildi ✓');this.forceUpdate();},
+            onPublish:()=>{
+              const r=DB.setCourseStatus(c.id,"published",me.name,"teacher");
+              if(r&&r.ok){
+                this.notify('"'+c.title+'" o\'quvchilar katalogida ochildi ✓ — o\'quvchi paneli yangilanadi');
+                this.forceUpdate();
+              } else this.notify("Publish qilib bo'lmadi");
+            },
             onDelete:()=>this.ask({
               title:"Kursni o'chirish",
               msg:'"'+c.title+'" butunlay o\'chiriladi (modullar, darslar, yozilishlar bilan). Qaytarib bo\'lmaydi.',
