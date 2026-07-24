@@ -389,6 +389,58 @@
     log(u.name, "student", "Ro'yxatdan o'tdi", u.email, "auth");
     return { ok: true, user: u };
   }
+  /**
+   * Google orqali kirish (frontend localStorage DB).
+   * profile: { name, email, avatar, googleId, role? }
+   * Backend token tekshirgandan keyin chaqiriladi.
+   */
+  function loginWithGoogle(profile) {
+    profile = profile || {};
+    var email = String(profile.email || "").trim().toLowerCase();
+    if (!email) return { ok: false, error: "Google email topilmadi" };
+    var googleId = String(profile.googleId || profile.sub || "").trim();
+    var name = String(profile.name || email.split("@")[0] || "Google foydalanuvchi").trim();
+    var avatar = String(profile.avatar || profile.picture || "").trim();
+    var role = profile.role || "student";
+
+    var u = null;
+    if (googleId) {
+      u = data.users.filter(function (x) { return x.googleId === googleId; })[0] || null;
+    }
+    if (!u) {
+      u = data.users.filter(function (x) { return (x.email || "").toLowerCase() === email; })[0] || null;
+    }
+
+    if (!u) {
+      u = {
+        id: uid("u"),
+        name: name,
+        email: email,
+        password: "", // Google orqali — parolsiz
+        role: role === "superadmin" || role === "manager" || role === "teacher" ? role : "student",
+        status: "active",
+        joined: todayLabel(),
+        last: "Hozir",
+        googleId: googleId,
+        avatar: avatar,
+        authProvider: "google"
+      };
+      data.users.push(u);
+      save();
+      log(u.name, u.role, "Google orqali ro'yxatdan o'tdi", u.email, "auth");
+    } else {
+      if (u.status === "blocked") return { ok: false, error: "Hisobingiz bloklangan" };
+      if (googleId) u.googleId = googleId;
+      if (avatar) u.avatar = avatar;
+      if (name && (!u.name || u.name.indexOf("@") >= 0)) u.name = name;
+      u.last = "Hozir";
+      u.authProvider = u.authProvider || "google";
+      save();
+      log(u.name, u.role, "Google orqali kirdi", u.email, "auth");
+    }
+    setSession({ userId: u.id, role: u.role, provider: "google" });
+    return { ok: true, user: u, created: !profile._existing };
+  }
 
   // ---------- GENERIC ----------
   function table(t) { return data[t] || []; }
@@ -1024,7 +1076,7 @@
   window.ProSkillDB = {
     raw: function () { return data; },
     table: table, byId: byId, insert: insert, update: update, remove: remove, save: save, reset: reset, bootstrap: bootstrap, reloadFromStorage: reloadFromStorage, isHealthy: function () { return isHealthy(data); },
-    session: session, currentUser: currentUser, login: login, loginAs: loginAs, register: register, logout: logout,
+    session: session, currentUser: currentUser, login: login, loginAs: loginAs, register: register, loginWithGoogle: loginWithGoogle, logout: logout,
     userName: userName, userAvatar: userAvatar, updateProfile: updateProfile, courseTitle: courseTitle, lessonsOf: lessonsOf, modulesOf: modulesOf,
     isEnrolled: isEnrolled, enrollmentsOf: enrollmentsOf, isDone: isDone, progressFor: progressFor, progressCount: progressCount,
     enrollFree: enrollFree, requestPayment: requestPayment, checkoutPay: checkoutPay, approvePayment: approvePayment, rejectPayment: rejectPayment, manualEnroll: manualEnroll,

@@ -22,6 +22,9 @@ class User(AbstractUser):
     bio = models.TextField(blank=True, default='')
     specialization = models.CharField(max_length=200, blank=True, default='')
     avatar = models.ImageField(upload_to='avatars/', blank=True, null=True)
+    # Google OAuth
+    google_id = models.CharField(max_length=64, blank=True, default='', db_index=True)
+    avatar_url = models.URLField(blank=True, default='')
     joined_label = models.CharField(max_length=50, blank=True, default='')
     last_seen = models.CharField(max_length=50, blank=True, default='Hozir')
 

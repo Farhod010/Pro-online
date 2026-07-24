@@ -4,6 +4,13 @@ from datetime import timedelta
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
+# .env faylini yuklash (GOOGLE_CLIENT_ID va boshqalar)
+try:
+    from dotenv import load_dotenv
+    load_dotenv(BASE_DIR / '.env')
+except Exception:
+    pass
+
 SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-proskill-dev-key-change-in-production')
 DEBUG = os.environ.get('DEBUG', 'True').lower() in ('true', '1', 'yes')
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
@@ -109,9 +116,13 @@ SIMPLE_JWT = {
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
 
-# CORS
+# CORS — frontend shu originlardan API chaqiradi
 CORS_ALLOWED_ORIGINS = os.environ.get(
     'CORS_ALLOWED_ORIGINS',
-    'http://localhost:3000,http://127.0.0.1:5500,http://localhost:5500'
+    'http://localhost:3000,http://127.0.0.1:5500,http://localhost:5500,http://127.0.0.1:8000,http://localhost:8000'
 ).split(',')
 CORS_ALLOW_CREDENTIALS = True
+
+# Google OAuth (Google Cloud Console → OAuth 2.0 Client ID)
+# .env: GOOGLE_CLIENT_ID=xxxx.apps.googleusercontent.com
+GOOGLE_CLIENT_ID = os.environ.get('GOOGLE_CLIENT_ID', '')

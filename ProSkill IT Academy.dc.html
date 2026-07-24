@@ -11,6 +11,8 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;600;700;800&family=Manrope:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <script src="proskill-db.js"></script>
+<script src="google-config.js"></script>
+<script src="https://accounts.google.com/gsi/client" async defer></script>
 <script src="image-slot.js"></script>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
@@ -941,43 +943,49 @@
             <button onClick="{{ setRegisterMode }}" style="cursor:pointer;flex:1;border:none;background:{{ regTabBg }};color:{{ regTabColor }};font-weight:700;font-size:13.5px;padding:10px;border-radius:9px">Ro'yxat</button>
           </div>
 
-          <!-- LOGIN -->
+          <!-- LOGIN — boshida Google, keyin email/parol -->
           <sc-if value="{{ isLoginMode }}" hint-placeholder-val="{{ true }}">
-            <h1>Sign in</h1>
+            <h1>Kirish</h1>
+            <p style="text-align:center;font-size:13px;color:#64748b;margin:-4px 0 14px;line-height:1.45">Google hisobingiz bilan tezda kiring yoki yangi hisob oching</p>
 
-            <label class="login-label">Email</label>
-            <input class="login-input" value="{{ loginEmail }}" onInput="{{ onLoginEmail }}" placeholder="your@email.com" style="margin-bottom:14px" />
+            <!-- Google Sign-In / Sign-Up (boshida) -->
+            <div id="google-btn-slot" style="display:flex;justify-content:center;margin-bottom:10px;min-height:44px"></div>
+            <button class="oauth-btn" onClick="{{ loginWithGoogle }}" type="button" title="Google hisobingiz bilan kiring yoki ro'yxatdan o'ting">
+              <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+              Google orqali kirish
+            </button>
+            <sc-if value="{{ googleLoading }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center;font-size:12.5px;color:#64748b;margin:8px 0 0">Google tekshirilmoqda…</div>
+            </sc-if>
+            <button class="oauth-btn" onClick="{{ loginFacebookStub }}" type="button" style="opacity:.85">
+              <span style="color:#1877f2;font-weight:800;font-size:18px;line-height:1">f</span>
+              Facebook (tez orada)
+            </button>
 
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
-              <label class="login-label" style="margin:0">Password</label>
-              <span class="auth-link">Forgot your password?</span>
-            </div>
-            <input class="login-input" type="password" value="{{ loginPassword }}" onInput="{{ onLoginPassword }}" placeholder="••••••••" style="margin-bottom:14px" />
-
-            <label style="display:flex;align-items:center;gap:9px;font-size:13.5px;color:#475569;cursor:pointer;margin-bottom:18px">
-              <input type="checkbox" style="width:15px;height:15px;accent-color:#0f172a" /> Remember me
-            </label>
+            <div class="login-divider">yoki email bilan</div>
 
             <sc-if value="{{ loginError }}" hint-placeholder-val="{{ false }}">
               <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:11px 13px;font-size:13px;color:#dc2626;margin-bottom:14px">{{ loginError }}</div>
             </sc-if>
 
-            <button onClick="{{ doLogin }}" class="login-btn">Sign in</button>
+            <label class="login-label">Email</label>
+            <input class="login-input" value="{{ loginEmail }}" onInput="{{ onLoginEmail }}" placeholder="email@example.com" style="margin-bottom:14px" />
+
+            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:7px">
+              <label class="login-label" style="margin:0">Parol</label>
+              <span class="auth-link" onClick="{{ forgotPassword }}" style="cursor:pointer">Parolni unutdingizmi?</span>
+            </div>
+            <input class="login-input" type="password" value="{{ loginPassword }}" onInput="{{ onLoginPassword }}" placeholder="Parolingizni kiriting" style="margin-bottom:14px" />
+
+            <label style="display:flex;align-items:center;gap:9px;font-size:13.5px;color:#475569;cursor:pointer;margin-bottom:18px">
+              <input type="checkbox" style="width:15px;height:15px;accent-color:#0f172a" /> Meni eslab qol
+            </label>
+
+            <button onClick="{{ doLogin }}" class="login-btn">Kirish</button>
 
             <p style="text-align:center;font-size:13.5px;color:#64748b;margin:16px 0 0">
-              Don't have an account? <span onClick="{{ setRegisterMode }}" class="auth-link-accent">Sign up</span>
+              Hisobingiz yo‘qmi? <span onClick="{{ setRegisterMode }}" class="auth-link-accent">Ro‘yxatdan o‘tish</span>
             </p>
-
-            <div class="login-divider">or</div>
-
-            <button class="oauth-btn" onClick="{{ loginStudent }}" type="button">
-              <span style="width:20px;height:20px;border-radius:50%;background:conic-gradient(#ea4335 0 25%,#fbbc05 0 50%,#34a853 0 75%,#4285f4 0);display:inline-block"></span>
-              Sign in with Google
-            </button>
-            <button class="oauth-btn" onClick="{{ loginStudent }}" type="button">
-              <span style="color:#1877f2;font-weight:800;font-size:18px;line-height:1">f</span>
-              Sign in with Facebook
-            </button>
 
             <div style="font-size:12px;color:#94a3b8;font-weight:600;margin:16px 0 8px;text-align:center">Demo tez kirish</div>
             <div class="login-demo">
@@ -990,20 +998,37 @@
             <div style="font-size:11px;color:#94a3b8;text-align:center;margin-top:8px;line-height:1.4">Parollar: student / teacher / manager / admin</div>
           </sc-if>
 
-          <!-- REGISTER -->
+          <!-- REGISTER — boshida Google, keyin forma -->
           <sc-if value="{{ isRegisterMode }}" hint-placeholder-val="{{ false }}">
-            <h1>Sign up</h1>
+            <h1>Ro‘yxatdan o‘tish</h1>
+            <p style="text-align:center;font-size:13px;color:#64748b;margin:-4px 0 14px;line-height:1.45">Google bilan bir bosishda hisob yarating</p>
 
-            <label class="login-label">To'liq ism</label>
+            <!-- Google Sign-Up (boshida) -->
+            <div id="google-btn-slot-reg" style="display:flex;justify-content:center;margin-bottom:10px;min-height:44px"></div>
+            <button class="oauth-btn" onClick="{{ loginWithGoogle }}" type="button" title="Google hisobingiz bilan ro'yxatdan o'ting">
+              <svg width="18" height="18" viewBox="0 0 48 48" aria-hidden="true"><path fill="#EA4335" d="M24 9.5c3.54 0 6.71 1.22 9.21 3.6l6.85-6.85C35.9 2.38 30.47 0 24 0 14.62 0 6.51 5.38 2.56 13.22l7.98 6.19C12.43 13.72 17.74 9.5 24 9.5z"/><path fill="#4285F4" d="M46.98 24.55c0-1.57-.15-3.09-.38-4.55H24v9.02h12.94c-.58 2.96-2.26 5.48-4.78 7.18l7.73 6c4.51-4.18 7.09-10.36 7.09-17.65z"/><path fill="#FBBC05" d="M10.53 28.59c-.48-1.45-.76-2.99-.76-4.59s.27-3.14.76-4.59l-7.98-6.19C.92 16.46 0 20.12 0 24c0 3.88.92 7.54 2.56 10.78l7.97-6.19z"/><path fill="#34A853" d="M24 48c6.48 0 11.93-2.13 15.89-5.81l-7.73-6c-2.15 1.45-4.92 2.3-8.16 2.3-6.26 0-11.57-4.22-13.47-9.91l-7.98 6.19C6.51 42.62 14.62 48 24 48z"/></svg>
+              Google orqali ro‘yxatdan o‘tish
+            </button>
+            <sc-if value="{{ googleLoading }}" hint-placeholder-val="{{ false }}">
+              <div style="text-align:center;font-size:12.5px;color:#64748b;margin:8px 0 0">Google tekshirilmoqda…</div>
+            </sc-if>
+
+            <div class="login-divider">yoki email bilan</div>
+
+            <sc-if value="{{ loginError }}" hint-placeholder-val="{{ false }}">
+              <div style="background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:11px 13px;font-size:13px;color:#dc2626;margin-bottom:14px">{{ loginError }}</div>
+            </sc-if>
+
+            <label class="login-label">To‘liq ism</label>
             <input class="login-input" value="{{ regName }}" onInput="{{ onRegName }}" placeholder="Aziz Karimov" style="margin-bottom:12px" />
 
             <label class="login-label">Email</label>
-            <input class="login-input" value="{{ regEmail }}" onInput="{{ onRegEmail }}" placeholder="your@email.com" style="margin-bottom:12px" />
+            <input class="login-input" value="{{ regEmail }}" onInput="{{ onRegEmail }}" placeholder="email@example.com" style="margin-bottom:12px" />
 
-            <label class="login-label">Password</label>
-            <input class="login-input" type="password" value="{{ regPassword }}" onInput="{{ onRegPassword }}" placeholder="••••••••" style="margin-bottom:12px" />
+            <label class="login-label">Parol</label>
+            <input class="login-input" type="password" value="{{ regPassword }}" onInput="{{ onRegPassword }}" placeholder="Kamida 4 ta belgi" style="margin-bottom:12px" />
 
-            <label class="login-label">Men ...</label>
+            <label class="login-label">Men …</label>
             <div style="display:flex;gap:8px;margin-bottom:14px">
               <sc-for list="{{ regRoleChips }}" as="r" hint-placeholder-count="2">
                 <button onClick="{{ r.onClick }}" style="cursor:pointer;flex:1;border:1.5px solid {{ r.border }};background:{{ r.bg }};color:{{ r.color }};font-weight:600;font-size:13px;padding:10px;border-radius:10px">{{ r.label }}</button>
@@ -1015,9 +1040,9 @@
               <span>Foydalanish shartlari va maxfiylik siyosatiga roziman</span>
             </label>
 
-            <button onClick="{{ register }}" class="login-btn">Create account</button>
+            <button onClick="{{ register }}" class="login-btn">Hisob yaratish</button>
             <p style="text-align:center;font-size:13.5px;color:#64748b;margin:16px 0 0">
-              Already have an account? <span onClick="{{ setLoginMode }}" class="auth-link-accent">Sign in</span>
+              Allaqachon hisobingiz bormi? <span onClick="{{ setLoginMode }}" class="auth-link-accent">Kirish</span>
             </p>
           </sc-if>
         </div>
@@ -1472,7 +1497,7 @@ class Component extends DCLogic {
 
     this.state = {
       route:"landing", user:null, dashTab:"overview", authMode:"login", regRole:"student",
-      loginEmail:"", loginPassword:"", loginError:null, regName:"", regEmail:"", regPassword:"",
+      loginEmail:"", loginPassword:"", loginError:null, googleLoading:false, regName:"", regEmail:"", regPassword:"",
       menuOpen:false,
 
       selected:"c1", currentLesson:"c1-0-0",
@@ -1491,9 +1516,192 @@ class Component extends DCLogic {
     try{ this.ensureDb(); }catch(e){}
     this._onResize=()=>{ clearTimeout(this._rz); this._rz=setTimeout(()=>{ try{this.forceUpdate();}catch(e){} },150); };
     try{ window.addEventListener("resize", this._onResize); }catch(e){}
+    // Google Identity Services tayyor bo'lganda tugmani chizish
+    this._googleReady=false;
+    this._initGoogleTimer=setInterval(()=>{
+      try{
+        if(window.google&&window.google.accounts&&window.google.accounts.id){
+          clearInterval(this._initGoogleTimer);
+          this.initGoogleSignIn();
+        }
+      }catch(e){}
+    },300);
+    setTimeout(()=>{ try{ clearInterval(this._initGoogleTimer); }catch(e){} },15000);
   }
   componentWillUnmount(){
     try{ window.removeEventListener("resize", this._onResize); }catch(e){}
+    try{ clearInterval(this._initGoogleTimer); }catch(e){}
+  }
+  getGoogleClientId(){
+    const cfg=window.PROSKILL_GOOGLE||{};
+    return String(cfg.clientId||"").trim();
+  }
+  getAuthApiBase(){
+    const cfg=window.PROSKILL_GOOGLE||{};
+    return String(cfg.apiBase||"http://127.0.0.1:8000/api/auth").replace(/\/$/,"");
+  }
+  initGoogleSignIn(){
+    const clientId=this.getGoogleClientId();
+    if(!clientId||clientId.indexOf("YOUR_GOOGLE")===0){
+      this._googleReady=false;
+      return;
+    }
+    try{
+      if(!window.google||!window.google.accounts||!window.google.accounts.id){
+        this._googleReady=false;
+        return;
+      }
+      window.google.accounts.id.initialize({
+        client_id: clientId,
+        callback: (resp)=>this.handleGoogleCredential(resp),
+        auto_select: false,
+        cancel_on_tap_outside: true
+      });
+      this.renderGoogleButtons();
+      this._googleReady=true;
+    }catch(e){
+      this._googleReady=false;
+      console.error("Google init xato:", e);
+    }
+  }
+  /** Kirish va Ro'yxat slotlariga rasmiy Google tugmasini chizish */
+  renderGoogleButtons(){
+    try{
+      if(!window.google||!window.google.accounts||!window.google.accounts.id) return;
+      const mode=this.state&&this.state.authMode;
+      const slots=[
+        {id:"google-btn-slot", text: mode==="register"?"signup_with":"signin_with"},
+        {id:"google-btn-slot-reg", text:"signup_with"}
+      ];
+      slots.forEach((s)=>{
+        const el=document.getElementById(s.id);
+        if(!el) return;
+        el.innerHTML="";
+        window.google.accounts.id.renderButton(el, {
+          theme: "outline",
+          size: "large",
+          text: s.text,
+          shape: "rectangular",
+          logo_alignment: "left",
+          width: 320
+        });
+      });
+    }catch(e){ console.error("Google tugma chizish xato:", e); }
+  }
+  /** Tugma bosilganda — Google One Tap / prompt yoki sozlama yo'qligi haqida xabar */
+  loginWithGoogle(){
+    const clientId=this.getGoogleClientId();
+    if(!clientId||clientId.indexOf("YOUR_GOOGLE")===0){
+      this.setState({loginError:"Google Client ID sozlanmagan. google-config.js va backend/.env ga Client ID yozing. Ko'rsatma: GOOGLE_OAUTH_SETUP.md"});
+      return;
+    }
+    this.setState({loginError:null,googleLoading:true});
+    try{
+      if(window.google&&window.google.accounts&&window.google.accounts.id){
+        // Official Google tugma yoki prompt
+        window.google.accounts.id.prompt((notification)=>{
+          try{
+            if(notification&&notification.isNotDisplayed&&notification.isNotDisplayed()){
+              this.setState({googleLoading:false,loginError:"Google oyna ochilmadi. Yuqoridagi rasmiy Google tugmasini bosing yoki brauzer pop-up ni ruxsat bering."});
+            } else if(notification&&notification.isSkippedMoment&&notification.isSkippedMoment()){
+              this.setState({googleLoading:false});
+            }
+          }catch(e){ this.setState({googleLoading:false}); }
+        });
+      } else {
+        this.setState({googleLoading:false,loginError:"Google skript yuklanmadi. Internetni tekshiring va sahifani yangilang."});
+      }
+    }catch(e){
+      this.setState({googleLoading:false,loginError:"Google xato: "+(e&&e.message?e.message:e)});
+    }
+  }
+  loginFacebookStub(){
+    this.setState({loginError:"Facebook login tez orada qo'shiladi. Hozir Google yoki email bilan kiring."});
+  }
+  /**
+   * Google dan kelgan JWT credential ni backendga yuborish
+   * va ProSkillDB sessiyasini ochish
+   */
+  async handleGoogleCredential(response){
+    const credential=response&&response.credential;
+    if(!credential){
+      this.setState({googleLoading:false,loginError:"Google token olinmadi. Qayta urinib ko'ring."});
+      return;
+    }
+    this.setState({googleLoading:true,loginError:null});
+    const api=this.getAuthApiBase()+"/google/";
+    try{
+      const res=await fetch(api,{
+        method:"POST",
+        headers:{"Content-Type":"application/json","Accept":"application/json"},
+        body:JSON.stringify({credential:credential})
+      });
+      let data=null;
+      try{ data=await res.json(); }catch(e){ data=null; }
+      if(!res.ok||!data||!data.ok){
+        const err=(data&&(data.error||data.detail))||("Server xatosi: "+res.status);
+        // Agar backend o'chiq bo'lsa — faqat frontend (local) fallback (token decode)
+        if(res.status===0||res.status>=500||(data&&data.code==="GOOGLE_CLIENT_ID_MISSING")){
+          const local=this.googleLocalFallback(credential);
+          if(local&&local.ok) return;
+        }
+        this.setState({googleLoading:false,loginError:String(err)});
+        return;
+      }
+      // Backend muvaffaqiyatli — JWT ni saqlash (ixtiyoriy)
+      try{
+        if(data.tokens){
+          localStorage.setItem("proskill_jwt_access", data.tokens.access||"");
+          localStorage.setItem("proskill_jwt_refresh", data.tokens.refresh||"");
+        }
+      }catch(e){}
+      // Local ProSkill panel sessiyasi (Student.dc.html va h.k.)
+      const DB=this.ensureDb();
+      const profile=data.profile||{
+        name:(data.user&&(data.user.name||((data.user.first_name||"")+" "+(data.user.last_name||"")).trim()))||"Google foydalanuvchi",
+        email:data.user&&data.user.email,
+        avatar:(data.user&&(data.user.avatar_url||data.user.avatar))||"",
+        googleId:(data.user&&data.user.google_id)||"",
+        role:(data.user&&data.user.role)||"student"
+      };
+      const r=DB&&DB.loginWithGoogle?DB.loginWithGoogle(profile):{ok:false,error:"DB loginWithGoogle yo'q"};
+      if(!r||!r.ok){
+        this.setState({googleLoading:false,loginError:(r&&r.error)||"Sessiya ochilmadi"});
+        return;
+      }
+      this.setState({googleLoading:false,loginError:null});
+      this.notify(data.created?"Google orqali ro'yxatdan o'tdingiz ✓":"Google orqali kirdingiz ✓");
+      const role=r.user.role||"student";
+      const dest={teacher:"ProSkill Teacher.dc.html",manager:"ProSkill Manager.dc.html",student:"ProSkill Student.dc.html",superadmin:"ProSkill Super Admin.dc.html"}[role]||"ProSkill Student.dc.html";
+      try{ window.location.href=dest; }catch(e){}
+    }catch(err){
+      // Tarmoq xatosi — local fallback urinish
+      const local=this.googleLocalFallback(credential);
+      if(local&&local.ok) return;
+      this.setState({googleLoading:false,loginError:"Serverga ulanib bo'lmadi. Django runserver ishlayotganini tekshiring (127.0.0.1:8000)."});
+    }
+  }
+  /** Backend ishlamasa ham — faqat rivojlantirish uchun JWT payload dan o'qish (verify emas!) */
+  googleLocalFallback(credential){
+    try{
+      const parts=String(credential).split(".");
+      if(parts.length<2) return {ok:false};
+      const json=JSON.parse(atob(parts[1].replace(/-/g,"+").replace(/_/g,"/")));
+      if(!json.email) return {ok:false};
+      const DB=this.ensureDb();
+      const r=DB.loginWithGoogle({
+        name:json.name||json.email,
+        email:json.email,
+        avatar:json.picture||"",
+        googleId:json.sub||"",
+        role:"student"
+      });
+      if(!r||!r.ok) return r;
+      this.setState({googleLoading:false,loginError:null});
+      this.notify("Google (local) sessiya ochildi — productionda backend verify majburiy");
+      try{ window.location.href="ProSkill Student.dc.html"; }catch(e){}
+      return {ok:true};
+    }catch(e){ return {ok:false}; }
   }
 
   money(n){ return n.toString().replace(/\B(?=(\d{3})+(?!\d))/g," ")+" so'm"; }
@@ -1512,7 +1720,19 @@ class Component extends DCLogic {
   }
 
   // ---- Navigatsiya ----
-  nav(r){ this.setState({route:r,menuOpen:false}); try{window.scrollTo(0,0);}catch(e){} }
+  nav(r){
+    this.setState({route:r,menuOpen:false});
+    try{window.scrollTo(0,0);}catch(e){}
+    // Login sahifasiga kirganda Google tugmalarini chizish
+    if(r==="login"){
+      setTimeout(()=>{
+        try{
+          if(this._googleReady) this.renderGoogleButtons();
+          else this.initGoogleSignIn();
+        }catch(e){}
+      }, 100);
+    }
+  }
   notify(msg){ this.setState({toast:msg}); clearTimeout(this._t); this._t=setTimeout(()=>this.setState({toast:null}),2600); }
 
   openCourse(id){ this.setState({route:"course",selected:id}); try{window.scrollTo(0,0);}catch(e){} }
@@ -1586,7 +1806,14 @@ class Component extends DCLogic {
     }catch(e){ this.setState({loginError:"Tiklash xato"}); }
   }
   logout(){ const DB=window.ProSkillDB; if(DB)DB.logout(); this.setState({user:null,route:"landing"}); }
-  setAuthMode(m){ this.setState({authMode:m,loginError:null}); }
+  setAuthMode(m){
+    this.setState({authMode:m,loginError:null,googleLoading:false});
+    // sc-if DOM almashtirgandan keyin Google tugmasini qayta chizish
+    setTimeout(()=>{ try{ this.renderGoogleButtons(); }catch(e){} }, 80);
+  }
+  forgotPassword(){
+    this.notify("Parol tiklash: demo rejimida demo parollardan foydalaning (student / teacher / manager / admin). Google orqali kirish parolsiz ishlaydi.");
+  }
   setRegRole(r){ this.setState({regRole:r}); }
   register(){
     const DB=this.ensureDb();
@@ -1882,6 +2109,10 @@ class Component extends DCLogic {
       // login
       loginStudent:()=>this.loginAs("student"), loginTeacher:()=>this.loginAs("teacher"), loginManager:()=>this.loginAs("manager"), loginDirector:()=>this.loginAs("manager"), loginAdmin:()=>this.loginAs("superadmin"),
       resetDemoDb:()=>this.resetDemoDb(),
+      loginWithGoogle:()=>this.loginWithGoogle(),
+      loginFacebookStub:()=>this.loginFacebookStub(),
+      forgotPassword:()=>this.forgotPassword(),
+      googleLoading:!!this.state.googleLoading,
       isLoginMode:st.authMode==="login", isRegisterMode:st.authMode==="register",
       loginEmail:st.loginEmail, loginPassword:st.loginPassword, loginError:st.loginError,
       onLoginEmail:(e)=>this.setState({loginEmail:e.target.value,loginError:null}),
