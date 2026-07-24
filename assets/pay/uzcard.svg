@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 48" role="img" aria-label="Uzcard">
+  <rect width="120" height="48" rx="10" fill="#1B3A8C"/>
+  <circle cx="28" cy="24" r="11" fill="#F7B500"/>
+  <circle cx="38" cy="24" r="11" fill="#E31E24" fill-opacity="0.92"/>
+  <text x="72" y="29" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="13" font-weight="800" fill="#fff">Uzcard</text>
+</svg>

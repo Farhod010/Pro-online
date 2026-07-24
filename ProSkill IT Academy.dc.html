@@ -986,6 +986,8 @@
               <button onClick="{{ loginManager }}">Manager</button>
               <button onClick="{{ loginAdmin }}">Super Admin</button>
             </div>
+            <button onClick="{{ resetDemoDb }}" type="button" style="cursor:pointer;width:100%;margin-top:12px;border:1px dashed #cbd5e1;background:#f8fafc;color:#64748b;font-weight:700;font-size:12.5px;padding:11px;border-radius:10px">♻ Demo bazani noldan tiklash</button>
+            <div style="font-size:11px;color:#94a3b8;text-align:center;margin-top:8px;line-height:1.4">Parollar: student / teacher / manager / admin</div>
           </sc-if>
 
           <!-- REGISTER -->
@@ -1485,6 +1487,8 @@ class Component extends DCLogic {
   closeMenu(){ if(this.state.menuOpen) this.setState({menuOpen:false}); }
 
   componentDidMount(){
+    // noldan ishlashi: DB bo'sh/buzilgan bo'lsa seed
+    try{ this.ensureDb(); }catch(e){}
     this._onResize=()=>{ clearTimeout(this._rz); this._rz=setTimeout(()=>{ try{this.forceUpdate();}catch(e){} },150); };
     try{ window.addEventListener("resize", this._onResize); }catch(e){}
   }
@@ -1545,26 +1549,47 @@ class Component extends DCLogic {
   }
 
   // ---- Auth (real, DB orqali) ----
-  loginAs(role){
+  ensureDb(){
     const DB=window.ProSkillDB;
-    if(DB){ const r=DB.loginAs(role); }
+    if(!DB) return null;
+    try{ if(DB.bootstrap) DB.bootstrap(false); }catch(e){}
+    try{ if(DB.reloadFromStorage) DB.reloadFromStorage(); }catch(e){}
+    return DB;
+  }
+  loginAs(role){
+    const DB=this.ensureDb();
+    if(DB){
+      const r=DB.loginAs(role);
+      if(!r||!r.ok){ this.setState({loginError:"Demo login ishlamadi — bazani noldan tiklang"}); return; }
+    }
     const dest={teacher:"ProSkill Teacher.dc.html",manager:"ProSkill Manager.dc.html",student:"ProSkill Student.dc.html",superadmin:"ProSkill Super Admin.dc.html"}[role];
     if(dest){ try{window.location.href=dest;return;}catch(e){} }
     const u={...this.roles[role],role};
     this.setState({user:u,route:"dashboard",dashTab:"overview"});
   }
   doLogin(){
-    const DB=window.ProSkillDB;
+    const DB=this.ensureDb();
     const r=DB?DB.login(this.state.loginEmail,this.state.loginPassword):{ok:false,error:"DB yo'q"};
-    if(!r.ok){ this.setState({loginError:r.error}); return; }
+    if(!r.ok){ this.setState({loginError:r.error||"Login xato"}); return; }
     const dest={teacher:"ProSkill Teacher.dc.html",manager:"ProSkill Manager.dc.html",student:"ProSkill Student.dc.html",superadmin:"ProSkill Super Admin.dc.html"}[r.user.role];
+    if(!dest){ this.setState({loginError:"Rol paneli topilmadi"}); return; }
     try{ window.location.href=dest; }catch(e){}
+  }
+  resetDemoDb(){
+    const DB=window.ProSkillDB;
+    if(!DB){ this.notify("DB yuklanmadi"); return; }
+    try{
+      if(DB.bootstrap) DB.bootstrap(true);
+      else if(DB.reset) DB.reset();
+      this.setState({loginError:null});
+      this.notify("Demo baza noldan tiklandi ✓ Endi login qiling");
+    }catch(e){ this.setState({loginError:"Tiklash xato"}); }
   }
   logout(){ const DB=window.ProSkillDB; if(DB)DB.logout(); this.setState({user:null,route:"landing"}); }
   setAuthMode(m){ this.setState({authMode:m,loginError:null}); }
   setRegRole(r){ this.setState({regRole:r}); }
   register(){
-    const DB=window.ProSkillDB;
+    const DB=this.ensureDb();
     const r=DB?DB.register(this.state.regName,this.state.regEmail,this.state.regPassword):{ok:false};
     if(!r.ok){ this.setState({loginError:r.error}); this.notify(r.error||"Xatolik"); return; }
     try{ window.location.href="ProSkill Student.dc.html"; }catch(e){ this.loginAs("student"); }
@@ -1856,6 +1881,7 @@ class Component extends DCLogic {
       canMarkComplete: currentLessonObj?(!(!enrolled&&!currentLessonObj.free) && !st.completed[currentLessonObj.key]):false,
       // login
       loginStudent:()=>this.loginAs("student"), loginTeacher:()=>this.loginAs("teacher"), loginManager:()=>this.loginAs("manager"), loginDirector:()=>this.loginAs("manager"), loginAdmin:()=>this.loginAs("superadmin"),
+      resetDemoDb:()=>this.resetDemoDb(),
       isLoginMode:st.authMode==="login", isRegisterMode:st.authMode==="register",
       loginEmail:st.loginEmail, loginPassword:st.loginPassword, loginError:st.loginError,
       onLoginEmail:(e)=>this.setState({loginEmail:e.target.value,loginError:null}),

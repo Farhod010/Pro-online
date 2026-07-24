@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 48" role="img" aria-label="Humo">
+  <rect width="120" height="48" rx="10" fill="#5B2D8E"/>
+  <path d="M22 30c4-10 10-14 16-14s12 4 16 14" fill="none" stroke="#F4C430" stroke-width="3.2" stroke-linecap="round"/>
+  <circle cx="38" cy="18" r="3.2" fill="#F4C430"/>
+  <text x="78" y="29" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="15" font-weight="800" fill="#fff">Humo</text>
+</svg>

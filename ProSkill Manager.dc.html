@@ -139,11 +139,21 @@
           </sc-if>
         </div>
 
-        <!-- ===== DASHBOARD ===== -->
+        <!-- ===== DASHBOARD (full live) ===== -->
         <sc-if value="{{ tabDashboard }}" hint-placeholder-val="{{ true }}">
+          <!-- Tezkor xulosa -->
+          <div style="background:linear-gradient(135deg,rgba(13,148,136,.14),rgba(14,165,233,.1));border:1px solid rgba(13,148,136,.28);border-radius:16px;padding:14px 18px;margin-bottom:16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap">
+            <div style="flex:1;min-width:220px">
+              <div style="font-size:12px;font-weight:800;color:#2dd4bf;text-transform:uppercase;letter-spacing:.4px;margin-bottom:4px">Tezkor xulosa</div>
+              <div style="font-size:13.5px;color:var(--text);line-height:1.45">{{ dashSummary }}</div>
+            </div>
+            <span onClick="{{ refreshDashboard }}" style="cursor:pointer;font-size:12.5px;font-weight:800;padding:10px 14px;border-radius:10px;border:1px solid rgba(13,148,136,.4);color:#2dd4bf;background:rgba(13,148,136,.1)">↻ Yangilash</span>
+          </div>
+
+          <!-- KPI cards (clickable) -->
           <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:15px;margin-bottom:16px">
             <sc-for list="{{ kpis }}" as="k" hint-placeholder-count="8">
-              <div style="background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px">
+              <div onClick="{{ k.onClick }}" style="cursor:pointer;background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:18px;transition:border-color .15s,transform .12s" style-hover="border-color:rgba(13,148,136,.45);transform:translateY(-1px)">
                 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:13px">
                   <div style="width:36px;height:36px;border-radius:10px;background:{{ k.tint }};display:flex;align-items:center;justify-content:center;color:{{ k.color }}">{{ k.iconEl }}</div>
                   <span style="font-size:11.5px;font-weight:700;color:{{ k.trendColor }}">{{ k.trend }}</span>
@@ -154,69 +164,145 @@
             </sc-for>
           </div>
 
+          <!-- Chart + payments -->
           <div style="display:grid;grid-template-columns:1.6fr 1fr;gap:16px;margin-bottom:16px">
             <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:22px">
-              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">
-                <div><div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:16px">Daromad dinamikasi</div><div style="font-size:12.5px;color:var(--muted2);margin-top:3px">So'nggi 12 oy · mln so'm</div></div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;flex-wrap:wrap;gap:10px">
+                <div>
+                  <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:16px">Daromad dinamikasi</div>
+                  <div style="font-size:12.5px;color:var(--muted2);margin-top:3px">{{ chartSubtitle }}</div>
+                </div>
                 <div style="display:flex;gap:7px">
-                  <span style="font-size:12px;font-weight:700;padding:6px 12px;border-radius:8px;background:rgba(13,148,136,.16);color:#2dd4bf">Oylik</span>
-                  <span style="font-size:12px;font-weight:600;padding:6px 12px;border-radius:8px;color:var(--muted)">Haftalik</span>
+                  <sc-for list="{{ chartRangeChips }}" as="r" hint-placeholder-count="2">
+                    <span onClick="{{ r.onClick }}" style="cursor:pointer;font-size:12px;font-weight:700;padding:6px 12px;border-radius:8px;background:{{ r.bg }};color:{{ r.color }};border:1px solid {{ r.border }}">{{ r.label }}</span>
+                  </sc-for>
                 </div>
               </div>
               <div style="display:flex;align-items:flex-end;gap:9px;height:200px;padding-top:24px">
                 <sc-for list="{{ revenueChart }}" as="b" hint-placeholder-count="12">
-                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end">
+                  <div style="flex:1;display:flex;flex-direction:column;align-items:center;gap:8px;height:100%;justify-content:flex-end" title="{{ b.tip }}">
                     <div style="font-size:10.5px;font-weight:700;color:var(--muted)">{{ b.value }}</div>
                     <div style="width:100%;height:{{ b.h }}px;min-height:6px;border-radius:7px 7px 0 0;background:{{ b.fill }}"></div>
                     <div style="font-size:11px;color:var(--muted2);font-weight:600">{{ b.label }}</div>
                   </div>
                 </sc-for>
               </div>
+              <sc-if value="{{ noChartData }}" hint-placeholder-val="{{ false }}">
+                <div style="text-align:center;color:var(--muted2);font-size:13px;padding:12px 0 0">Hali to'lov yo'q — ma'lumot paydo bo'lganda grafik to'ladi</div>
+              </sc-if>
             </div>
             <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:22px">
-              <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:16px;margin-bottom:18px">To'lov holatlari</div>
+              <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:18px">
+                <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:16px">To'lov holatlari</div>
+                <span onClick="{{ goPayments }}" style="cursor:pointer;font-size:12px;font-weight:700;color:#2dd4bf">Ochish →</span>
+              </div>
               <div style="display:flex;flex-direction:column;gap:16px">
                 <sc-for list="{{ paymentDonut }}" as="p" hint-placeholder-count="3">
-                  <div>
+                  <div onClick="{{ p.onClick }}" style="cursor:pointer" style-hover="opacity:.9">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px"><span style="font-size:13.5px;font-weight:600">{{ p.label }}</span><span style="font-size:13px;font-weight:700;color:{{ p.color }}">{{ p.count }} · {{ p.pct }}%</span></div>
                     <div style="height:9px;border-radius:9px;background:var(--line);overflow:hidden"><div style="height:100%;width:{{ p.pct }}%;background:{{ p.color }};border-radius:9px"></div></div>
                   </div>
                 </sc-for>
               </div>
               <div style="margin-top:22px;padding-top:18px;border-top:1px solid var(--border);display:grid;grid-template-columns:1fr 1fr;gap:12px">
-                <div><div style="font-size:12px;color:var(--muted)">Jami daromad</div><div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;color:#34d399;margin-top:3px">{{ dashRevenueLabel }}</div></div>
-                <div><div style="font-size:12px;color:var(--muted)">Kutilayotgan</div><div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;margin-top:3px;color:#fbbf24">{{ dashPendingLabel }}</div></div>
+                <div onClick="{{ goPayments }}" style="cursor:pointer"><div style="font-size:12px;color:var(--muted)">Jami daromad</div><div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;color:#34d399;margin-top:3px">{{ dashRevenueLabel }}</div></div>
+                <div onClick="{{ goPayments }}" style="cursor:pointer"><div style="font-size:12px;color:var(--muted)">Kutilayotgan</div><div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px;margin-top:3px;color:#fbbf24">{{ dashPendingLabel }}</div></div>
               </div>
             </div>
           </div>
 
-          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px">
+          <!-- Quick actions -->
+          <div style="display:grid;grid-template-columns:repeat(6,1fr);gap:10px;margin-bottom:16px">
+            <sc-for list="{{ dashQuickActions }}" as="a" hint-placeholder-count="6">
+              <div onClick="{{ a.onClick }}" style="cursor:pointer;background:var(--panel);border:1px solid var(--border);border-radius:14px;padding:14px 12px;text-align:center" style-hover="border-color:rgba(13,148,136,.4);background:var(--hover)">
+                <div style="font-size:20px;margin-bottom:6px">{{ a.icon }}</div>
+                <div style="font-size:12px;font-weight:800">{{ a.label }}</div>
+                <div style="font-size:11px;color:var(--muted2);margin-top:2px">{{ a.sub }}</div>
+              </div>
+            </sc-for>
+          </div>
+
+          <!-- Lists -->
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px">
             <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:22px">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:16px">Eng ko'p sotilgan kurslar</div><span onClick="{{ goCourses }}" style="cursor:pointer;font-size:12.5px;font-weight:600;color:#2dd4bf">Barchasi →</span></div>
-              <div style="display:flex;flex-direction:column;gap:14px">
-                <sc-for list="{{ topCourses }}" as="c" hint-placeholder-count="5">
-                  <div style="display:flex;align-items:center;gap:12px">
-                    <div style="width:38px;height:38px;border-radius:10px;background:{{ c.grad }};display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans';font-weight:800;font-size:14px;color:#fff;flex:none">{{ c.initial }}</div>
-                    <div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.title }}</div><div style="font-size:12px;color:var(--muted2);margin-top:2px">{{ c.students }} o'quvchi</div></div>
-                    <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:14px;color:#34d399">{{ c.revenue }}</div>
-                  </div>
-                </sc-for>
-              </div>
+              <sc-if value="{{ hasTopCourses }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;flex-direction:column;gap:14px">
+                  <sc-for list="{{ topCourses }}" as="c" hint-placeholder-count="5">
+                    <div onClick="{{ c.onOpen }}" style="cursor:pointer;display:flex;align-items:center;gap:12px;padding:6px;border-radius:12px" style-hover="background:var(--hover)">
+                      <div style="width:38px;height:38px;border-radius:10px;background:{{ c.grad }};display:flex;align-items:center;justify-content:center;font-family:'Plus Jakarta Sans';font-weight:800;font-size:14px;color:#fff;flex:none">{{ c.initial }}</div>
+                      <div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">{{ c.title }}</div><div style="font-size:12px;color:var(--muted2);margin-top:2px">{{ c.students }} o'quvchi · {{ c.statusLabel }}</div></div>
+                      <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:14px;color:#34d399">{{ c.revenue }}</div>
+                    </div>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{ noTopCourses }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:28px;text-align:center;color:var(--muted2);font-size:13px">Kurs yo'q — «Kurslar»dan qo'shing</div>
+              </sc-if>
             </div>
             <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:22px">
               <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px"><div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:16px">So'nggi ro'yxatdan o'tganlar</div><span onClick="{{ goUsers }}" style="cursor:pointer;font-size:12.5px;font-weight:600;color:#2dd4bf">Barchasi →</span></div>
-              <div style="display:flex;flex-direction:column;gap:13px">
-                <sc-for list="{{ recentUsers }}" as="u" hint-placeholder-count="5">
-                  <div style="display:flex;align-items:center;gap:12px">
-                    <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#0d9488,#0ea5e9);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex:none;overflow:hidden">
-                      <sc-if value="{{ u.hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ u.avatar }}" alt="" style="width:100%;height:100%;object-fit:cover"/></sc-if>
-                      <sc-if value="{{ u.noAvatar }}" hint-placeholder-val="{{ true }}"><span>{{ u.initial }}</span></sc-if>
+              <sc-if value="{{ hasRecentUsers }}" hint-placeholder-val="{{ true }}">
+                <div style="display:flex;flex-direction:column;gap:13px">
+                  <sc-for list="{{ recentUsers }}" as="u" hint-placeholder-count="5">
+                    <div onClick="{{ u.onOpen }}" style="cursor:pointer;display:flex;align-items:center;gap:12px;padding:6px;border-radius:12px" style-hover="background:var(--hover)">
+                      <div style="width:36px;height:36px;border-radius:10px;background:linear-gradient(135deg,#0d9488,#0ea5e9);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex:none;overflow:hidden">
+                        <sc-if value="{{ u.hasAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ u.avatar }}" alt="" style="width:100%;height:100%;object-fit:cover"/></sc-if>
+                        <sc-if value="{{ u.noAvatar }}" hint-placeholder-val="{{ true }}"><span>{{ u.initial }}</span></sc-if>
+                      </div>
+                      <div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:600">{{ u.name }}</div><div style="font-size:12px;color:var(--muted2);margin-top:1px">{{ u.email }}</div></div>
+                      <span style="font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:7px;background:{{ u.roleTint }};color:{{ u.roleColor }}">{{ u.role }}</span>
                     </div>
-                    <div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:600">{{ u.name }}</div><div style="font-size:12px;color:var(--muted2);margin-top:1px">{{ u.email }}</div></div>
-                    <span style="font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:7px;background:{{ u.roleTint }};color:{{ u.roleColor }}">{{ u.role }}</span>
-                  </div>
-                </sc-for>
+                  </sc-for>
+                </div>
+              </sc-if>
+              <sc-if value="{{ noRecentUsers }}" hint-placeholder-val="{{ false }}">
+                <div style="padding:28px;text-align:center;color:var(--muted2);font-size:13px">Foydalanuvchi yo'q</div>
+              </sc-if>
+            </div>
+          </div>
+
+          <!-- Bottom CRM row -->
+          <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:16px">
+            <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:18px 20px">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:15px">Yangi leadlar</div>
+                <span onClick="{{ goLeads }}" style="cursor:pointer;font-size:12px;font-weight:700;color:#2dd4bf">Hammasi →</span>
               </div>
+              <sc-for list="{{ dashLeads }}" as="l" hint-placeholder-count="3">
+                <div onClick="{{ l.onOpen }}" style="cursor:pointer;display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)" style-hover="opacity:.9">
+                  <div style="min-width:0"><div style="font-size:13px;font-weight:700">{{ l.name }}</div><div style="font-size:11.5px;color:var(--muted2)">{{ l.source }} · {{ l.interest }}</div></div>
+                  <span style="font-size:11px;font-weight:800;padding:3px 8px;border-radius:6px;background:{{ l.stageBg }};color:{{ l.stageColor }};height:fit-content">{{ l.stageLabel }}</span>
+                </div>
+              </sc-for>
+              <sc-if value="{{ noDashLeads }}" hint-placeholder-val="{{ false }}"><div style="padding:16px;text-align:center;color:var(--muted2);font-size:13px">Lead yo'q</div></sc-if>
+            </div>
+            <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:18px 20px">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:15px">Qarzdorlar</div>
+                <span onClick="{{ goDebts }}" style="cursor:pointer;font-size:12px;font-weight:700;color:#2dd4bf">Hammasi →</span>
+              </div>
+              <sc-for list="{{ dashDebts }}" as="d" hint-placeholder-count="3">
+                <div onClick="{{ d.onOpen }}" style="cursor:pointer;display:flex;justify-content:space-between;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)">
+                  <div style="min-width:0"><div style="font-size:13px;font-weight:700">{{ d.student }}</div><div style="font-size:11.5px;color:var(--muted2)">{{ d.course }}</div></div>
+                  <div style="text-align:right"><div style="font-size:13px;font-weight:800;color:#fb7185">{{ d.amount }}</div><div style="font-size:11px;color:var(--muted2)">{{ d.status }}</div></div>
+                </div>
+              </sc-for>
+              <sc-if value="{{ noDashDebts }}" hint-placeholder-val="{{ false }}"><div style="padding:16px;text-align:center;color:var(--muted2);font-size:13px">Qarz yo'q ✓</div></sc-if>
+            </div>
+            <div style="background:var(--panel);border:1px solid var(--border);border-radius:18px;padding:18px 20px">
+              <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px">
+                <div style="font-family:'Plus Jakarta Sans';font-weight:700;font-size:15px">Ochiq vazifalar</div>
+                <span onClick="{{ goControl }}" style="cursor:pointer;font-size:12px;font-weight:700;color:#2dd4bf">Hammasi →</span>
+              </div>
+              <sc-for list="{{ dashTasks }}" as="t" hint-placeholder-count="3">
+                <div onClick="{{ t.onOpen }}" style="cursor:pointer;padding:10px 0;border-bottom:1px solid var(--line)">
+                  <div style="font-size:13px;font-weight:700">{{ t.title }}</div>
+                  <div style="font-size:11.5px;color:var(--muted2);margin-top:2px">{{ t.assignee }} · {{ t.due }} · {{ t.priority }}</div>
+                </div>
+              </sc-for>
+              <sc-if value="{{ noDashTasks }}" hint-placeholder-val="{{ false }}"><div style="padding:16px;text-align:center;color:var(--muted2);font-size:13px">Vazifa yo'q</div></sc-if>
             </div>
           </div>
         </sc-if>
@@ -1349,12 +1435,15 @@
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
   componentDidMount(){
-    const DB=window.ProSkillDB;const s=DB?DB.session():null;
+    const DB=window.ProSkillDB;
+    try{ if(DB&&DB.bootstrap) DB.bootstrap(false); }catch(e){}
+    try{ if(DB&&DB.reloadFromStorage) DB.reloadFromStorage(); }catch(e){}
+    const s=DB?DB.session():null;
     if(!s||s.role!=="manager"){ try{window.location.href="ProSkill IT Academy.dc.html";}catch(e){} return; }
     // boshqa tab (teacher) o'zgarishlarini olish
     this._onFocus=()=>{ try{ this.softReload(); }catch(e){} };
     this._onVis=()=>{ try{ if(document.visibilityState==="visible") this.softReload(); }catch(e){} };
-    this._onStorage=(e)=>{ try{ if(e&&e.key&&e.key!=="proskill_db_v1") return; this.softReload(); }catch(err){} };
+    this._onStorage=(e)=>{ try{ if(e&&e.key&&String(e.key).indexOf("proskill_db_")!==0) return; this.softReload(); }catch(err){} };
     try{ window.addEventListener("focus", this._onFocus); }catch(e){}
     try{ document.addEventListener("visibilitychange", this._onVis); }catch(e){}
     try{ window.addEventListener("storage", this._onStorage); }catch(e){}
@@ -1497,7 +1586,7 @@ class Component extends DCLogic {
     this.state={tab:"dashboard",theme:"dark",search:"",userFilter:"Hammasi",modal:null,toast:null,lessonCourse:"",audience:"students",accent:"#0d9488",enrollStudent:"",enrollCourse:"",
       showUserMenu:false,notifTitle:"",notifText:"",notifError:null,notifRev:0,
       notifChPlatform:true,notifChEmail:true,notifChTelegram:false,
-      reportRange:"Oy",payFilter:"Hammasi",enrollError:null,payRev:0,studentFilter:"Hammasi",studentRev:0,teacherFilter:"Hammasi",courseFilter:"Hammasi",courseRev:0,
+      reportRange:"Oy",chartRange:"month",payFilter:"Hammasi",enrollError:null,payRev:0,studentFilter:"Hammasi",studentRev:0,teacherFilter:"Hammasi",courseFilter:"Hammasi",courseRev:0,dashRev:0,
       feedbackFilter:"Hammasi",feedbackRev:0,
       reviewFilter:"all",reviewNote:"",reviewError:null,showReviewPreview:false,reviewRev:0,
       previewTitle:"",previewCourse:"",previewDuration:"",previewMeta:"",previewUrl:"",previewHasUrl:false,
@@ -1577,8 +1666,21 @@ class Component extends DCLogic {
       patch.courseRev=(this.state.courseRev||0)+1;
       patch.payRev=(this.state.payRev||0)+1;
     }
+    if(t==="dashboard"){
+      const DB=window.ProSkillDB;
+      try{ if(DB&&DB.reloadFromStorage) DB.reloadFromStorage(); }catch(e){}
+      patch.dashRev=(this.state.dashRev||0)+1;
+      patch.payRev=(this.state.payRev||0)+1;
+      patch.crmRev=(this.state.crmRev||0)+1;
+    }
     this.setState(patch);
     try{window.scrollTo(0,0);}catch(e){}
+  }
+  refreshDashboard(){
+    const DB=window.ProSkillDB;
+    try{ if(DB&&DB.reloadFromStorage) DB.reloadFromStorage(); }catch(e){}
+    this.setState(s=>({dashRev:(s.dashRev||0)+1,payRev:(s.payRev||0)+1,crmRev:(s.crmRev||0)+1}));
+    this.notify("Dashboard yangilandi ✓");
   }
   toggleTheme(){this.setState(s=>({theme:s.theme==="dark"?"light":"dark"}));}
   setSearch(e){this.setState({search:e.target.value});}
@@ -2349,42 +2451,86 @@ class Component extends DCLogic {
         avgProg=Math.round(enr.reduce((s,e)=>s+DB.progressFor(e.studentId,e.courseId),0)/enr.length);
       }
     }
+    void st.dashRev; void st.payRev; void st.crmRev;
+    // studentsN = ro'yxatdagi student hisoblar; yozilgan o'quvchi = enrollments
+    const enrolledStudentsN=DB?new Set((DB.raw().enrollments||[]).map(e=>e.studentId)).size:0;
     const kpiDef=[
-      ["Jami o'quvchilar",String(studentsN),"student","#0d9488","baza","#34d399"],
-      ["Daromad",(revTotal/1e6).toFixed(1)+" mln","revenue","#34d399","paid","#34d399"],
-      ["Faol guruhlar",String(crm.activeGroups||0),"categories","#22d3ee","jonli","#34d399"],
-      ["Kutilayotgan to'lov",String(pendN),"payments","#fbbf24",pendN?"Diqqat":"OK",pendN?"#fbbf24":"#34d399"],
-      ["Leadlar (yangi)",String(crm.leadsNew||0),"users","#0ea5e9","CRM","#38bdf8"],
-      ["Qarzdorlar",String(crm.debtsTotal||0),"payments","#fb7185",crm.debtsSum?((crm.debtsSum/1e6).toFixed(1)+" mln"):"0","#fb7185"],
-      ["Xodimlar",String(teachersN),"teacher","#f472b6","ustoz","#34d399"],
-      ["Ochiq vazifalar",String(crm.openTasks||0),"settings","#a78bfa","boshqarish","#a78bfa"]
+      ["Yozilgan o'quvchi",String(enrolledStudentsN),"student","#0d9488",studentsN?"hisob: "+studentsN:"0","#34d399","students"],
+      ["Daromad",(revTotal/1e6).toFixed(1)+" mln","revenue","#34d399",revTotal?"paid":"sotuv yo'q",revTotal?"#34d399":"#9b98ad","payments"],
+      ["Faol guruhlar",String(crm.activeGroups||0),"categories","#22d3ee","jonli","#34d399","branches"],
+      ["Kutilayotgan to'lov",String(pendN),"payments","#fbbf24",pendN?"Diqqat":"0","#9b98ad","payments"],
+      ["Leadlar (yangi)",String(crm.leadsNew||0),"users","#0ea5e9","CRM","#38bdf8","leads"],
+      ["Qarzdorlar",String(crm.debtsTotal||0),"payments","#fb7185",crm.debtsSum?((crm.debtsSum/1e6).toFixed(1)+" mln"):"0 so'm","#9b98ad","debts"],
+      ["Xodimlar",String(teachersN),"teacher","#f472b6","ustoz","#34d399","teachers"],
+      ["Ochiq vazifalar",String(crm.openTasks||0),"settings","#a78bfa","boshqarish","#a78bfa","control"]
     ];
-    const kpis=kpiDef.map(([label,value,ico,color,trend,trendColor])=>({label,value,iconEl:this.ic(ico),color,tint:color+"22",trend,trendColor}));
+    const kpis=kpiDef.map(([label,value,ico,color,trend,trendColor,go])=>({
+      label,value,iconEl:this.ic(ico),color,tint:color+"22",trend,trendColor,
+      onClick:()=>this.setTab(go)
+    }));
 
-    const rev=[120,135,128,160,180,172,205,222,210,248,270,Math.max(120,Math.round(revTotal/1e6)||312)];
-    const maxR=Math.max(...rev);
-    const months=["Iyul","Avg","Sen","Okt","Noy","Dek","Yan","Fev","Mar","Apr","May","Iyun"];
-    const revenueChart=rev.map((v,i)=>({value:v,label:months[i],h:Math.round(v/maxR*150),fill:i===rev.length-1?"linear-gradient(180deg,#2dd4bf,#8b9bff)":"linear-gradient(180deg,rgba(13,148,136,.7),rgba(14,165,233,.45))"}));
+    // Faqat haqiqiy paid to'lovlar — savdo yo'q bo'lsa hammasi 0
+    const chartRange=st.chartRange||"month";
+    const paidList=pays.filter(p=>p.status==="paid");
+    let rev=[], months=[];
+    if(chartRange==="week"){
+      months=["Du","Se","Chor","Pay","Ju","Shan","Yak"];
+      rev=months.map((_,i)=>{
+        const slice=paidList.filter((_,idx)=>idx%7===i);
+        const sum=slice.reduce((s,p)=>s+(p.amount||0),0);
+        return Math.round((sum/1e6)*10)/10;
+      });
+    } else {
+      months=["Iyul","Avg","Sen","Okt","Noy","Dek","Yan","Fev","Mar","Apr","May","Iyun"];
+      rev=months.map((_,i)=>{
+        const slice=paidList.filter((_,idx)=>idx%12===i);
+        const sum=slice.reduce((s,p)=>s+(p.amount||0),0);
+        if(i===months.length-1 && paidList.length) return Math.round((revTotal/1e6)*10)/10;
+        return Math.round((sum/1e6)*10)/10;
+      });
+    }
+    const maxR=Math.max(1,...rev,0.001);
+    const hasAnyRev=rev.some(v=>v>0);
+    const revenueChart=rev.map((v,i)=>({
+      value:v,
+      label:months[i],
+      h:hasAnyRev?Math.max(v>0?8:4, Math.round(v/maxR*150)):4,
+      fill:i===rev.length-1?"linear-gradient(180deg,#2dd4bf,#8b9bff)":"linear-gradient(180deg,rgba(13,148,136,.55),rgba(14,165,233,.35))",
+      tip:months[i]+": "+v+" mln so'm"
+    }));
+    const chartSubtitle=chartRange==="week"?"Joriy hafta · mln so'm (faqat real to'lov)":"So'nggi 12 oy · mln so'm (faqat real to'lov)";
+    const chartRangeChips=[
+      {label:"Oylik",onClick:()=>this.setState({chartRange:"month",dashRev:(this.state.dashRev||0)+1}),bg:chartRange==="month"?"rgba(13,148,136,.16)":"transparent",color:chartRange==="month"?"#2dd4bf":"var(--muted)",border:chartRange==="month"?"rgba(13,148,136,.4)":"transparent"},
+      {label:"Haftalik",onClick:()=>this.setState({chartRange:"week",dashRev:(this.state.dashRev||0)+1}),bg:chartRange==="week"?"rgba(13,148,136,.16)":"transparent",color:chartRange==="week"?"#2dd4bf":"var(--muted)",border:chartRange==="week"?"rgba(13,148,136,.4)":"transparent"}
+    ];
+    const noChartData=!hasAnyRev;
 
     const payTotal=Math.max(1,paidN+pendN+failN);
-    const paymentDonut=[{label:"Tasdiqlangan",count:paidN,pct:Math.round(paidN/payTotal*100),color:"#34d399"},{label:"Kutilayotgan",count:pendN,pct:Math.round(pendN/payTotal*100),color:"#fbbf24"},{label:"Rad etilgan",count:failN,pct:Math.round(failN/payTotal*100),color:"#fb7185"}];
+    const paymentDonut=[
+      {label:"Tasdiqlangan",count:paidN,pct:paidN+pendN+failN?Math.round(paidN/payTotal*100):0,color:"#34d399",onClick:()=>{ this.setState({payFilter:"paid"}); this.setTab("payments"); }},
+      {label:"Kutilayotgan",count:pendN,pct:paidN+pendN+failN?Math.round(pendN/payTotal*100):0,color:"#fbbf24",onClick:()=>{ this.setState({payFilter:"pending"}); this.setTab("payments"); }},
+      {label:"Rad etilgan",count:failN,pct:paidN+pendN+failN?Math.round(failN/payTotal*100):0,color:"#fb7185",onClick:()=>{ this.setState({payFilter:"failed"}); this.setTab("payments"); }}
+    ];
 
     // courses from DB
     const dbCourses=DB?DB.table("courses"):[];
     const topCourses=dbCourses.map(c=>{
       const cnt=(DB.raw().enrollments||[]).filter(e=>e.courseId===c.id).length;
       const t=DB.byId("users",c.teacherId);
+      const paidRev=pays.filter(p=>p.status==="paid"&&p.courseId===c.id).reduce((s,p)=>s+(p.amount||0),0);
+      const revShow=paidRev||(c.price||0)*cnt;
       return{
-        id:c.id,title:c.title,cat:c.cat,teacher:t?t.name:"—",price:c.price,rating:c.rating||0,
+        id:c.id,title:c.title,cat:c.cat,teacher:t?t.name:"—",price:c.price||0,rating:c.rating||0,
         students:cnt||0,status:c.status,featured:!!c.featured,
         grad:this.grads[c.cat]||"linear-gradient(135deg,#0d9488,#0ea5e9)",
         initial:(c.cat||"K").charAt(0),
-        revenue:this.money(c.price*Math.max(1,cnt)).replace(" so'm","").split(" ").slice(0,2).join(" ")
+        statusLabel:c.status==="published"?"Faol":(c.status==="pending"?"Tekshiruvda":c.status||"draft"),
+        revenue:(revShow/1e6).toFixed(1)+" mln",
+        onOpen:()=>this.goReviewCourse(c)
       };
-    }).sort((a,b)=>b.students-a.students).slice(0,5).map(c=>({
-      title:c.title,students:String(c.students),initial:c.initial,grad:c.grad,
-      revenue:(c.price*Math.max(1,c.students)/1e6).toFixed(1)+" mln"
-    }));
+    }).sort((a,b)=>b.students-a.students||b.price-a.price).slice(0,5);
+    const hasTopCourses=topCourses.length>0;
+    const noTopCourses=!hasTopCourses;
 
     const recentUsers=(DB?DB.table("users"):[]).slice().reverse().slice(0,6).map(u=>{
       const role=u.role==="teacher"?"Teacher":(u.role==="manager"?"Manager":(u.role==="superadmin"?"Super Admin":"Student"));
@@ -2393,9 +2539,44 @@ class Component extends DCLogic {
         name:u.name,email:u.email,
         initial:(u.name||"U").split(/\s+/).map(w=>w[0]).join("").slice(0,2).toUpperCase(),
         role:role,roleTint:roleMeta(role).tint,roleColor:roleMeta(role).color,
-        avatar:avatar,hasAvatar:!!avatar,noAvatar:!avatar
+        hasAvatar:!!avatar,noAvatar:!avatar,avatar:avatar,
+        onOpen:()=>{
+          if(u.role==="student") this.setTab("students");
+          else if(u.role==="teacher") this.setTab("teachers");
+          else this.setTab("control");
+        }
       };
     });
+    const hasRecentUsers=recentUsers.length>0;
+    const noRecentUsers=!hasRecentUsers;
+    const dashSummary="Yozilgan: "+enrolledStudentsN+" · Daromad: "+(revTotal/1e6).toFixed(1)+" mln · Kutilayotgan: "+pendN+" · Lead: "+(crm.leadsNew||0)+" · Qarz: "+(crm.debtsTotal||0)+" · Guruh: "+(crm.activeGroups||0)+" · Vazifa: "+(crm.openTasks||0)+(revTotal===0?" · Hali sotuv yo'q (0)":"");
+    const dashQuickActions=[
+      {icon:"👥",label:"O'quvchilar",sub:enrolledStudentsN+" yozilgan",onClick:()=>this.setTab("students")},
+      {icon:"💳",label:"To'lovlar",sub:pendN?"⏳ "+pendN:"0 so'm",onClick:()=>this.setTab("payments")},
+      {icon:"🎯",label:"Leadlar",sub:String(crm.leadsNew||0)+" yangi",onClick:()=>this.setTab("leads")},
+      {icon:"⚠",label:"Qarzdorlar",sub:String(crm.debtsTotal||0),onClick:()=>this.setTab("debts")},
+      {icon:"🏢",label:"Bo'limlar",sub:String(crm.activeGroups||0)+" guruh",onClick:()=>this.setTab("branches")},
+      {icon:"✓",label:"Vazifalar",sub:String(crm.openTasks||0)+" ochiq",onClick:()=>this.setTab("control")}
+    ];
+    const stageMap={new:["Yangi","#38bdf8","rgba(56,189,248,.14)"],contacted:["Aloqa","#a78bfa","rgba(167,139,250,.14)"],trial:["Trial","#fbbf24","rgba(251,191,36,.14)"],negotiation:["Muzokara","#fb923c","rgba(251,146,60,.14)"],won:["Won","#34d399","rgba(52,211,153,.14)"],lost:["Lost","#fb7185","rgba(251,113,133,.14)"]};
+    const dashLeads=(DB?(DB.raw().leads||[]):[]).filter(l=>l.stage!=="won"&&l.stage!=="lost").slice(0,4).map(l=>{
+      const sm=stageMap[l.stage]||stageMap.new;
+      return{name:l.name,source:l.source||"—",interest:l.interest||"—",stageLabel:sm[0],stageColor:sm[1],stageBg:sm[2],onOpen:()=>this.setTab("leads")};
+    });
+    const noDashLeads=dashLeads.length===0;
+    const dashDebts=(DB?(DB.raw().debts||[]):[]).filter(d=>d.status!=="paid").slice(0,4).map(d=>({
+      student:DB.userName(d.studentId),course:DB.courseTitle(d.courseId),
+      amount:this.money(d.amount).replace(" so'm",""),
+      status:d.status==="overdue"?"Muddati o'tgan":"Muddatli",
+      onOpen:()=>this.setTab("debts")
+    }));
+    const noDashDebts=dashDebts.length===0;
+    const dashTasks=(DB?(DB.raw().tasks||[]):[]).filter(t=>t.status!=="done").slice(0,4).map(t=>({
+      title:t.title,assignee:t.assignee||"—",due:t.due||"—",
+      priority:t.priority==="high"?"Yuqori":(t.priority==="low"?"Past":"O'rta"),
+      onOpen:()=>this.setTab("control")
+    }));
+    const noDashTasks=dashTasks.length===0;
 
     const meName=me?me.name:"Manager";
     const meEmail=me?me.email:"—";
@@ -2573,12 +2754,17 @@ class Component extends DCLogic {
       })(),
       goCourses:()=>this.setTab("courses"), goUsers:()=>this.setTab("students"),
       goLeads:()=>this.setTab("leads"), goDebts:()=>this.setTab("debts"), goBranches:()=>this.setTab("branches"),
+      goControl:()=>this.setTab("control"),
       openAddLead:()=>this.openAddLead(), openAddDebt:()=>this.openAddDebt(),
       openAddBranch:()=>this.openAddBranch(), openAddGroup:()=>this.openAddGroup(), openAddTask:()=>this.openAddTask(),
+      refreshDashboard:()=>this.refreshDashboard(),
       // tab flags
       tabDashboard:tab==="dashboard",tabReports:tab==="reports",tabUsers:tab==="users",tabManagers:tab==="managers",tabTeachers:tab==="teachers",tabStudents:tab==="students",tabCourses:tab==="courses",tabLessons:tab==="lessons",tabCategories:tab==="categories",tabCerts:tab==="certs",tabReviews:tab==="reviews",tabPayments:tab==="payments",tabNotifications:tab==="notifications",tabSecurity:tab==="security",tabSettings:tab==="settings",
       tabLeads:tab==="leads",tabDebts:tab==="debts",tabBranches:tab==="branches",tabControl:tab==="control",
       kpis, revenueChart, paymentDonut, topCourses, recentUsers,
+      chartRangeChips, chartSubtitle, noChartData,
+      hasTopCourses, noTopCourses, hasRecentUsers, noRecentUsers,
+      dashSummary, dashQuickActions, dashLeads, noDashLeads, dashDebts, noDashDebts, dashTasks, noDashTasks,
       // modal
       modal:st.modal, modalTitle:st.modal?st.modal.title:"", modalMsg:st.modal?st.modal.msg:"", modalConfirm:st.modal?st.modal.confirm:"", modalIcon:st.modal?st.modal.icon:"", modalTint:st.modal&&st.modal.danger?"rgba(251,113,133,.16)":"rgba(13,148,136,.16)", modalBtn:st.modal&&st.modal.danger?"linear-gradient(135deg,#f43f5e,#fb7185)":"linear-gradient(135deg,#0d9488,#0ea5e9)",
       closeModal:()=>this.closeModal(), confirmModal:()=>this.confirmModal(),

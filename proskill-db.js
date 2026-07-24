@@ -5,8 +5,10 @@
    window.ProSkillDB sifatida global ochiladi.
    ============================================================ */
 (function () {
-  var DB_KEY = "proskill_db_v1";
-  var SESSION_KEY = "proskill_session_v1";
+  // v3 = savdo/to'lov 0 dan (demo sotuvlar yo'q)
+  var DB_KEY = "proskill_db_v3";
+  var SESSION_KEY = "proskill_session_v3";
+  var LEGACY_KEYS = ["proskill_db_v1", "proskill_session_v1", "proskill_db_v2", "proskill_session_v2"];
 
   function uid(p) { return (p || "id") + "_" + Math.random().toString(36).slice(2, 8); }
   function nowISO() { return new Date().toISOString(); }
@@ -93,37 +95,10 @@
       }
     });
 
-    // enrollments for Aziz (u_std1)
-    var enrollments = [
-      { id: uid("enr"), studentId: "u_std1", courseId: "t1", type: "paid", status: "active", createdAt: "02 May 2026" },
-      { id: uid("enr"), studentId: "u_std1", courseId: "c4", type: "paid", status: "active", createdAt: "21 Apr 2026" },
-      { id: uid("enr"), studentId: "u_std1", courseId: "c10", type: "free", status: "active", createdAt: "01 Iyun 2026" },
-      { id: uid("enr"), studentId: "u_std2", courseId: "c2", type: "paid", status: "active", createdAt: "06 May 2026" },
-      { id: uid("enr"), studentId: "u_std4", courseId: "t1", type: "paid", status: "active", createdAt: "21 Apr 2026" }
-    ];
-
-    // progress: completed lesson ids per student
+    // 0-dan start: hali sotuv / yozilish / to'lov yo'q
+    var enrollments = [];
     var progress = []; // {studentId, lessonId}
-    // Aziz: t1 -> 37/52-ish; we have fewer lessons (9 per course); complete some
-    function complete(studentId, courseId, count) {
-      var ls = lessons.filter(function (l) { return l.courseId === courseId; });
-      for (var i = 0; i < count && i < ls.length; i++) progress.push({ studentId: studentId, lessonId: ls[i].id });
-    }
-    complete("u_std1", "t1", 6);   // ~67%
-    complete("u_std1", "c4", 9);   // 100%
-    complete("u_std1", "c10", 2);  // ~22%
-    complete("u_std4", "t1", 9);   // 100%
-    complete("u_std2", "c2", 4);
-
-    // payments
-    var payments = [
-      { id: "#10247", studentId: "u_std1", courseId: "t1", amount: 690000, method: "Payme", status: "paid", date: "02 May 2026", reason: "" },
-      { id: "#10231", studentId: "u_std1", courseId: "c4", amount: 590000, method: "Click", status: "paid", date: "21 Apr 2026", reason: "" },
-      { id: "#10246", studentId: "u_std2", courseId: "c2", amount: 890000, method: "Click", status: "paid", date: "06 May 2026", reason: "" },
-      { id: "#10245", studentId: "u_std3", courseId: "t2", amount: 990000, method: "Uzcard", status: "pending", date: "18 Iyun 2026", reason: "" },
-      { id: "#10244", studentId: "u_std5", courseId: "c5", amount: 490000, method: "Humo", status: "pending", date: "18 Iyun 2026", reason: "" },
-      { id: "#10242", studentId: "u_std6", courseId: "c6", amount: 1190000, method: "Click", status: "failed", date: "15 Iyun 2026", reason: "Karta mablag'i yetarli emas." }
-    ];
+    var payments = [];
 
     // tests
     var tests = [
@@ -163,49 +138,19 @@
           { q: "RGB nimaning qisqartmasi?", options: ["Red Green Blue", "Right Good Best", "Run Get Build", "Real Graphic Base"], correct: 0 }
         ] }
     ];
-    var testResults = [
-      { id: uid("res"), studentId: "u_std1", testId: "tst_1", score: 85, correct: 4, wrong: 1, percentage: 85, passed: true, date: "10 May 2026" },
-      { id: uid("res"), studentId: "u_std1", testId: "tst_2", score: 72, correct: 2, wrong: 1, percentage: 72, passed: true, date: "18 May 2026" },
-      { id: uid("res"), studentId: "u_std4", testId: "tst_1", score: 80, correct: 4, wrong: 1, percentage: 80, passed: true, date: "12 May 2026" },
-      { id: uid("res"), studentId: "u_std4", testId: "tst_2", score: 68, correct: 2, wrong: 1, percentage: 68, passed: false, date: "20 May 2026" },
-      { id: uid("res"), studentId: "u_std1", testId: "tst_5", score: 71, correct: 2, wrong: 1, percentage: 71, passed: true, date: "01 Iyun 2026" },
-      { id: uid("res"), studentId: "u_std1", testId: "tst_4", score: 90, correct: 2, wrong: 0, percentage: 90, passed: true, date: "08 Iyun 2026" }
-    ];
+    var testResults = [];
     // homework / topshiriqlar
     var assignments = [
       { id: "asg_1", courseId: "t1", teacherId: "u_tch1", title: "Mini loyiha: CRUD ilova", desc: "Oddiy CRUD ilova yozing" },
       { id: "asg_2", courseId: "t2", teacherId: "u_tch1", title: "REST API yaratish", desc: "DRF bilan 3 endpoint" }
     ];
-    var assignmentSubs = [
-      { id: uid("asub"), assignmentId: "asg_1", studentId: "u_std1", text: "GitHub link: github.com/aziz/crud", status: "graded", score: 92, date: "15 May 2026" },
-      { id: uid("asub"), assignmentId: "asg_1", studentId: "u_std4", text: "Loyiha tayyor, PDF yuborildi", status: "graded", score: 88, date: "16 May 2026" },
-      { id: uid("asub"), assignmentId: "asg_1", studentId: "u_std2", text: "Hali tugallanmagan versiya", status: "pending", score: 0, date: "18 May 2026" },
-      { id: uid("asub"), assignmentId: "asg_1", studentId: "u_std5", text: "CRUD + validation qo'shdim", status: "pending", score: 0, date: "19 May 2026" },
-      { id: uid("asub"), assignmentId: "asg_2", studentId: "u_std1", text: "3 ta endpoint ishlayapti", status: "graded", score: 90, date: "20 May 2026" },
-      { id: uid("asub"), assignmentId: "asg_2", studentId: "u_std4", text: "Serializer xatosi bor", status: "pending", score: 0, date: "21 May 2026" },
-      { id: uid("asub"), assignmentId: "asg_2", studentId: "u_std5", text: "JWT qo'shdim", status: "pending", score: 0, date: "22 May 2026" }
-    ];
+    var assignmentSubs = [];
 
-    var certificates = [
-      { id: "PSK-2026-0418", studentId: "u_std1", courseId: "c4", date: "12 Iyun 2026", status: "valid" },
-      { id: "PSK-2026-0402", studentId: "u_std4", courseId: "t1", date: "02 Iyun 2026", status: "valid" }
-    ];
-
-    var reviews = [
-      { id: uid("rev"), studentId: "u_std1", courseId: "c4", rating: 5, text: "Ajoyib kurs! Figma'ni noldan o'rgandim va endi freelance qilyapman.", status: "visible", date: "12 Iyun 2026", reply: "" },
-      { id: uid("rev"), studentId: "u_std4", courseId: "t1", rating: 5, text: "Eng yaxshi Python kursi! Ustoz juda tushunarli tushuntiradi.", status: "visible", date: "03 Iyun 2026", reply: "Rahmat, Nilufar! Omad!" },
-      { id: uid("rev"), studentId: "u_std2", courseId: "c2", rating: 4, text: "Yaxshi kurs, lekin ba'zi darslar tezroq o'tilsa edi.", status: "visible", date: "20 May 2026", reply: "" }
-    ];
-
-    var questions = [
-      { id: uid("q"), studentId: "u_std1", courseId: "t1", lessonRef: "3-modul, 2-dars", text: "List comprehension va generator o'rtasidagi farq nima?", time: "2 soat oldin", status: "answered", answer: "List comprehension darhol ro'yxat yaratadi, generator esa elementlarni talab bo'yicha qaytaradi va xotirani tejaydi.", teacherId: "u_tch1" },
-      { id: uid("q"), studentId: "u_std1", courseId: "t1", lessonRef: "2-modul, 4-dars", text: "Dekoratorlarni qachon ishlatish kerak?", time: "Kecha", status: "unanswered", answer: "", teacherId: "u_tch1" },
-      { id: uid("q"), studentId: "u_std5", courseId: "c5", lessonRef: "1-modul, 3-dars", text: "Target auditoriyani qanday aniqlayman?", time: "3 kun oldin", status: "answered", answer: "Mahsulot kim uchun foydali ekanini yozing, keyin yosh va qiziqish bo'yicha segmentlang.", teacherId: "u_tch4" }
-    ];
-
+    var certificates = [];
+    var reviews = [];
+    var questions = [];
     var notifications = [
-      { id: uid("n"), userId: "u_std1", title: "Xush kelibsiz!", text: "ProSkill IT Academy'ga xush kelibsiz. O'qishni boshlang!", read: true, date: "02 May 2026" },
-      { id: uid("n"), userId: "u_std1", title: "Sertifikat tayyor", text: "Grafik dizayn kursi sertifikatingiz tayyor.", read: false, date: "12 Iyun 2026" }
+      { id: uid("n"), userId: "u_mgr1", title: "Xush kelibsiz, Manager!", text: "Platforma 0-dan ishga tushdi. Kurslar katalogda. Sotuvlar hali yo'q.", read: false, date: todayLabel() }
     ];
 
     var logs = [
@@ -230,12 +175,11 @@
       { id: "br2", name: "Yunusobod filiali", address: "Toshkent, Yunusobod 12", phone: "+998 71 200 00 02", manager: "Kamola Saidova", active: true },
       { id: "br3", name: "Samarqand filiali", address: "Samarqand, Registon ko'chasi", phone: "+998 66 200 00 03", manager: "—", active: true }
     ];
+    // guruhlar ochiq, lekin o'quvchi 0 (hali yozilish yo'q)
     var groups = [
-      { id: "gr1", branchId: "br1", name: "Python A1", courseId: "t1", teacherId: "u_tch1", room: "A-101", schedule: "Du/Chor/Ju 18:00", capacity: 18, students: 12, status: "active" },
-      { id: "gr2", branchId: "br1", name: "Frontend B1", courseId: "c2", teacherId: "u_tch2", room: "A-102", schedule: "Se/Pay 17:00", capacity: 16, students: 14, status: "active" },
-      { id: "gr3", branchId: "br2", name: "Backend Pro", courseId: "t2", teacherId: "u_tch1", room: "B-201", schedule: "Du/Ju 19:00", capacity: 14, students: 9, status: "active" },
-      { id: "gr4", branchId: "br2", name: "SMM Start", courseId: "c5", teacherId: "u_tch4", room: "B-105", schedule: "Shanba 10:00", capacity: 20, students: 11, status: "active" },
-      { id: "gr5", branchId: "br3", name: "Dizayn 01", courseId: "c4", teacherId: "u_tch4", room: "C-01", schedule: "Se/Pay 16:00", capacity: 12, students: 7, status: "draft" }
+      { id: "gr1", branchId: "br1", name: "Python A1", courseId: "t1", teacherId: "u_tch1", room: "A-101", schedule: "Du/Chor/Ju 18:00", capacity: 18, students: 0, status: "active" },
+      { id: "gr2", branchId: "br1", name: "Frontend B1", courseId: "c2", teacherId: "u_tch2", room: "A-102", schedule: "Se/Pay 17:00", capacity: 16, students: 0, status: "active" },
+      { id: "gr3", branchId: "br2", name: "Backend Pro", courseId: "t2", teacherId: "u_tch1", room: "B-201", schedule: "Du/Ju 19:00", capacity: 14, students: 0, status: "active" }
     ];
     var rooms = [
       { id: "rm1", branchId: "br1", name: "A-101", seats: 20, type: "Kompyuter" },
@@ -253,27 +197,13 @@
       { id: "ld5", name: "Akbar Toirov", phone: "+998 95 999 00 55", source: "Instagram", stage: "lost", interest: "Mobil", note: "Boshqa markazga ketdi", managerId: "u_mgr1", lastContact: "12 Iyul 2026", createdAt: "05 Iyul 2026" },
       { id: "ld6", name: "Dilnoza Alimova", phone: "+998 97 222 33 66", source: "Sayt", stage: "won", interest: "Python", note: "Ro'yxatdan o'tdi", managerId: "u_mgr1", lastContact: "16 Iyul 2026", createdAt: "01 Iyul 2026" }
     ];
-    // Qarzdorlar
-    var debts = [
-      { id: "db1", studentId: "u_std2", courseId: "c2", amount: 450000, dueDate: "10 Iyul 2026", status: "overdue", note: "2-to'lov kechikdi", reminders: 1 },
-      { id: "db2", studentId: "u_std4", courseId: "c4", amount: 295000, dueDate: "25 Iyul 2026", status: "due", note: "Yarim to'lov qoldi", reminders: 0 },
-      { id: "db3", studentId: "u_std5", courseId: "c5", amount: 180000, dueDate: "01 Avgust 2026", status: "due", note: "Keyingi oy", reminders: 0 },
-      { id: "db4", studentId: "u_std3", courseId: "t1", amount: 690000, dueDate: "05 Iyul 2026", status: "overdue", note: "To'liq to'lov kutilmoqda", reminders: 2 }
-    ];
-    // Vazifalar (boshqarish)
+    // hali qarz / xarajat yo'q — 0 dan
+    var debts = [];
     var tasks = [
-      { id: "tk1", title: "Leadlarni qayta chaqirish", assignee: "Jasur Toshmatov", due: "24 Iyul", priority: "high", status: "open", section: "leads" },
-      { id: "tk2", title: "Qarzdorlarga eslatma", assignee: "Kamola Saidova", due: "23 Iyul", priority: "high", status: "open", section: "debts" },
-      { id: "tk3", title: "Yangi guruh ochish — Python", assignee: "Sardor Aliyev", due: "30 Iyul", priority: "medium", status: "open", section: "groups" },
-      { id: "tk4", title: "Hisobotni Super Admin'ga yuborish", assignee: "Jasur Toshmatov", due: "28 Iyul", priority: "low", status: "done", section: "reports" }
+      { id: "tk1", title: "Leadlarni qayta chaqirish", assignee: "Jasur Toshmatov", due: todayLabel(), priority: "high", status: "open", section: "leads" },
+      { id: "tk2", title: "Birinchi guruhga yozilish ochish", assignee: "Jasur Toshmatov", due: todayLabel(), priority: "medium", status: "open", section: "groups" }
     ];
-    // Xarajatlar (hisobot)
-    var expenses = [
-      { id: "ex1", title: "Ijara — Chilonzor", amount: 12000000, category: "Ijara", date: "01 Iyul 2026", branchId: "br1" },
-      { id: "ex2", title: "Ustozlar maoshi", amount: 28000000, category: "Maosh", date: "05 Iyul 2026", branchId: "br1" },
-      { id: "ex3", title: "Marketing (Instagram)", amount: 3500000, category: "Marketing", date: "10 Iyul 2026", branchId: null },
-      { id: "ex4", title: "Kommunal", amount: 1800000, category: "Kommunal", date: "12 Iyul 2026", branchId: "br2" }
-    ];
+    var expenses = [];
 
     // Xodim maosh / grafik (teachers + managers)
     users.forEach(function (u) {
@@ -301,14 +231,22 @@
 
   // ---------- LOAD / SAVE ----------
   var data;
+  function isHealthy(d) {
+    return !!(d && Array.isArray(d.users) && d.users.length >= 4 &&
+      Array.isArray(d.courses) && d.courses.length >= 1 &&
+      Array.isArray(d.lessons) && Array.isArray(d.modules));
+  }
   function load() {
+    // v2
     try {
       var r = localStorage.getItem(DB_KEY);
       if (r) {
         var d = JSON.parse(r);
-        return ensureCrmTables(d);
+        d = ensureCrmTables(d);
+        if (isHealthy(d)) return d;
       }
     } catch (e) {}
+    // toza seed — savdo 0 dan (eski v1/v2 demo sotuvlarni olib kelmaymiz)
     var s = seed();
     try { localStorage.setItem(DB_KEY, JSON.stringify(s)); } catch (e) {}
     return s;
@@ -325,6 +263,15 @@
     if (!d.lessons) d.lessons = [];
     if (!d.enrollments) d.enrollments = [];
     if (!d.users) d.users = [];
+    if (!d.payments) d.payments = [];
+    if (!d.progress) d.progress = [];
+    if (!d.reviews) d.reviews = [];
+    if (!d.questions) d.questions = [];
+    if (!d.notifications) d.notifications = [];
+    if (!d.logs) d.logs = [];
+    if (!d.categories) d.categories = [];
+    if (!d.certificates) d.certificates = [];
+    if (!d.settings) d.settings = { platformName: "ProSkill IT Academy" };
     if (!d.branches || !d.branches.length) {
       d.branches = [
         { id: "br1", name: "Chilonzor filiali", address: "Toshkent, Chilonzor 9", phone: "+998 71 200 00 01", manager: "Jasur Toshmatov", active: true },
@@ -337,45 +284,30 @@
     if (!d.debts) d.debts = [];
     if (!d.tasks) d.tasks = [];
     if (!d.expenses) d.expenses = [];
-    // bir marta demo CRM to'ldirish (bo'sh bo'lsa)
+    // faqat struktura — demo qarz/xarajat/sotuv QO'SHILMAYDI (0-dan start)
     if (!d._crmSeeded) {
       if (!d.leads.length) {
         d.leads = [
           { id: "ld1", name: "Javlon Rahimov", phone: "+998 90 111 22 11", source: "Instagram", stage: "new", interest: "Python", note: "Bepul dars so'radi", managerId: "u_mgr1", lastContact: todayLabel(), createdAt: todayLabel() },
-          { id: "ld2", name: "Malika Yusupova", phone: "+998 91 333 44 22", source: "Sayt", stage: "contacted", interest: "Frontend", note: "Demo darsga keladi", managerId: "u_mgr1", lastContact: todayLabel(), createdAt: todayLabel() },
-          { id: "ld3", name: "Sardor Bekmurodov", phone: "+998 93 555 66 33", source: "Telegram", stage: "trial", interest: "Backend", note: "Trial darsda", managerId: "u_mgr2", lastContact: todayLabel(), createdAt: todayLabel() }
+          { id: "ld2", name: "Malika Yusupova", phone: "+998 91 333 44 22", source: "Sayt", stage: "contacted", interest: "Frontend", note: "Demo darsga keladi", managerId: "u_mgr1", lastContact: todayLabel(), createdAt: todayLabel() }
         ];
       }
       if (!d.groups.length) {
         d.groups = [
-          { id: "gr1", branchId: "br1", name: "Python A1", courseId: "t1", teacherId: "u_tch1", room: "A-101", schedule: "Du/Chor/Ju 18:00", capacity: 18, students: 12, status: "active" },
-          { id: "gr2", branchId: "br1", name: "Frontend B1", courseId: "c2", teacherId: "u_tch2", room: "A-102", schedule: "Se/Pay 17:00", capacity: 16, students: 14, status: "active" }
-        ];
-      }
-      if (!d.debts.length) {
-        d.debts = [
-          { id: "db1", studentId: "u_std2", courseId: "c2", amount: 450000, dueDate: todayLabel(), status: "overdue", note: "2-to'lov kechikdi", reminders: 1 },
-          { id: "db2", studentId: "u_std4", courseId: "c4", amount: 295000, dueDate: todayLabel(), status: "due", note: "Yarim to'lov qoldi", reminders: 0 }
+          { id: "gr1", branchId: "br1", name: "Python A1", courseId: "t1", teacherId: "u_tch1", room: "A-101", schedule: "Du/Chor/Ju 18:00", capacity: 18, students: 0, status: "active" }
         ];
       }
       if (!d.tasks.length) {
         d.tasks = [
-          { id: "tk1", title: "Leadlarni qayta chaqirish", assignee: "Manager", due: todayLabel(), priority: "high", status: "open", section: "leads" },
-          { id: "tk2", title: "Qarzdorlarga eslatma", assignee: "Manager", due: todayLabel(), priority: "high", status: "open", section: "debts" }
-        ];
-      }
-      if (!d.expenses.length) {
-        d.expenses = [
-          { id: "ex1", title: "Ijara", amount: 12000000, category: "Ijara", date: todayLabel(), branchId: "br1" },
-          { id: "ex2", title: "Marketing", amount: 3500000, category: "Marketing", date: todayLabel(), branchId: null }
+          { id: "tk1", title: "Leadlarni qayta chaqirish", assignee: "Manager", due: todayLabel(), priority: "high", status: "open", section: "leads" }
         ];
       }
       if (!d.rooms.length) {
         d.rooms = [
-          { id: "rm1", branchId: "br1", name: "A-101", seats: 20, type: "Kompyuter" },
-          { id: "rm2", branchId: "br2", name: "B-201", seats: 16, type: "Laboratoriya" }
+          { id: "rm1", branchId: "br1", name: "A-101", seats: 20, type: "Kompyuter" }
         ];
       }
+      // debts, expenses, payments, enrollments — bo'sh qoladi (0)
       d._crmSeeded = true;
     }
     return d;
@@ -383,15 +315,43 @@
   function save() { try { localStorage.setItem(DB_KEY, JSON.stringify(data)); } catch (e) {} }
   data = ensureCrmTables(load());
   try { save(); } catch (e) {}
-  function reset() { data = seed(); save(); try { localStorage.removeItem(SESSION_KEY); } catch (e) {} }
+  function reset() {
+    data = seed();
+    save();
+    try { localStorage.removeItem(SESSION_KEY); } catch (e) {}
+    try { LEGACY_KEYS.forEach(function (k) { localStorage.removeItem(k); }); } catch (e) {}
+    return { ok: true };
+  }
+  /** Buzilgan / bo'sh DB ni noldan tiklash */
+  function bootstrap(force) {
+    if (force || !isHealthy(data)) {
+      data = seed();
+      save();
+      return { ok: true, reset: true };
+    }
+    data = ensureCrmTables(data);
+    save();
+    return { ok: true, reset: false };
+  }
   /** Boshqa tab (ustoz/manager) yozgan o'zgarishlarni xotiraga qayta yuklash */
   function reloadFromStorage() {
     try {
       var r = localStorage.getItem(DB_KEY);
-      if (!r) return false;
+      if (!r) {
+        // v2 yo'q — v1 yoki seed
+        data = load();
+        save();
+        return true;
+      }
       var d = JSON.parse(r);
       if (!d || typeof d !== "object") return false;
-      data = ensureCrmTables(d);
+      d = ensureCrmTables(d);
+      if (!isHealthy(d)) {
+        data = seed();
+        save();
+        return true;
+      }
+      data = d;
       return true;
     } catch (e) { return false; }
   }
@@ -490,6 +450,69 @@
     var p = insert("payments", { id: "#" + (10300 + data.payments.length), studentId: studentId, courseId: courseId, amount: c ? c.price : 0, method: method || "Payme", status: "pending", date: todayLabel(), reason: "" });
     log(userName(studentId), "student", "To'lov yubordi", courseTitle(courseId), "payment");
     return { ok: true, payment: p };
+  }
+  /**
+   * Student checkout — to'lov muvaffaqiyatli: paid + enroll + email/SMS xabari
+   * method: Click | Payme | Uzcard | Visa
+   */
+  function checkoutPay(studentId, courseId, method, meta) {
+    if (!studentId || !courseId) return { ok: false, error: "Ma'lumot yetarli emas" };
+    if (isEnrolled(studentId, courseId)) return { ok: false, error: "Siz allaqachon bu kursga yozilgansiz" };
+    var c = byId("courses", courseId);
+    if (!c) return { ok: false, error: "Kurs topilmadi" };
+    if ((c.price || 0) === 0) {
+      return enrollFree(studentId, courseId);
+    }
+    var m = String(method || "Payme");
+    var amount = Number(c.price) || 0;
+    var p = insert("payments", {
+      id: "#" + (11000 + data.payments.length),
+      studentId: studentId,
+      courseId: courseId,
+      amount: amount,
+      method: m,
+      status: "paid",
+      date: todayLabel(),
+      reason: "",
+      meta: meta || {}
+    });
+    insert("enrollments", {
+      studentId: studentId,
+      courseId: courseId,
+      type: "paid",
+      status: "active",
+      createdAt: todayLabel()
+    });
+    var u = byId("users", studentId);
+    var phone = (meta && meta.phone) || (u && u.phone) || "";
+    var email = (u && u.email) || "";
+    notify(
+      studentId,
+      "To'lov muvaffaqiyatli ✓",
+      '"' + c.title + '" kursi ochildi. Summa: ' + money(amount) +
+        (email ? (" · Email: " + email) : "") +
+        (phone ? (" · SMS: " + phone) : "") +
+        ". Chek " + p.id
+    );
+    // managerlarga qisqa xabar
+    data.users.filter(function (x) { return x.role === "manager" && x.status !== "blocked"; }).forEach(function (mgr) {
+      notify(mgr.id, "Yangi to'lov", userName(studentId) + " · " + c.title + " · " + money(amount) + " · " + m);
+    });
+    log(userName(studentId), "student", "To'lovni amalga oshirdi", p.id + " · " + c.title + " · " + m, "payment");
+    return {
+      ok: true,
+      payment: p,
+      course: c,
+      receipt: {
+        id: p.id,
+        amount: amount,
+        method: m,
+        course: c.title,
+        email: email,
+        phone: phone,
+        date: p.date
+      }
+    };
   }
   function findPayment(paymentId) {
     var id = paymentId == null ? "" : String(paymentId);
@@ -1000,11 +1023,11 @@
   // ---------- EXPORT ----------
   window.ProSkillDB = {
     raw: function () { return data; },
-    table: table, byId: byId, insert: insert, update: update, remove: remove, save: save, reset: reset, reloadFromStorage: reloadFromStorage,
+    table: table, byId: byId, insert: insert, update: update, remove: remove, save: save, reset: reset, bootstrap: bootstrap, reloadFromStorage: reloadFromStorage, isHealthy: function () { return isHealthy(data); },
     session: session, currentUser: currentUser, login: login, loginAs: loginAs, register: register, logout: logout,
     userName: userName, userAvatar: userAvatar, updateProfile: updateProfile, courseTitle: courseTitle, lessonsOf: lessonsOf, modulesOf: modulesOf,
     isEnrolled: isEnrolled, enrollmentsOf: enrollmentsOf, isDone: isDone, progressFor: progressFor, progressCount: progressCount,
-    enrollFree: enrollFree, requestPayment: requestPayment, approvePayment: approvePayment, rejectPayment: rejectPayment, manualEnroll: manualEnroll,
+    enrollFree: enrollFree, requestPayment: requestPayment, checkoutPay: checkoutPay, approvePayment: approvePayment, rejectPayment: rejectPayment, manualEnroll: manualEnroll,
     completeLesson: completeLesson, submitTest: submitTest, testResultFor: testResultFor,
     testsOfCourse: testsOfCourse, testsOfTeacher: testsOfTeacher, addTest: addTest, updateTest: updateTest, toggleTestActive: toggleTestActive,
     testStats: testStats, resultsOfTest: resultsOfTest,

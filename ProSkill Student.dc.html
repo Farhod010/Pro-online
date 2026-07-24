@@ -65,6 +65,30 @@
     font-size:clamp(1.6rem,2.5vw,1.9rem);letter-spacing:-.5px;margin-bottom:18px;color:var(--text);
   }
   .kasb-price{font-family:'Plus Jakarta Sans',sans-serif;font-weight:800;font-size:17px;color:var(--text);margin-bottom:12px}
+  /* ===== PAY CHECKOUT ===== */
+  .pay-overlay{position:fixed;inset:0;z-index:200;background:rgba(8,15,30,.72);backdrop-filter:blur(6px);display:flex;align-items:center;justify-content:center;padding:16px;overflow-y:auto}
+  .pay-sheet{background:var(--solid,#fff);border:1px solid var(--border);border-radius:22px;width:min(920px,100%);max-height:min(92vh,900px);overflow-y:auto;box-shadow:0 28px 80px rgba(0,0,0,.35);animation:pop .22s ease both}
+  .pay-grid{display:grid;grid-template-columns:1.05fr 1fr;gap:0}
+  .pay-left{padding:clamp(18px,3vw,28px);border-right:1px solid var(--border);background:linear-gradient(165deg,#f0fdf4 0%,#ecfdf5 40%,#fff 100%)}
+  .admin-root[data-theme="dark"] .pay-left{background:linear-gradient(165deg,rgba(16,185,129,.12),rgba(15,23,41,.4))}
+  .pay-right{padding:clamp(18px,3vw,28px)}
+  .pay-method{cursor:pointer;display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:14px;border:1.5px solid var(--border);background:var(--panel);margin-bottom:10px;transition:.15s}
+  .pay-method:hover{border-color:rgba(16,185,129,.45);background:rgba(16,185,129,.04)}
+  .pay-method.on{border-color:#10b981;background:rgba(16,185,129,.1);box-shadow:0 0 0 3px rgba(16,185,129,.12)}
+  .pay-logo{width:52px;height:40px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-weight:800;font-size:12px;color:#fff;flex:none;overflow:hidden;background:#fff;border:1px solid var(--border);padding:4px;box-sizing:border-box}
+  .pay-logo img{width:100%;height:100%;object-fit:contain;display:block}
+  .pay-input{width:100%;background:var(--input);border:1.5px solid var(--border);border-radius:12px;padding:13px 14px;color:var(--text);font-size:14.5px;outline:none}
+  .pay-input:focus{border-color:#10b981;box-shadow:0 0 0 3px rgba(16,185,129,.15)}
+  .pay-btn{cursor:pointer;width:100%;border:none;background:linear-gradient(135deg,#059669,#10b981 55%,#22c55e);color:#fff;font-weight:800;font-size:16px;padding:16px 18px;border-radius:14px;box-shadow:0 12px 28px rgba(16,185,129,.35);letter-spacing:.2px}
+  .pay-btn:hover{filter:brightness(1.05)}
+  .pay-trust{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+  .pay-trust span{font-size:11.5px;font-weight:700;padding:7px 10px;border-radius:9px;background:rgba(16,185,129,.1);color:#047857;border:1px solid rgba(16,185,129,.2)}
+  .admin-root[data-theme="dark"] .pay-trust span{color:#6ee7b7;background:rgba(16,185,129,.14)}
+  .pay-success{text-align:center;padding:clamp(28px,4vw,48px) 24px}
+  @media (max-width:720px){
+    .pay-grid{grid-template-columns:1fr}
+    .pay-left{border-right:none;border-bottom:1px solid var(--border)}
+  }
   /* Faollar jadvali (mohirdev style) */
   .podium{display:flex;align-items:flex-end;justify-content:center;gap:16px;margin:8px auto 28px;max-width:720px;flex-wrap:wrap}
   .podium-card{
@@ -1116,6 +1140,120 @@
 
   </main>
 
+  <!-- ===== TO'LOV (PAY CHECKOUT) ===== -->
+  <sc-if value="{{ showPayCheckout }}" hint-placeholder-val="{{ false }}">
+    <div class="pay-overlay" onClick="{{ closePayCheckout }}">
+      <div class="pay-sheet" onClick="{{ stopPayProp }}">
+        <sc-if value="{{ paySuccess }}" hint-placeholder-val="{{ false }}">
+          <div class="pay-success">
+            <div style="width:72px;height:72px;border-radius:50%;background:linear-gradient(135deg,#10b981,#22c55e);color:#fff;display:flex;align-items:center;justify-content:center;font-size:34px;margin:0 auto 18px;box-shadow:0 14px 32px rgba(16,185,129,.35)">✓</div>
+            <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:clamp(20px,3vw,26px);margin-bottom:8px">To'lov muvaffaqiyatli amalga oshdi!</div>
+            <p style="font-size:14.5px;color:var(--muted);line-height:1.55;max-width:420px;margin:0 auto 10px">«{{ payCourseTitle }}» kursi «Mening kurslarim» bo'limiga qo'shildi. O'qishni hoziroq boshlashingiz mumkin.</p>
+            <div style="font-size:13px;color:var(--muted2);margin-bottom:6px">Chek: <b style="color:var(--text)">{{ payReceiptId }}</b> · {{ payMethodLabel }} · {{ payTotalLabel }}</div>
+            <div style="font-size:13px;color:#059669;font-weight:600;margin-bottom:22px">📧 Email va 📱 SMS tasdiqlash yuborildi</div>
+            <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap">
+              <button onClick="{{ goMyCoursesAfterPay }}" class="pay-btn" style="width:auto;min-width:220px;padding:14px 22px">Mening kurslarimga o'tish</button>
+              <button onClick="{{ closePayCheckout }}" style="cursor:pointer;border:1.5px solid var(--border);background:var(--panel);color:var(--text);font-weight:700;font-size:14px;padding:14px 20px;border-radius:14px">Yopish</button>
+            </div>
+          </div>
+        </sc-if>
+
+        <sc-if value="{{ payFormView }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 22px;border-bottom:1px solid var(--border)">
+            <div>
+              <div style="font-size:12px;font-weight:800;color:#059669;text-transform:uppercase;letter-spacing:.4px">Xavfsiz to'lov</div>
+              <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:18px">To'lovni amalga oshirish</div>
+            </div>
+            <span onClick="{{ closePayCheckout }}" style="cursor:pointer;width:38px;height:38px;border-radius:11px;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;font-size:18px;color:var(--muted)">✕</span>
+          </div>
+          <div class="pay-grid">
+            <!-- LEFT: course + total -->
+            <div class="pay-left">
+              <div style="font-size:12px;font-weight:800;color:var(--muted2);text-transform:uppercase;margin-bottom:12px">Kurs ma'lumoti</div>
+              <div style="display:flex;gap:14px;align-items:flex-start;margin-bottom:18px">
+                <div style="width:52px;height:52px;border-radius:14px;background:{{ payCourseGrad }};display:flex;align-items:center;justify-content:center;font-weight:800;font-size:20px;color:#fff;flex:none">{{ payCourseInitial }}</div>
+                <div style="min-width:0">
+                  <div style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:17px;line-height:1.3;margin-bottom:4px">{{ payCourseTitle }}</div>
+                  <div style="font-size:13px;color:var(--muted)">{{ payCourseTeacher }} · {{ payCourseCat }}</div>
+                </div>
+              </div>
+              <div style="background:var(--panel);border:1px solid var(--border);border-radius:16px;padding:16px">
+                <div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:14px">
+                  <span style="color:var(--muted)">Asosiy narx</span>
+                  <span style="text-decoration:line-through;color:var(--muted2);font-weight:600">{{ payOldPriceLabel }}</span>
+                </div>
+                <div style="display:flex;justify-content:space-between;margin-bottom:10px;font-size:14px">
+                  <span style="color:var(--muted)">Chegirma</span>
+                  <span style="color:#059669;font-weight:800">− {{ payDiscountLabel }}</span>
+                </div>
+                <div style="height:1px;background:var(--border);margin:12px 0"></div>
+                <div style="display:flex;justify-content:space-between;align-items:center">
+                  <span style="font-weight:800;font-size:15px">Umumiy to'lov</span>
+                  <span style="font-family:'Plus Jakarta Sans';font-weight:800;font-size:24px;color:#059669">{{ payTotalLabel }}</span>
+                </div>
+              </div>
+              <div class="pay-trust">
+                <span>🔒 SSL himoyalangan</span>
+                <span>✓ To'lov xavfsiz amalga oshiriladi</span>
+                <span>↩ 30 kun ichida pulni qaytarish kafolati</span>
+              </div>
+              <p style="font-size:12.5px;color:var(--muted2);line-height:1.5;margin-top:14px">To'lov muvaffaqiyatli bo'lgach kurs avtomatik ochiladi. Email va SMS orqali tasdiqlash yuboriladi.</p>
+            </div>
+
+            <!-- RIGHT: methods + form -->
+            <div class="pay-right">
+              <div style="font-size:12px;font-weight:800;color:var(--muted2);text-transform:uppercase;margin-bottom:12px">To'lov usulini tanlang</div>
+              <sc-for list="{{ payMethods }}" as="m" hint-placeholder-count="4">
+                <div onClick="{{ m.onSelect }}" class="pay-method {{ m.cls }}">
+                  <div class="pay-logo"><img src="{{ m.logoUrl }}" alt="{{ m.label }}"/></div>
+                  <div style="flex:1;min-width:0">
+                    <div style="font-size:14.5px;font-weight:800">{{ m.label }}</div>
+                    <div style="font-size:12px;color:var(--muted2)">{{ m.hint }}</div>
+                  </div>
+                  <div style="width:20px;height:20px;border-radius:50%;border:2px solid {{ m.radioBorder }};display:flex;align-items:center;justify-content:center;flex:none">
+                    <div style="width:10px;height:10px;border-radius:50%;background:{{ m.radioFill }}"></div>
+                  </div>
+                </div>
+              </sc-for>
+
+              <sc-if value="{{ payIsWallet }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:8px">
+                  <label style="font-size:12.5px;font-weight:700;color:var(--muted);display:block;margin-bottom:7px">Telefon raqami</label>
+                  <input class="pay-input" value="{{ payPhone }}" onInput="{{ onPayPhone }}" placeholder="+998 90 123 45 67" />
+                  <p style="font-size:12.5px;color:var(--muted2);margin-top:8px;line-height:1.45">{{ payWalletHint }}</p>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ payIsCard }}" hint-placeholder-val="{{ true }}">
+                <div style="margin-top:8px">
+                  <label style="font-size:12.5px;font-weight:700;color:var(--muted);display:block;margin-bottom:7px">Karta raqami</label>
+                  <input class="pay-input" value="{{ payCard }}" onInput="{{ onPayCard }}" placeholder="8600 0000 0000 0000" style="margin-bottom:12px;letter-spacing:1px" />
+                  <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+                    <div>
+                      <label style="font-size:12.5px;font-weight:700;color:var(--muted);display:block;margin-bottom:7px">Amal qilish muddati</label>
+                      <input class="pay-input" value="{{ payExpiry }}" onInput="{{ onPayExpiry }}" placeholder="MM/YY" />
+                    </div>
+                    <div>
+                      <label style="font-size:12.5px;font-weight:700;color:var(--muted);display:block;margin-bottom:7px">CVV</label>
+                      <input class="pay-input" value="{{ payCvv }}" onInput="{{ onPayCvv }}" placeholder="•••" type="password" />
+                    </div>
+                  </div>
+                </div>
+              </sc-if>
+
+              <sc-if value="{{ payError }}" hint-placeholder-val="{{ false }}">
+                <div style="margin-top:12px;background:rgba(251,113,133,.1);border:1px solid rgba(251,113,133,.3);border-radius:12px;padding:11px 13px;font-size:13px;color:#e11d48">{{ payError }}</div>
+              </sc-if>
+
+              <button onClick="{{ submitPayCheckout }}" class="pay-btn" style="margin-top:18px">💳 To'lovni amalga oshirish</button>
+              <div style="text-align:center;font-size:12px;color:var(--muted2);margin-top:12px">Tugmani bosish orqali oferta shartlariga rozilik bildirasiz</div>
+            </div>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </sc-if>
+
   <!-- ===== CONFIRM MODAL ===== -->
   <sc-if value="{{ modal }}" hint-placeholder-val="{{ false }}">
     <div onClick="{{ closeModal }}" style="position:fixed;inset:0;z-index:100;background:rgba(4,3,9,.65);backdrop-filter:blur(4px);display:flex;align-items:center;justify-content:center;padding:24px">
@@ -1343,7 +1481,9 @@ class Component extends DCLogic {
     this.studentName="O'quvchi";
     this.state={tab:"dashboard",theme:"light",search:"",modal:null,toast:null,lessonCourse:null,currentLesson:null,completed:{},catFilter:"Hammasi",payFilter:"Hammasi",qaFilter:"Hammasi",accent:"#3b82f6",
       lessonPlaying:false,playProgress:12,lessonComment:"",lessonRating:5,lessonCommentError:null,contentRev:0,
-      profName:"",profPhone:"",profBio:"",profTelegram:""};
+      profName:"",profPhone:"",profBio:"",profTelegram:"",
+      showPayCheckout:false,paySuccess:false,payCourseId:null,payMethod:"Payme",
+      payPhone:"",payCard:"",payExpiry:"",payCvv:"",payError:null,payReceipt:null};
     this.sync();
     this.state.completed=Object.assign({},this.completedSet);
     if(this.enrolled[0]){ this.state.lessonCourse=this.enrolled[0].id; var fm=this.modulesByCourse[this.enrolled[0].id]; if(fm&&fm[0]&&fm[0].lessons[0]) this.state.currentLesson=fm[0].lessons[0].key; }
@@ -1351,16 +1491,18 @@ class Component extends DCLogic {
 
   componentDidMount(){
     const DB=window.ProSkillDB;
+    try{ if(DB&&DB.bootstrap) DB.bootstrap(false); }catch(e){}
+    try{ if(DB&&DB.reloadFromStorage) DB.reloadFromStorage(); }catch(e){}
     const s=DB?DB.session():null;
     if(!s||s.role!=="student"){ try{window.location.href="ProSkill IT Academy.dc.html";}catch(e){} return; }
     this.syncProfileForm();
-    this.refresh();
+    this.refresh(true);
     // Ustoz/manager boshqa tabda yozsa — localStorage dan qayta yuklab yangilash
     this._onFocus=()=>{ try{ this.refresh(); }catch(e){} };
     this._onVis=()=>{ try{ if(document.visibilityState==="visible") this.refresh(); }catch(e){} };
     this._onStorage=(e)=>{
       try{
-        if(e&&e.key&&e.key!=="proskill_db_v1") return;
+        if(e&&e.key&&e.key.indexOf("proskill_db_")!==0) return;
         this.refresh();
       }catch(err){}
     };
@@ -1592,8 +1734,78 @@ class Component extends DCLogic {
   enrollMeta(id){return this.enrolled.find(e=>e.id===id);}
   progressFor(id){const e=this.enrolled.find(x=>x.id===id);if(e)return e.progress;const DB=this.DB();return DB&&this.me?DB.progressFor(this.me.id,id):0;}
   enrollFree(c){const DB=this.DB();const r=DB.enrollFree(this.me.id,c.id);if(!r.ok){this.notify(r.error);return;}this.refresh();this.notify('"'+c.title+'" ochildi — darsni boshlang!');this.setState({tab:"mycourses"});}
-  buyCourse(c){if(this.isEnrolled(c.id)){this.notify("Siz allaqachon bu kursga yozilgansiz");return;}this.ask({title:"Kursni sotib olish",msg:'"'+c.title+'" — '+this.money(c.price)+". To'lov yuborilgandan keyin status 'pending' bo'ladi. Manager tasdiqlagach kurs ochiladi.",confirm:"To'lov yuborish",icon:"💳",onConfirm:()=>{const DB=this.DB();DB.requestPayment(this.me.id,c.id,"Payme");this.refresh();this.notify("To'lov yuborildi ⏳ Manager tasdig'ini kuting");this.setState({tab:"payments"});}});}
-  retryPayment(p){const DB=this.DB();const co=DB.table("courses").filter(x=>DB.courseTitle(x.id)===p.course)[0];if(co){DB.requestPayment(this.me.id,co.id,p.method);this.refresh();this.notify("To'lov qayta yuborildi ⏳");}}
+  buyCourse(c){
+    if(!c||!c.id){ this.notify("Kurs topilmadi"); return; }
+    if(this.isEnrolled(c.id)){ this.notify("Siz allaqachon bu kursga yozilgansiz"); return; }
+    if((c.price||0)===0){ this.enrollFree(c); return; }
+    this.openPayCheckout(c);
+  }
+  openPayCheckout(c){
+    const me=this.me||(window.ProSkillDB&&window.ProSkillDB.currentUser());
+    const phone=me&&me.phone?String(me.phone):"+998 ";
+    this.setState({
+      showPayCheckout:true,paySuccess:false,payCourseId:c.id,payMethod:"Payme",
+      payPhone:phone,payCard:"",payExpiry:"",payCvv:"",payError:null,payReceipt:null
+    });
+  }
+  closePayCheckout(){
+    this.setState({showPayCheckout:false,paySuccess:false,payError:null,payReceipt:null,payCourseId:null});
+  }
+  stopPayProp(e){ if(e&&e.stopPropagation) e.stopPropagation(); if(e&&e.preventDefault) e.preventDefault(); }
+  selectPayMethod(m){ this.setState({payMethod:m,payError:null}); }
+  formatCard(v){
+    const d=String(v||"").replace(/\D/g,"").slice(0,16);
+    return d.replace(/(.{4})/g,"$1 ").trim();
+  }
+  formatExpiry(v){
+    const d=String(v||"").replace(/\D/g,"").slice(0,4);
+    if(d.length<=2) return d;
+    return d.slice(0,2)+"/"+d.slice(2);
+  }
+  submitPayCheckout(){
+    const DB=this.DB();const me=this.me;
+    if(!DB||!me){ this.setState({payError:"Avval tizimga kiring"}); return; }
+    const courseId=this.state.payCourseId;
+    const method=this.state.payMethod||"Payme";
+    const isCard=method==="Uzcard"||method==="Visa";
+    const isWallet=method==="Click"||method==="Payme";
+    if(isWallet){
+      const phone=String(this.state.payPhone||"").replace(/\s/g,"");
+      if(phone.replace(/\D/g,"").length<9){ this.setState({payError:"To'g'ri telefon raqamini kiriting"}); return; }
+    }
+    if(isCard){
+      const card=String(this.state.payCard||"").replace(/\s/g,"");
+      const exp=String(this.state.payExpiry||"");
+      const cvv=String(this.state.payCvv||"");
+      if(card.length<16){ this.setState({payError:"Karta raqami 16 ta raqamdan iborat bo'lishi kerak"}); return; }
+      if(!/^\d{2}\/\d{2}$/.test(exp)){ this.setState({payError:"Amal qilish muddatini MM/YY formatida kiriting"}); return; }
+      if(cvv.length<3){ this.setState({payError:"CVV kodini kiriting (3 raqam)"}); return; }
+    }
+    const r=DB.checkoutPay(me.id,courseId,method,{
+      phone:this.state.payPhone||"",
+      cardLast4:String(this.state.payCard||"").replace(/\s/g,"").slice(-4)
+    });
+    if(!r||!r.ok){ this.setState({payError:(r&&r.error)||"To'lov amalga oshmadi. Qayta urinib ko'ring."}); return; }
+    this.sync();
+    this.setState({
+      paySuccess:true,payError:null,payReceipt:r.receipt||null,
+      completed:Object.assign({},this.completedSet||{}),contentRev:(this.state.contentRev||0)+1
+    });
+    this.notify("To'lov muvaffaqiyatli ✓ Kurs ochildi");
+  }
+  goMyCoursesAfterPay(){
+    this.closePayCheckout();
+    this.refresh(true);
+    this.setState({tab:"mycourses"});
+    try{window.scrollTo(0,0);}catch(e){}
+  }
+  retryPayment(p){
+    const DB=this.DB();
+    if(!DB||!p) return;
+    const co=(DB.table("courses")||[]).find(x=>DB.courseTitle(x.id)===p.course)||(DB.table("courses")||[]).find(x=>x.id===p.courseId);
+    if(co) this.openPayCheckout(Object.assign({},co,this.courseById[co.id]||{}));
+    else this.notify("Kurs topilmadi");
+  }
   openCourse(id){
     this.sync();
     const mods=this.modulesByCourse[id]||[];
@@ -2011,10 +2223,69 @@ class Component extends DCLogic {
       studentTestRows:this.myTests.map(t=>({...t,icon:t.taken?(t.passed?"✓":"✗"):"📝",iconBg:t.taken?(t.passed?"rgba(52,211,153,.14)":"rgba(251,113,133,.14)"):"rgba(16,185,129,.14)",scoreColor:t.passed?"#34d399":"#fb7185",resultLabel:t.passed?"O'tdi":"Yiqildi",btnLabel:t.taken?"Qayta ishlash":"Boshlash",btnBorder:t.taken?"1px solid var(--border)":"none",btnBg:t.taken?"var(--panel)":"linear-gradient(135deg,#10b981,#22c55e)",btnColor:t.taken?"var(--text)":"#fff",onTake:()=>this.takeTest(t)})),
       // certs
       certCards:this.myCerts.map(c=>({...c,statusLabel:c.ready?"✓ Tayyor":(c.canIssue?"Sertifikat olishga tayyor":"Davom etmoqda"),locked:!c.ready&&!c.canIssue,canIssue:!!c.canIssue,onDownload:()=>{if(c.canIssue)this.issueCert(c.courseId);else this.notify(c.id+" — PDF yuklab olinmoqda ✓");}})),
-      // payments
+      // payments list
       payStats:[{label:"Jami to'lovlarim",value:this.myPayments.length+"",color:"var(--text)"},{label:"Tasdiqlangan",value:this.myPayments.filter(p=>p.status==="paid").length+"",color:"#34d399"},{label:"Kutilmoqda",value:this.myPayments.filter(p=>p.status==="pending").length+"",color:"#fbbf24"}],
-      myPaymentRows:this.myPayments.map(p=>{const map={paid:["To'langan","#34d399"],pending:["Kutilmoqda","#fbbf24"],failed:["Rad etilgan","#fb7185"]};const mm=map[p.status];return{...p,amountLabel:this.money(p.amount).replace(" so'm",""),statusLabel:mm[0],statusColor:mm[1],isFailed:p.status==="failed",notFailed:p.status!=="failed",onRetry:()=>this.retryPayment(p),onView:()=>this.notify(p.id+" tafsilotlari")};}),
+      myPaymentRows:this.myPayments.map(p=>{const map={paid:["To'langan","#34d399"],pending:["Kutilmoqda","#fbbf24"],failed:["Rad etilgan","#fb7185"]};const mm=map[p.status]||["—","var(--muted)"];return{...p,amountLabel:this.money(p.amount).replace(" so'm",""),statusLabel:mm[0],statusColor:mm[1],isFailed:p.status==="failed",notFailed:p.status!=="failed",onRetry:()=>this.retryPayment(p),onView:()=>this.notify(p.id+" · "+p.method+" · "+this.money(p.amount))};}),
       hasFailedPay:this.myPayments.some(p=>p.status==="failed"), failedReason:(this.myPayments.find(p=>p.status==="failed")||{}).reason||"",
+      // ===== PAY CHECKOUT =====
+      showPayCheckout:!!st.showPayCheckout,
+      paySuccess:!!st.paySuccess,
+      payFormView:!st.paySuccess,
+      closePayCheckout:()=>this.closePayCheckout(),
+      stopPayProp:(e)=>this.stopPayProp(e),
+      submitPayCheckout:()=>this.submitPayCheckout(),
+      goMyCoursesAfterPay:()=>this.goMyCoursesAfterPay(),
+      ...(function(){
+        const c=st.payCourseId?(catObj(st.payCourseId)||{}):{};
+        const price=Number(c.price)||0;
+        const oldPrice=price?Math.round(price*1.2):0;
+        const discount=oldPrice-price;
+        const method=st.payMethod||"Payme";
+        const isCard=method==="Uzcard"||method==="Visa";
+        const isWallet=method==="Click"||method==="Payme";
+        const methods=[
+          {id:"Click",label:"Click",hint:"Telefon orqali tezkor to'lov",logoUrl:"assets/pay/click.svg"},
+          {id:"Payme",label:"Payme",hint:"Payme hisobi yoki telefon",logoUrl:"assets/pay/payme.svg"},
+          {id:"Uzcard",label:"Uzcard / Humo",hint:"Mahalliy bank kartasi",logoUrl:"assets/pay/uzcard-humo.svg"},
+          {id:"Visa",label:"Visa / Mastercard",hint:"Xalqaro karta",logoUrl:"assets/pay/visa-mc.svg"}
+        ].map(m=>{
+          const on=method===m.id;
+          return{
+            ...m,cls:on?"on":"",
+            radioBorder:on?"#10b981":"var(--border)",
+            radioFill:on?"#10b981":"transparent",
+            onSelect:()=>this.selectPayMethod(m.id)
+          };
+        });
+        const rec=st.payReceipt||{};
+        return{
+          payCourseTitle:c.title||"Kurs",
+          payCourseTeacher:c.teacher||"—",
+          payCourseCat:c.cat||"—",
+          payCourseGrad:c.grad||"linear-gradient(135deg,#10b981,#22c55e)",
+          payCourseInitial:c.initial||(c.cat||"K").charAt(0),
+          payOldPriceLabel:oldPrice?this.money(oldPrice):"—",
+          payDiscountLabel:discount?this.money(discount):"0 so'm",
+          payTotalLabel:this.money(price),
+          payMethods:methods,
+          payIsCard:isCard,
+          payIsWallet:isWallet,
+          payPhone:st.payPhone||"",
+          payCard:st.payCard||"",
+          payExpiry:st.payExpiry||"",
+          payCvv:st.payCvv||"",
+          payError:st.payError||null,
+          payWalletHint:method==="Click"
+            ?"Click ilovasiga o'tish yoki telefon raqamingizga so'rov yuboriladi."
+            :"Payme ilovasiga o'tish yoki hisobingizga bog'langan telefon orqali tasdiqlaysiz.",
+          onPayPhone:(e)=>this.setState({payPhone:e.target.value,payError:null}),
+          onPayCard:(e)=>this.setState({payCard:this.formatCard(e.target.value),payError:null}),
+          onPayExpiry:(e)=>this.setState({payExpiry:this.formatExpiry(e.target.value),payError:null}),
+          onPayCvv:(e)=>this.setState({payCvv:String(e.target.value||"").replace(/\D/g,"").slice(0,4),payError:null}),
+          payReceiptId:rec.id||"—",
+          payMethodLabel:rec.method||method
+        };
+      }).call(this),
       // qa
       qaCourseOptions:this.enrolled.map(e=>({title:catObj(e.id).title})),
       askQuestion:()=>this.doAskQuestion(st.qaCourse||(this.enrolled[0]?catObj(this.enrolled[0].id).title:""),st.qaLesson||"",st.qaText||""),

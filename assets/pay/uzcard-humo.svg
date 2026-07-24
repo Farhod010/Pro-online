@@ -1,0 +1,11 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 48" role="img" aria-label="Uzcard Humo">
+  <rect width="120" height="48" rx="10" fill="#F4F6FB"/>
+  <rect x="1" y="1" width="118" height="46" rx="9" fill="none" stroke="#E2E8F0"/>
+  <!-- Uzcard circles -->
+  <circle cx="28" cy="24" r="10" fill="#F7B500"/>
+  <circle cx="38" cy="24" r="10" fill="#E31E24" fill-opacity="0.9"/>
+  <!-- Humo bird hint -->
+  <path d="M58 30c3-8 7.5-11 12-11s9 3 12 11" fill="none" stroke="#5B2D8E" stroke-width="2.6" stroke-linecap="round"/>
+  <circle cx="70" cy="17.5" r="2.4" fill="#F4C430"/>
+  <text x="98" y="27" text-anchor="middle" font-family="Arial, Helvetica, sans-serif" font-size="9" font-weight="800" fill="#1B3A8C">U/H</text>
+</svg>

@@ -1019,9 +1019,13 @@
 <script type="text/x-dc" data-dc-script>
 class Component extends DCLogic {
   componentDidMount(){
-    const DB=window.ProSkillDB;const s=DB?DB.session():null;
+    const DB=window.ProSkillDB;
+    try{ if(DB&&DB.bootstrap) DB.bootstrap(false); }catch(e){}
+    try{ if(DB&&DB.reloadFromStorage) DB.reloadFromStorage(); }catch(e){}
+    const s=DB?DB.session():null;
     if(!s||s.role!=="teacher"){try{window.location.href="ProSkill IT Academy.dc.html";}catch(e){} return;}
     this.syncProfileForm();
+    try{ this.forceUpdate(); }catch(e){}
   }
   constructor(props){
     super(props);

@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 48" role="img" aria-label="Click">
+  <defs>
+    <linearGradient id="cg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#00B5EF"/>
+      <stop offset="100%" stop-color="#0086C9"/>
+    </linearGradient>
+  </defs>
+  <rect width="120" height="48" rx="10" fill="url(#cg)"/>
+  <circle cx="26" cy="24" r="11" fill="#fff" fill-opacity=".18"/>
+  <path d="M22 24h8M26 20v8" stroke="#fff" stroke-width="2.4" stroke-linecap="round"/>
+  <text x="72" y="30" text-anchor="middle" font-family="Arial Black, Arial, sans-serif" font-size="18" font-weight="800" fill="#fff" letter-spacing=".6">Click</text>
+</svg>
